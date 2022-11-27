@@ -1,0 +1,16 @@
+*/output
+.idea
+.vscode
+
+*.json
+*.zst
+*.log
+*.tar*
+*.gz
+
+!tranco/info.json
+
+.mypy_cache
+.vscode
+__pycache__
+output
