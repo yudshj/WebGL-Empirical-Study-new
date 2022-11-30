@@ -9,7 +9,7 @@
 
 BOT_NAME = 'webgl'
 LOG_LEVEL = 'INFO'
-LOG_FILE = '/storage/output/scrapy-info.log'
+LOG_FILE = '/storage/webgl/output/scrapy-info.log'
 
 SPIDER_MODULES = ['webgl.spiders']
 NEWSPIDER_MODULE = 'webgl.spiders'
@@ -97,6 +97,6 @@ REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
 TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
 
 
-MONGO_URI = 'mongodb://127.0.0.1:27017/'
-MONGO_DATABASE = 'tranco'
-DUMPDIR = '/home/maghsk/storage/Projects/WebGL Empirical Study/Crawler/output'
+# MONGO_URI = 'mongodb://127.0.0.1:27017/'
+# MONGO_DATABASE = 'tranco'
+# DUMPDIR = '/home/maghsk/storage/Projects/WebGL Empirical Study/Crawler/output'

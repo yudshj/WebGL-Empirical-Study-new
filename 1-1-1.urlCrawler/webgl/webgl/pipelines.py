@@ -17,7 +17,7 @@ from scrapy.exporters import JsonLinesItemExporter
 
 
 class WebGLPipeline:
-    OUTPUT_BASE_PATH = Path('/storage/output')
+    OUTPUT_BASE_PATH = Path('/storage/webgl/output')
 
     def __init__(self):
         self.js_fp
