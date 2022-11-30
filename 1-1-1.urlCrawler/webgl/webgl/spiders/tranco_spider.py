@@ -65,7 +65,8 @@ class TrancoSpider(scrapy.Spider):
         origin_url: str = response.meta.get('origin_url')
         logging.info(f"parsing {response.url}")
         lst = response.xpath('//script')
-        js_lst: list[str] = []
+        false_key = set(keyword for keyword in self.settings.getlist('KEYWORDS'))
+        true_key = set()
         # remote_js_dict: dict[str, Optional[str]] = {}
         # remote_js_count = 0
         remote_js_url_list: list[str] = []
@@ -81,12 +82,15 @@ class TrancoSpider(scrapy.Spider):
 
                 yield scrapy.Request(
                     url=url,
-                    callback=self.parse_js,  # lambda x: js_lst.append(x.body),
+                    callback=self.parse_js,
                     meta={'origin_url': response.url, "idx": response.meta['idx']},
                     priority=10,
                 )
             else:
-                js_lst.append(item.get())
+                for key in list(false_key):
+                    if key in item.get():
+                        true_key.add(key)
+                        false_key.remove(key)
                 pass
 
         # Expanding
@@ -108,25 +112,12 @@ class TrancoSpider(scrapy.Spider):
                             "origin_url": response.url
                         }
                     )
-
-        # Yielding
-        if type(response.body) is str:
-            keywords = {
-                keyword: response.body.find(keyword) != -1
-                for keyword in self.settings.getlist('KEYWORDS')
-            }
-        elif type(response.body) is bytes:
-            keywords = {
-                keyword: response.body.find(keyword.encode()) != -1
-                for keyword in self.settings.getlist('KEYWORDS')
-            }
-        else:
-            raise ValueError()
+        
         yield HtmlData(
             access_time=datetime.utcnow(),
             url=response.url,
             idx=response.meta['idx'],
             remote_js_url_list=remote_js_url_list,
             referer=origin_url,
-            keywords=keywords,
+            keywords=dict([(key, True) for key in true_key] + [(key, False) for key in false_key]),
         )
