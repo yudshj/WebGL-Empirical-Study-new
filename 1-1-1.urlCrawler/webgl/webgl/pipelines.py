@@ -37,12 +37,13 @@ class WebGLPipeline:
 
         self.html_exporter = JsonLinesItemExporter(
             self.html_fp,
-            fields_to_export=['access_time', 'idx', 'url', 'lit_used_webgl', 'lit_used_getcontext', 'lit_used_getcontext_webgl', 
-                              'remote_js_url_list'])
+            # fields_to_export=['access_time', 'idx', 'url', 'keywords', 'remote_js_url_list']
+        )
 
         self.js_exporter = JsonLinesItemExporter(
             self.js_fp,
-            fields_to_export=['access_time', 'idx', 'url', 'lit_used_webgl', 'lit_used_getcontext', 'lit_used_getcontext_webgl'])
+            # fields_to_export=['access_time', 'idx', 'url', 'keywords']
+        )
 
     def close_spider(self, spider):
         self.html_exporter.finish_exporting()

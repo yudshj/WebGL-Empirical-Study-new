@@ -15,6 +15,8 @@ from ..items import HtmlData, JavaScriptData
 from datetime import datetime
 
 
+
+
 class TrancoSpider(scrapy.Spider):
     name = "tranco"
     # start_urls = ['https://www.oppo.com/cn/smartphones/series-find-n/find-n/3d/']
@@ -25,16 +27,21 @@ class TrancoSpider(scrapy.Spider):
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
+        self.keywords = self.settings.getlist('KEYWORDS')
 
     def start_requests(self):
+        tranco_begin:int = self.settings.getint('TRANCO_BEGIN')
+        tranco_end:int = self.settings.getint('TRANCO_END')
         tranco_top1M_csv_path = Path(self.tranco_top1M_csv_path_str)
         tranco_list: List[List[str]] = [x.strip().split(',') for x in tranco_top1M_csv_path.read_text().splitlines()]
+        tranco_list = tranco_list[tranco_begin:tranco_end]
         # tranco_list = ['www.oppo.com']
         for idx, url in tranco_list:
             logging.info(f"seeding {url}")
-            yield Request(url=f"http://{url}", callback=self.parse, meta={"cur_depth": 0, "retry": 0, "idx": int(idx)})
+            yield Request(url=f"http://{url}", callback=self.parse, meta={"cur_depth": 0, "retry": 0, "idx": int(idx), "origin_url": f"<TRANCO-{idx}> - {url}"})
 
     def parse_js(self, response: Response):
+        origin_url: str = response.meta.get('origin_url')
         if response.status != 200:
             if response.meta["retry"] < self.max_retry:
                 yield Request(url=response.url, callback=self.parse_js,
@@ -44,22 +51,20 @@ class TrancoSpider(scrapy.Spider):
                     access_time=None,
                     idx=response.meta['idx'],
                     url=response.url,
-                    # code=None,
-                    lit_used_getcontext=None,
-                    lit_used_webgl=None,
-                    lit_used_getcontext_webgl=None,
+                    keywords=None,
+                    referer=origin_url,
                 )
             return
-
-        origin_url: str = response.meta.get('origin_url')
         if type(response.body) is bytes:
-            lit_used_getcontext = (response.body.find(b'getContext') != -1)
-            lit_used_webgl = (response.body.find(b'webgl') != -1)
-            lit_used_getcontext_webgl = (response.body.find(b'getContext("webgl') != -1)
+            keywords = {
+                keyword: response.body.find(keyword.encode()) != -1
+                for keyword in self.keywords
+            }
         elif type(response.body) is str:
-            lit_used_getcontext = (response.body.find('getContext') != -1)
-            lit_used_webgl = (response.body.find('webgl') != -1)
-            lit_used_getcontext_webgl = (response.body.find('getContext("webgl') != -1)
+            keywords = {
+                keyword: response.body.find(keyword) != -1
+                for keyword in self.keywords
+            }
         else:
             raise ValueError()
 
@@ -67,19 +72,12 @@ class TrancoSpider(scrapy.Spider):
             access_time=datetime.utcnow(),
             idx=response.meta['idx'],
             url=response.url,
-            # code=code,
-            lit_used_getcontext=lit_used_getcontext,
-            lit_used_webgl=lit_used_webgl,
-            # lit_used_getcontext=code.find("getContext") != -1,
-            # lit_used_webgl=code.find("webgl") != -1,
-            # origin_url=origin_url,
-            # url=response.url,
-            # js=JavaScriptData.from_str(r),
-            # name=response.meta.get('name')
-            lit_used_getcontext_webgl=lit_used_getcontext_webgl,
+            keywords=keywords,
+            referer=origin_url,
         )
 
     def parse(self, response: Response):
+        origin_url: str = response.meta.get('origin_url')
         if response.status != 200:
             if response.meta["retry"] < self.max_retry:
                 yield Request(url=response.url, callback=self.parse_js,
@@ -89,11 +87,9 @@ class TrancoSpider(scrapy.Spider):
                     idx=response.meta['idx'],
                     url=response.url,
                     access_time=None,
-                    # js_code_list=None,
                     remote_js_url_list=None,
-                    lit_used_webgl=None,
-                    lit_used_getcontext=None,
-                    lit_used_getcontext_webgl=None,
+                    keywords=None,
+                    referer=origin_url,
                 )
             return
 
@@ -136,13 +132,21 @@ class TrancoSpider(scrapy.Spider):
                     yield Request(url, callback=self.parse, meta={"cur_depth": next_depth, "retry": 0, "idx": response.meta['idx']})
 
         # Yielding
+        if type(response.body) is str:
+            keywords = {
+                keyword: response.body.find(keyword) != -1
+                for keyword in self.keywords
+            }
+        elif type(response.body) is bytes:
+            keywords = {
+                keyword: response.body.find(keyword.encode()) != -1
+                for keyword in self.keywords
+            }
         yield HtmlData(
             access_time=datetime.utcnow(),
             url=response.url,
             idx=response.meta['idx'],
-            # js_code_list=js_lst,
             remote_js_url_list=remote_js_url_list,
-            lit_used_getcontext=any(code.find('getContext') != -1 for code in js_lst),
-            lit_used_webgl=any(code.find('webgl') != -1 for code in js_lst),
-            lit_used_getcontext_webgl=any(code.find('getContext("webgl') != -1 for code in js_lst),
+            referer=origin_url,
+            keywords=keywords,
         )
