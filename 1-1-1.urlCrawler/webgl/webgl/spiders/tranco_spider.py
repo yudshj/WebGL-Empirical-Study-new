@@ -33,6 +33,7 @@ class TrancoSpider(scrapy.Spider):
         tranco_top1M_csv_path = Path(self.tranco_top1M_csv_path_str)
         tranco_list: List[List[str]] = [x.strip().split(',') for x in tranco_top1M_csv_path.read_text().splitlines()]
         tranco_list = tranco_list[tranco_begin:tranco_end]
+        logging.info(f"tranco_begin: {tranco_begin}, tranco_end: {tranco_end}, total: {len(tranco_list)}")
         # tranco_list = ['www.oppo.com']
         for idx, url in tranco_list:
             logging.info(f"seeding {url}")
