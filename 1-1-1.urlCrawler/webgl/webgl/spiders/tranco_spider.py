@@ -18,7 +18,7 @@ from datetime import datetime
 class TrancoSpider(scrapy.Spider):
     name = "tranco"
     # start_urls = ['https://www.oppo.com/cn/smartphones/series-find-n/find-n/3d/']
-    tranco_top1M_csv_path_str = "/home/ubuntu/OppoCrawler/tranco/top-1m.csv"
+    tranco_top1M_csv_path_str = "/storage/tranco/top-1m.csv"
     max_depth = 2
     max_width = 2
     max_retry = 2  # total access := max_retry + 1

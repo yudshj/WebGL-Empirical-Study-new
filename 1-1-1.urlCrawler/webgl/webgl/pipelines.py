@@ -8,9 +8,8 @@
 from itemadapter import ItemAdapter
 from .items import *
 # import pymongo
+import gzip
 import json
-import dataclasses
-import logging
 # import cachetools
 from pathlib import Path
 
@@ -18,7 +17,7 @@ from scrapy.exporters import JsonLinesItemExporter
 
 
 class WebGLPipeline:
-    OUTPUT_BASE_PATH = Path('/home/ubuntu/OppoCrawler/output')
+    OUTPUT_BASE_PATH = Path('/storage/output')
 
     def __init__(self):
         self.js_fp
@@ -36,6 +35,8 @@ class WebGLPipeline:
         self.OUTPUT_BASE_PATH.mkdir(parents=True, exist_ok=True)
         self.html_fp = open(self.OUTPUT_BASE_PATH / 'simplified_html.json', 'wb')
         self.js_fp = open(self.OUTPUT_BASE_PATH / 'simplified_js.json', 'wb')
+        # self.html_fp = gzip.open(self.OUTPUT_BASE_PATH / 'simplified_html.json.gz', 'wb')
+        # self.js_fp = gzip.open(self.OUTPUT_BASE_PATH / 'simplified_js.json.gz', 'wb')
 
         self.html_exporter = JsonLinesItemExporter(
             self.html_fp,

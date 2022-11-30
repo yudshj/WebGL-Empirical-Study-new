@@ -9,7 +9,7 @@
 
 BOT_NAME = 'webgl'
 LOG_LEVEL = 'INFO'
-LOG_FILE = '/home/ubuntu/OppoCrawler/output/scrapy-info.log'
+LOG_FILE = '/storage/output/scrapy-info.log'
 
 SPIDER_MODULES = ['webgl.spiders']
 NEWSPIDER_MODULE = 'webgl.spiders'
