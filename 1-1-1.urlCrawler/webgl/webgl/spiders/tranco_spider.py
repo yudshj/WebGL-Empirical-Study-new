@@ -27,7 +27,6 @@ class TrancoSpider(scrapy.Spider):
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        self.keywords = self.settings.getlist('KEYWORDS')
 
     def start_requests(self):
         tranco_begin:int = self.settings.getint('TRANCO_BEGIN')
@@ -58,12 +57,12 @@ class TrancoSpider(scrapy.Spider):
         if type(response.body) is bytes:
             keywords = {
                 keyword: response.body.find(keyword.encode()) != -1
-                for keyword in self.keywords
+                for keyword in self.settings.getlist('KEYWORDS')
             }
         elif type(response.body) is str:
             keywords = {
                 keyword: response.body.find(keyword) != -1
-                for keyword in self.keywords
+                for keyword in self.settings.getlist('KEYWORDS')
             }
         else:
             raise ValueError()
@@ -135,12 +134,12 @@ class TrancoSpider(scrapy.Spider):
         if type(response.body) is str:
             keywords = {
                 keyword: response.body.find(keyword) != -1
-                for keyword in self.keywords
+                for keyword in self.settings.getlist('KEYWORDS')
             }
         elif type(response.body) is bytes:
             keywords = {
                 keyword: response.body.find(keyword.encode()) != -1
-                for keyword in self.keywords
+                for keyword in self.settings.getlist('KEYWORDS')
             }
         yield HtmlData(
             access_time=datetime.utcnow(),
