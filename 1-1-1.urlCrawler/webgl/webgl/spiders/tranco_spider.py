@@ -94,7 +94,7 @@ class TrancoSpider(scrapy.Spider):
 
         logging.info(f"parsing {response.url}")
         lst = response.xpath('//script')
-        # js_lst: list[str] = []
+        js_lst: list[str] = []
         # remote_js_dict: dict[str, Optional[str]] = {}
         # remote_js_count = 0
         remote_js_url_list: list[str] = []
@@ -115,7 +115,7 @@ class TrancoSpider(scrapy.Spider):
                     priority=10,
                 )
             else:
-                # js_lst.append(item.get())
+                js_lst.append(item.get())
                 pass
 
         # Expanding
