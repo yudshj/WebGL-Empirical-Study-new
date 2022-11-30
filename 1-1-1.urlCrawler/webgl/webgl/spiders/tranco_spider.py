@@ -47,16 +47,19 @@ class TrancoSpider(scrapy.Spider):
                     # code=None,
                     lit_used_getcontext=None,
                     lit_used_webgl=None,
+                    lit_used_getcontext_webgl=None,
                 )
             return
 
         origin_url: str = response.meta.get('origin_url')
         if type(response.body) is bytes:
-            lit_used_getcontext = (response.body.find(b"getContext") != -1)
-            lit_used_webgl = (response.body.find(b"webgl") != -1)
+            lit_used_getcontext = (response.body.find(b'getContext') != -1)
+            lit_used_webgl = (response.body.find(b'webgl') != -1)
+            lit_used_getcontext_webgl = (response.body.find(b'getContext("webgl') != -1)
         elif type(response.body) is str:
-            lit_used_getcontext = (response.body.find("getContext") != -1)
-            lit_used_webgl = (response.body.find("webgl") != -1)
+            lit_used_getcontext = (response.body.find('getContext') != -1)
+            lit_used_webgl = (response.body.find('webgl') != -1)
+            lit_used_getcontext_webgl = (response.body.find('getContext("webgl') != -1)
         else:
             raise ValueError()
 
@@ -73,6 +76,7 @@ class TrancoSpider(scrapy.Spider):
             # url=response.url,
             # js=JavaScriptData.from_str(r),
             # name=response.meta.get('name')
+            lit_used_getcontext_webgl=lit_used_getcontext_webgl,
         )
 
     def parse(self, response: Response):
@@ -89,6 +93,7 @@ class TrancoSpider(scrapy.Spider):
                     remote_js_url_list=None,
                     lit_used_webgl=None,
                     lit_used_getcontext=None,
+                    lit_used_getcontext_webgl=None,
                 )
             return
 
@@ -137,6 +142,7 @@ class TrancoSpider(scrapy.Spider):
             idx=response.meta['idx'],
             # js_code_list=js_lst,
             remote_js_url_list=remote_js_url_list,
-            lit_used_getcontext=any(code.find("getContext") != -1 for code in js_lst),
-            lit_used_webgl=any(code.find("webgl") != -1 for code in js_lst),
+            lit_used_getcontext=any(code.find('getContext') != -1 for code in js_lst),
+            lit_used_webgl=any(code.find('webgl') != -1 for code in js_lst),
+            lit_used_getcontext_webgl=any(code.find('getContext("webgl') != -1 for code in js_lst),
         )

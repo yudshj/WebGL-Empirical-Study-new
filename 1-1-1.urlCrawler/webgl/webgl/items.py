@@ -16,6 +16,7 @@ class JavaScriptData:
     # code: Optional[str]
     lit_used_webgl: Optional[bool]
     lit_used_getcontext: Optional[bool]
+    lit_used_getcontext_webgl: Optional[bool]
 
     # @staticmethod
     # def from_url_str(url: str, code: str):
@@ -37,3 +38,4 @@ class HtmlData:
     remote_js_url_list: Optional[List[str]]
     lit_used_webgl: Optional[bool]
     lit_used_getcontext: Optional[bool]
+    lit_used_getcontext_webgl: Optional[bool]
