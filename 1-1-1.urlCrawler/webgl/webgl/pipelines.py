@@ -20,10 +20,7 @@ class WebGLPipeline:
     OUTPUT_BASE_PATH = Path('/storage/webgl/output')
 
     def __init__(self):
-        self.js_fp
-        self.html_fp
-        self.js_exporter
-        self.html_exporter
+        pass
 
     def process_item(self, item, spider):
         if isinstance(item, JavaScriptData):
