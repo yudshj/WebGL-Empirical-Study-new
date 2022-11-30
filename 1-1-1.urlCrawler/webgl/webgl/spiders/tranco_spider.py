@@ -23,7 +23,6 @@ class TrancoSpider(scrapy.Spider):
     tranco_top1M_csv_path_str = "/storage/webgl/tranco/top-1m.csv"
     max_depth = 2
     max_width = 2
-    max_retry = 2  # total access := max_retry + 1
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
@@ -37,23 +36,10 @@ class TrancoSpider(scrapy.Spider):
         # tranco_list = ['www.oppo.com']
         for idx, url in tranco_list:
             logging.info(f"seeding {url}")
-            yield Request(url=f"http://{url}", callback=self.parse, meta={"cur_depth": 0, "retry": 0, "idx": int(idx), "origin_url": f"<TRANCO-{idx}> - {url}"})
+            yield Request(url=f"http://{url}", callback=self.parse, meta={"cur_depth": 0, "idx": int(idx), "origin_url": f"<TRANCO-{idx}> - {url}"})
 
     def parse_js(self, response: Response):
         origin_url: str = response.meta.get('origin_url')
-        if response.status != 200:
-            if response.meta["retry"] < self.max_retry:
-                yield Request(url=response.url, callback=self.parse_js,
-                              meta={"cur_depth": response.meta["cur_depth"], "retry": response.meta["retry"] + 1, "idx": response.meta['idx']})
-            else:
-                yield JavaScriptData(
-                    access_time=None,
-                    idx=response.meta['idx'],
-                    url=response.url,
-                    keywords=None,
-                    referer=origin_url,
-                )
-            return
         if type(response.body) is bytes:
             keywords = {
                 keyword: response.body.find(keyword.encode()) != -1
@@ -77,21 +63,6 @@ class TrancoSpider(scrapy.Spider):
 
     def parse(self, response: Response):
         origin_url: str = response.meta.get('origin_url')
-        if response.status != 200:
-            if response.meta["retry"] < self.max_retry:
-                yield Request(url=response.url, callback=self.parse_js,
-                              meta={"cur_depth": response.meta["cur_depth"], "retry": response.meta["retry"] + 1, "idx": response.meta['idx']})
-            else:
-                yield HtmlData(
-                    idx=response.meta['idx'],
-                    url=response.url,
-                    access_time=None,
-                    remote_js_url_list=None,
-                    keywords=None,
-                    referer=origin_url,
-                )
-            return
-
         logging.info(f"parsing {response.url}")
         lst = response.xpath('//script')
         js_lst: list[str] = []
@@ -111,7 +82,7 @@ class TrancoSpider(scrapy.Spider):
                 yield scrapy.Request(
                     url=url,
                     callback=self.parse_js,  # lambda x: js_lst.append(x.body),
-                    meta={'origin_url': response.url, 'retry': 0, "idx": response.meta['idx']},
+                    meta={'origin_url': response.url, "idx": response.meta['idx']},
                     priority=10,
                 )
             else:
@@ -128,7 +99,15 @@ class TrancoSpider(scrapy.Spider):
             if len(a_set) > 0:
                 expand_list = random.choices(list(a_set), k=min(len(a_set), self.max_width))
                 for url in expand_list:
-                    yield Request(url, callback=self.parse, meta={"cur_depth": next_depth, "retry": 0, "idx": response.meta['idx']})
+                    yield Request(
+                        url,
+                        callback=self.parse,
+                        meta={
+                            "cur_depth": next_depth,
+                            "idx": response.meta['idx'],
+                            "origin_url": response.url
+                        }
+                    )
 
         # Yielding
         if type(response.body) is str:
@@ -141,6 +120,8 @@ class TrancoSpider(scrapy.Spider):
                 keyword: response.body.find(keyword.encode()) != -1
                 for keyword in self.settings.getlist('KEYWORDS')
             }
+        else:
+            raise ValueError()
         yield HtmlData(
             access_time=datetime.utcnow(),
             url=response.url,
