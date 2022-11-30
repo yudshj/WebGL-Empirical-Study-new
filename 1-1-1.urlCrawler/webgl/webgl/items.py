@@ -13,7 +13,7 @@ class JavaScriptData:
     url: str
     idx: int
     access_time: Optional[datetime]
-    code: Optional[str]
+    # code: Optional[str]
     lit_used_webgl: Optional[bool]
     lit_used_getcontext: Optional[bool]
 
@@ -33,7 +33,7 @@ class HtmlData:
     url: str
     idx: int
     access_time: Optional[datetime]
-    js_code_list: Optional[List[str]]
+    # js_code_list: Optional[List[str]]
     remote_js_url_list: Optional[List[str]]
     lit_used_webgl: Optional[bool]
     lit_used_getcontext: Optional[bool]

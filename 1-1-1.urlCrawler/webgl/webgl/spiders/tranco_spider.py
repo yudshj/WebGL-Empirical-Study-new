@@ -8,7 +8,7 @@ from pathlib import Path
 
 from scrapy import Request
 from scrapy.http import Response
-from typing import Optional
+from typing import Optional, List
 
 from ..items import HtmlData, JavaScriptData
 
@@ -28,7 +28,7 @@ class TrancoSpider(scrapy.Spider):
 
     def start_requests(self):
         tranco_top1M_csv_path = Path(self.tranco_top1M_csv_path_str)
-        tranco_list: list[str] = [x.strip().split(',') for x in tranco_top1M_csv_path.read_text().strip().splitlines()]
+        tranco_list: List[List[str]] = [x.strip().split(',') for x in tranco_top1M_csv_path.read_text().splitlines()]
         # tranco_list = ['www.oppo.com']
         for idx, url in tranco_list:
             logging.info(f"seeding {url}")
@@ -44,7 +44,7 @@ class TrancoSpider(scrapy.Spider):
                     access_time=None,
                     idx=response.meta['idx'],
                     url=response.url,
-                    code=None,
+                    # code=None,
                     lit_used_getcontext=None,
                     lit_used_webgl=None,
                 )
@@ -52,9 +52,11 @@ class TrancoSpider(scrapy.Spider):
 
         origin_url: str = response.meta.get('origin_url')
         if type(response.body) is bytes:
-            code = response.body.decode('utf-8')
+            lit_used_getcontext = (response.body.find(b"getContext") != -1)
+            lit_used_webgl = (response.body.find(b"webgl") != -1)
         elif type(response.body) is str:
-            code = response.body
+            lit_used_getcontext = (response.body.find("getContext") != -1)
+            lit_used_webgl = (response.body.find("webgl") != -1)
         else:
             raise ValueError()
 
@@ -62,9 +64,11 @@ class TrancoSpider(scrapy.Spider):
             access_time=datetime.utcnow(),
             idx=response.meta['idx'],
             url=response.url,
-            code=code,
-            lit_used_getcontext=code.find("getContext") != -1,
-            lit_used_webgl=code.find("webgl") != -1,
+            # code=code,
+            lit_used_getcontext=lit_used_getcontext,
+            lit_used_webgl=lit_used_webgl,
+            # lit_used_getcontext=code.find("getContext") != -1,
+            # lit_used_webgl=code.find("webgl") != -1,
             # origin_url=origin_url,
             # url=response.url,
             # js=JavaScriptData.from_str(r),
@@ -81,7 +85,7 @@ class TrancoSpider(scrapy.Spider):
                     idx=response.meta['idx'],
                     url=response.url,
                     access_time=None,
-                    js_code_list=None,
+                    # js_code_list=None,
                     remote_js_url_list=None,
                     lit_used_webgl=None,
                     lit_used_getcontext=None,
@@ -90,7 +94,7 @@ class TrancoSpider(scrapy.Spider):
 
         logging.info(f"parsing {response.url}")
         lst = response.xpath('//script')
-        js_lst: list[str] = []
+        # js_lst: list[str] = []
         # remote_js_dict: dict[str, Optional[str]] = {}
         # remote_js_count = 0
         remote_js_url_list: list[str] = []
@@ -111,7 +115,8 @@ class TrancoSpider(scrapy.Spider):
                     priority=10,
                 )
             else:
-                js_lst.append(item.get())
+                # js_lst.append(item.get())
+                pass
 
         # Expanding
         next_depth = response.meta.get("cur_depth") + 1
@@ -130,7 +135,7 @@ class TrancoSpider(scrapy.Spider):
             access_time=datetime.utcnow(),
             url=response.url,
             idx=response.meta['idx'],
-            js_code_list=js_lst,
+            # js_code_list=js_lst,
             remote_js_url_list=remote_js_url_list,
             lit_used_getcontext=any(code.find("getContext") != -1 for code in js_lst),
             lit_used_webgl=any(code.find("webgl") != -1 for code in js_lst),
