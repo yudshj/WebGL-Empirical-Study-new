@@ -13,7 +13,7 @@ LOG_FILE = '/storage/webgl/output/scrapy-info.log'
 
 SPIDER_MODULES = ['webgl.spiders']
 NEWSPIDER_MODULE = 'webgl.spiders'
-
+JOBDIR = '/storage/webgl/jobdir'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'webgl (+http://www.yourdomain.com)'
