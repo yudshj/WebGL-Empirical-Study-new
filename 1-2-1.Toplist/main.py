@@ -10,11 +10,16 @@
     # - https://github.com/tensorflow/tfjs-examples
 
 ---- rule ----
-<SEARCH> ::= "webgl "? (<GFX> | <GPGPU> ) " " ( <VERB> | <VERB_ALT> )
-<GFX> ::= "three.js" | "PixiJS" | "babylon"  // top-3@https://gist.github.com/dmnsgn/76878ba6903cf15789b712464875cfdc
-<GPGPU> ::= "tfjs" | "onnxweb" | "webdnn"    // top-3@https://blog.logrocket.com/ai-in-browsers-comparing-tensorflow-onnx-and-webdnn-for-image-classification/
-<VERB> ::= "usecase" | "gallery" | "top-list" | "real-world websites" 
-<VERB_ALT> ::= "example" | "tutorial" | "demo" 
+<SEARCH> ::= "webgl "? ( <GFX> | <GPGPU> ) " " ( <VERB> | <VERB_ALT> )
+
+/* top-3@https://gist.github.com/dmnsgn/76878ba6903cf15789b712464875cfdc */
+<GFX> ::= "three.js" | "PixiJS" | "babylon"
+
+/* top-3@https://blog.logrocket.com/ai-in-browsers-comparing-tensorflow-onnx-and-webdnn-for-image-classification/ */
+<GPGPU> ::= "tfjs" | "onnxweb" | "webdnn"
+
+<VERB> ::= "usecase" | "gallery" | "top-list" | "real-world websites"
+<VERB_ALT> ::= "example" | "tutorial" | "demo"
 '''
 
 toplist_urls = [
