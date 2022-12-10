@@ -18,9 +18,17 @@ from scrapy.exporters import JsonLinesItemExporter
 
 class WebGLPipeline:
     OUTPUT_BASE_PATH = Path('/storage/webgl/output')
-
-    def __init__(self):
+    def __init__(self, tranco_begin, tranco_end):
+        self.tranco_begin = tranco_begin
+        self.tranco_end = tranco_end
         pass
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            tranco_begin=crawler.settings.get('TRANCO_BEGIN'),
+            tranco_end=crawler.settings.get('TRANCO_END')
+        )
 
     def process_item(self, item, spider):
         if isinstance(item, JavaScriptData):
@@ -30,12 +38,14 @@ class WebGLPipeline:
 
     def open_spider(self, spider):
         self.OUTPUT_BASE_PATH.mkdir(parents=True, exist_ok=True)
-        if (self.OUTPUT_BASE_PATH / 'simplified_html.json.gz').exists() or (self.OUTPUT_BASE_PATH / 'simplified_js.json.gz').exists():
+        html_out_path = self.OUTPUT_BASE_PATH / f'simplified_html_{self.tranco_begin}-{self.tranco_end}.json.gz'
+        js_out_path = self.OUTPUT_BASE_PATH / f'simplified_js_{self.tranco_begin}-{self.tranco_end}.json.gz'
+        if html_out_path.exists() or js_out_path.exists():
             raise FileExistsError("Output files already exist")
         # self.html_fp = open(self.OUTPUT_BASE_PATH / 'simplified_html.json', 'wb')
         # self.js_fp = open(self.OUTPUT_BASE_PATH / 'simplified_js.json', 'wb')
-        self.html_fp = gzip.open(self.OUTPUT_BASE_PATH / 'simplified_html.json.gz', 'wb')
-        self.js_fp = gzip.open(self.OUTPUT_BASE_PATH / 'simplified_js.json.gz', 'wb')
+        self.html_fp = gzip.open(html_out_path, 'wb')
+        self.js_fp = gzip.open(js_out_path, 'wb')
 
         self.html_exporter = JsonLinesItemExporter(
             self.html_fp,
