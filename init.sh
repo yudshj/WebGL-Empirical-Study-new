@@ -1,6 +1,7 @@
 #!/bin/bash
+export NEEDRESTART_MODE=a
 sudo apt update
-NEEDRESTART_MODE=a sudo apt -y install python3 rsync python3-pip jq ipython3 ripgrep exa tmux
+sudo NEEDRESTART_MODE=a apt -y install python3 rsync python3-pip jq ipython3 ripgrep exa tmux
 python3 -m pip install --upgrade pip
 python3 -m pip install scrapy selenium selenium-wire tqdm
 
