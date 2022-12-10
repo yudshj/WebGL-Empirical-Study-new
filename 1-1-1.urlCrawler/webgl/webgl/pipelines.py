@@ -30,6 +30,8 @@ class WebGLPipeline:
 
     def open_spider(self, spider):
         self.OUTPUT_BASE_PATH.mkdir(parents=True, exist_ok=True)
+        if (self.OUTPUT_BASE_PATH / 'simplified_html.json').exists() or (self.OUTPUT_BASE_PATH / 'simplified_js.json').exists():
+            raise FileExistsError("Output files already exist")
         self.html_fp = open(self.OUTPUT_BASE_PATH / 'simplified_html.json', 'wb')
         self.js_fp = open(self.OUTPUT_BASE_PATH / 'simplified_js.json', 'wb')
         # self.html_fp = gzip.open(self.OUTPUT_BASE_PATH / 'simplified_html.json.gz', 'wb')
