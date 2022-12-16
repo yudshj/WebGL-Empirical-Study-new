@@ -2,3 +2,5 @@ scrapy
 tqdm
 selenium
 selenium-wire
+ipython
+django

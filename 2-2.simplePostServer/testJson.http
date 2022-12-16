@@ -1,0 +1,47 @@
+POST http://127.0.0.1:8001/api/new/
+Content-Type: application/json
+Accept: */*
+Accept-Encoding: gzip, deflate, br
+Accept-Language: zh-CN,zh;q=0.9
+Access-Control-Request-Headers: content-type
+Access-Control-Request-Method: POST
+Host: 127.0.0.1
+Origin: https://webglsamples.org
+Proxy-Connection: keep-alive
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: cross-site
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36
+
+{"hello":  123}
+
+###
+# curl 'http://127.0.0.1/api/new/'
+#  -X 'OPTIONS'
+#  -H 'Accept: */*'
+#  -H 'Accept-Language: zh-CN,zh;q=0.9'
+#  -H 'Access-Control-Request-Headers: content-type'
+#  -H 'Access-Control-Request-Method: POST'
+#  -H 'Origin: https://webglsamples.org'
+#  -H 'Proxy-Connection: keep-alive'
+#  -H 'Sec-Fetch-Dest: empty'
+#  -H 'Sec-Fetch-Mode: cors'
+#  -H 'Sec-Fetch-Site: cross-site'
+#  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+#  --compressed
+POST http://127.0.0.1/api/new/
+Accept: */*
+Accept-Language: zh-CN,zh;q=0.9
+Access-Control-Request-Headers: content-type
+Access-Control-Request-Method: POST
+Origin: https://webglsamples.org
+Proxy-Connection: keep-alive
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: cross-site
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36
+
+{"23": 24}
+
+###
+
