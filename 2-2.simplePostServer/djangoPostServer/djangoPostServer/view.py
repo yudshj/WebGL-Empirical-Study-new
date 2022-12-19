@@ -7,7 +7,6 @@ import gzip
 def post(request: HttpRequest):
     if request.method == 'POST':
         yudong: str = request.headers.get("Yudong")
-        yudong = yudong.split("/")[2]
         # with io.BytesIO() as buffer:
         #     for chunk in request.FILES['data'].chunks():
         #         buffer.write(chunk)
