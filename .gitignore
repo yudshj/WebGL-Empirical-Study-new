@@ -16,3 +16,4 @@ __pycache__
 output
 _gh_token
 .ipynb_checkpoints
+/2-2.simplePostServer/djangoPostServer/db.sqlite3
