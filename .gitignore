@@ -17,3 +17,4 @@ _gh_token
 .ipynb_checkpoints
 *.sqlite3
 .DS_Store
+/2-1.seleniumShimmer/tmp
