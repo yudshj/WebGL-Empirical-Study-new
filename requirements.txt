@@ -7,5 +7,6 @@ django
 
 pandas
 openpyxl
-
+jupyter
 matplotlib
+numpy
