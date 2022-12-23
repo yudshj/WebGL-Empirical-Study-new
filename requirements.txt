@@ -4,3 +4,8 @@ selenium
 selenium-wire
 ipython
 django
+
+pandas
+openpyxl
+
+matplotlib
