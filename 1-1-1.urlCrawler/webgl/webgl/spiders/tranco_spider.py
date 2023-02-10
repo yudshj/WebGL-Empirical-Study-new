@@ -23,6 +23,7 @@ class TrancoSpider(scrapy.Spider):
     tranco_top1M_csv_path_str = "/storage/webgl/tranco/top-1m.csv"
     max_depth = 2
     max_width = 2
+    IMAGE_EXTENSIONS = {'zip', 'ods', 'jar', 'apng', 'pdb', 'ipa', 'tex', 'ical', 'vcf', 'gz', 'ai', 'sys', 'csv', 'rar', 'pdf', 'mpkg', 'ovf', 'pptx', 'swf', 'rpm', 'exe', 'ear', 'odp', 'jpeg', 'bmp', 'rtf', 'msi', 'eot', 'psd', 'img', 'ppt', 'woff2', 'yml', 'mp4', 'ttf', 'gif', 'tgz', 'pkg', 'md', 'bak', '7z', 'atom', 'odg', 'ova', 'class', 'mp3', 'xz', 'otf', 'xml', 'avi', 'jpg', 'woff', 'deb', 'docx', 'dll', 'ps', 'js', 'map', 'odf', 'har', 'dmg', 'apk', 'yaml', 'cur', 'war', 'webm', 'wav', 'tar', 'sar', 'webp', 'ogg', 'temp', 'bz2', 'doc', 'svg', 'eps', 'vmdk', 'mkv', 'txt', 'dmp', 'crash', 'tmp', 'avif', 'tiff', 'odt', 'bin', 'xlsx', 'vhd', 'ics', 'tsv', 'ico', 'flac', 'png', 'm4a', 'iso', 'xls', 'so'}
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
@@ -100,6 +101,7 @@ class TrancoSpider(scrapy.Spider):
             a_set = set(x.attrib.get('href') for x in response.xpath("//a"))
             a_set = set(x for x in a_set if x and (x.startswith("http") or x[0] == '/'))
             a_set = set(x if x.startswith("http") else response.urljoin(x) for x in a_set)
+            a_set = set(x for x in a_set if x.split('.')[-1] not in self.IMAGE_EXTENSIONS)
 
             if len(a_set) > 0:
                 expand_list = random.choices(list(a_set), k=min(len(a_set), self.max_width))
