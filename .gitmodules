@@ -1,0 +1,3 @@
+[submodule "2-1.seleniumShimmer"]
+	path = 2-1.seleniumShimmer
+	url = git@github.com:maghsk/seleniumShimmer.git
