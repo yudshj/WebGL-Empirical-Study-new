@@ -1,6 +1,7 @@
 import scrapy
 import scrapy.selector
 import random
+import gzip
 
 import logging
 
@@ -14,7 +15,7 @@ from ..items import HtmlData, JavaScriptData
 
 from datetime import datetime
 
-
+PROBLEMATIC_URLS = '/home/ubuntu/problematic_urls.csv.gz'
 
 
 class TrancoSpider(scrapy.Spider):
@@ -29,16 +30,19 @@ class TrancoSpider(scrapy.Spider):
         super().__init__(name, **kwargs)
 
     def start_requests(self):
-        tranco_begin:int = self.settings.getint('TRANCO_BEGIN')
-        tranco_end:int = self.settings.getint('TRANCO_END')
-        tranco_top1M_csv_path = Path(self.tranco_top1M_csv_path_str)
-        tranco_list: List[List[str]] = [x.strip().split(',') for x in tranco_top1M_csv_path.read_text().splitlines()]
-        tranco_list = tranco_list[tranco_begin:tranco_end]
-        logging.info(f"tranco_begin: {tranco_begin}, tranco_end: {tranco_end}, total: {len(tranco_list)}")
+        # tranco_begin:int = self.settings.getint('TRANCO_BEGIN')
+        # tranco_end:int = self.settings.getint('TRANCO_END')
+        # tranco_top1M_csv_path = Path(self.tranco_top1M_csv_path_str)
+        # tranco_list: List[List[str]] = [x.strip().split(',') for x in tranco_top1M_csv_path.read_text().splitlines()]
+        # tranco_list = tranco_list[tranco_begin:tranco_end]
+        # logging.info(f"tranco_begin: {tranco_begin}, tranco_end: {tranco_end}, total: {len(tranco_list)}")
         # tranco_list = ['www.oppo.com']
-        for idx, url in tranco_list:
-            logging.info(f"seeding {url}")
-            yield Request(url=f"http://{url}", callback=self.parse, meta={"cur_depth": 0, "idx": int(idx), "origin_url": f"<TRANCO-{idx}> - {url}"})
+        # for idx, url in tranco_list:
+        with gzip.open(PROBLEMATIC_URLS, 'rt') as fp:
+            for lno, line in enumerate(fp):
+                url = line.strip()
+                logging.info(f"extending {url}")
+                yield Request(url=url, callback=self.parse_js, meta={"cur_depth": 0, "idx": lno, "origin_url": f"problematic - line {lno}"})
 
     def parse_js(self, response: Response):
         origin_url: str = response.meta.get('origin_url')
