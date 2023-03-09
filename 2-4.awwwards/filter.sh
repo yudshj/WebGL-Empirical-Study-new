@@ -1,0 +1,1 @@
+rg 'class="figure-rollover__bt"' -A 2 | sort | rg href | choose -f " " 1 | choose -f '"' 1 > output.txt
