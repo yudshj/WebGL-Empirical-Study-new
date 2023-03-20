@@ -6,7 +6,7 @@ OUT_PATH = Path('./awwwards_output') / datetime.datetime.now().strftime('%Y-%m-%
 OUT_PATH.mkdir(exist_ok=True, parents=True)
 
 def get_page(page: int):
-    url = 'https://www.awwwards.com/websites/webgl/?page=' + str(page)
+    url = 'https://www.awwwards.com/websites/3d/?page=' + str(page)
     headers = {
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',

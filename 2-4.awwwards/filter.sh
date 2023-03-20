@@ -1,1 +1,1 @@
-rg 'class="figure-rollover__bt"' -A 2 | sort | rg href | choose -f " " 1 | choose -f '"' 1 > output.txt
+rg --no-ignore-vcs 'class="figure-rollover__bt"' -A 2 awwwards_output | sort | uniq | rg href | choose -f " " 1 | choose -f '"' 1 | sort | uniq > output.txt
