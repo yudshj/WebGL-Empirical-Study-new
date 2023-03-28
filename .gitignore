@@ -22,3 +22,5 @@ _gh_token
 2-4.awwwards/**/*.html
 *.png
 *.jpg
+*.pkl
+*.zstd
