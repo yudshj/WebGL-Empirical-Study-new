@@ -7,3 +7,6 @@
 [submodule "3-2.AnalyzeTraces"]
 	path = 3-2.AnalyzeTraces
 	url = git@github.com:maghsk/WES_3-2_AnalyzeTraces.git
+[submodule "3-3.spector"]
+	path = 3-3.spector
+	url = git@github.com:maghsk/WES-spector.git
