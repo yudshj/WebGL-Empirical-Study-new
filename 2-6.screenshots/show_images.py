@@ -9,8 +9,8 @@ import cv2
 
 
 # output/2022-01-01
-START = 1579
-END = 1999
+START = 0
+END = 1578
 IMG_PATH = Path('input/all/screenshot')
 OUT_PATH = Path('output') / (datetime.datetime.now().strftime('%Y-%m-%d') + f'_{START}-{END}_output.pkl')
 

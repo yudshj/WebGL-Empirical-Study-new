@@ -1,12 +1,13 @@
 scrapy
-tqdm
-selenium
+tqdm~=4.64.1
+selenium~=4.8.3
 selenium-wire
 ipython
 django
 
-pandas
+pandas~=1.5.3
 openpyxl
 jupyter
 matplotlib
 numpy
+zstandard~=0.19.0
