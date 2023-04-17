@@ -1,6 +1,7 @@
 */output
 .idea
 .vscode
+venv
 
 *.json
 *.zst

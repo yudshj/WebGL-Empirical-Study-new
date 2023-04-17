@@ -10,3 +10,6 @@
 [submodule "2-3-1.spector"]
 	path = 2-3-1.spector
 	url = git@github.com:maghsk/WES-spector.git
+[submodule "3-5.parseGlsl"]
+	path = 3-5.parseGlsl
+	url = git@github.com:maghsk/WES_parse-glsl.git
