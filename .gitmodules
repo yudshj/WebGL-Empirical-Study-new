@@ -2,7 +2,7 @@
 	path = 2-1.seleniumShimmer
 	url = git@github.com:maghsk/WES-seleniumShimmer.git
 [submodule "3.Analysis"]
-	path = 3.Analysis
+	path = 3-0.Analysis
 	url = git@github.com:maghsk/WES-Analysis.git
 [submodule "3-2.AnalyzeTraces"]
 	path = 3-2.AnalyzeTraces
