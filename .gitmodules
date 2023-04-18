@@ -13,3 +13,6 @@
 [submodule "3-5.parseGlsl"]
 	path = 3-5.parseGlsl
 	url = git@github.com:maghsk/WES_parse-glsl.git
+[submodule "2-3.seleniumCrawler"]
+	path = 2-3.seleniumCrawler
+	url = git@github.com:maghsk/WES-seleniumShimmer.git
