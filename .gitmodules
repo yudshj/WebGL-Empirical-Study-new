@@ -19,3 +19,6 @@
 [submodule "2-7.webglCapture"]
 	path = 2-7.webglCapture
 	url = git@github.com:maghsk/webgl-capture.git
+[submodule "2-8.networkCapture"]
+	path = 2-8.networkCapture
+	url = git@github.com:maghsk/WES_Capture-HAR.git
