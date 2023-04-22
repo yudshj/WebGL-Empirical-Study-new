@@ -16,3 +16,6 @@
 [submodule "2-3.seleniumCrawler"]
 	path = 2-3.seleniumCrawler
 	url = git@github.com:maghsk/WES-seleniumShimmer.git
+[submodule "3-3.webglCapture"]
+	path = 2-7.webglCapture
+	url = git@github.com:maghsk/webgl-capture.git
