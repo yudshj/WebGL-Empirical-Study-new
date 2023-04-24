@@ -63,7 +63,6 @@ fs.mkdirSync('output/simple/', {recursive: true});
                 }
 
                 await page.waitForTimeout(10_000);
-                await page.screenshot({path: screenshot_out_path, fullPage: false});
 
                 const gl_simple_time_hp = performance.now();
                 const gl_simple_counters = [];

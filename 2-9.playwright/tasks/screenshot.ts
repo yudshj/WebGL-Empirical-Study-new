@@ -44,7 +44,7 @@ fs.mkdirSync('output/screenshots/', {recursive: true});
             try {
                 const context = await browser.newContext( { ignoreHTTPSErrors: true } );
                 const page = await context.newPage();
-                await page.goto(url, {waitUntil: 'domcontentloaded', timeout: 30_000}).catch(() => {});
+                await page.goto(url, {waitUntil: 'networkidle', timeout: 30_000}).catch(() => {});
                 await page.waitForTimeout(10000);
                 await page.waitForLoadState('networkidle', {timeout: 30_000}).catch(() => {});
                 await page.waitForLoadState('networkidle', {timeout: 30_000}).catch(() => {});
