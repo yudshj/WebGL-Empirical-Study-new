@@ -1,7 +1,8 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
-const idx_url = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
 const child_process = require("child_process");
+
+const idx_url: Array<Array<String>> = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
 
 fs.mkdirSync('output/har', { recursive: true });
 
