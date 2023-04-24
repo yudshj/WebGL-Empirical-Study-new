@@ -43,7 +43,7 @@ fs.mkdirSync('output/raf/', {recursive: true});
             });
             try {
                 const context = await browser.newContext( { ignoreHTTPSErrors: true } );
-                await context.addInitScript({path: 'inject-gl.js'});
+                await context.addInitScript({path: 'js/inject-gl.js'});
 
                 const page = await context.newPage();
                 const date = Date.now();

@@ -43,8 +43,8 @@ fs.mkdirSync('output/simple/', {recursive: true});
             });
             try {
                 const context = await browser.newContext( { ignoreHTTPSErrors: true } );
-                await context.addInitScript({path: 'webgl-memory.js'});
-                await context.addInitScript({path: 'inject-simple.js'});
+                await context.addInitScript({path: 'js/webgl-memory.js'});
+                await context.addInitScript({path: 'js/inject-simple.js'});
 
                 const page = await context.newPage();
                 const date = Date.now();

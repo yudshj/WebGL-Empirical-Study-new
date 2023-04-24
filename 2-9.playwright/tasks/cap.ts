@@ -43,7 +43,7 @@ fs.mkdirSync('output/cap/', {recursive: true});
             });
             try {
                 const context = await browser.newContext({ignoreHTTPSErrors: true});
-                await context.addInitScript({path: 'webgl-capture.js'});
+                await context.addInitScript({path: 'js/webgl-capture.js'});
 
                 const page = await context.newPage();
                 const date = Date.now();

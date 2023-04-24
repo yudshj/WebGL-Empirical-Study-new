@@ -29,7 +29,7 @@ fs.mkdirSync('output/screenshots/', {recursive: true});
             const browser = await chromium.launch({
                 ignoreHTTPSErrors: true,
                 proxy: {
-                    server: 'socks5://ss.maghsk.site:3539',
+                    server: 'socks5://ss.maghsk.site:3536',
                     bypass: 'localhost,127.0.0.1'
                 },
                 headless: true,
