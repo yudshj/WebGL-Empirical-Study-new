@@ -3,14 +3,17 @@ const fs = require('fs');
 const zlib = require('zlib');
 
 
-const idx_url: Array<Array<String>> = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
-const total = idx_url.length;
-
-const PART = parseInt(process.argv[2]);
-const TOTAL_PART = parseInt(process.argv[3]);
-const PART_SIZE = Math.ceil(total / TOTAL_PART);
-const START = PART * PART_SIZE;
-const END = Math.min((PART + 1) * PART_SIZE, total);
+// const idx_url: Array<Array<String>> = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
+const idx_url = [["TEST-1", "https://vrseat.vercel.app/"]];
+// const total = idx_url.length;
+//
+// const PART = parseInt(process.argv[2]);
+// const TOTAL_PART = parseInt(process.argv[3]);
+// const PART_SIZE = Math.ceil(total / TOTAL_PART);
+// const START = PART * PART_SIZE;
+// const END = Math.min((PART + 1) * PART_SIZE, total);
+const START=0;
+const END=1;
 
 console.log(START, "to", END)
 
@@ -32,7 +35,7 @@ fs.mkdirSync('output/cap/', {recursive: true});
                     server: 'socks5://ss.maghsk.site:3536',
                     bypass: 'localhost,127.0.0.1'
                 },
-                headless: true,
+                headless: false,
                 launchOptions: {
                     args: [
                         "--enable-gpu",
@@ -43,6 +46,7 @@ fs.mkdirSync('output/cap/', {recursive: true});
             });
             try {
                 const context = await browser.newContext({ignoreHTTPSErrors: true});
+                await context.addInitScript({path: 'js/inject-tiny.js'});
                 await context.addInitScript({path: 'js/webgl-capture.js'});
 
                 const page = await context.newPage();

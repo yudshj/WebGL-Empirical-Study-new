@@ -117,7 +117,7 @@ function getUniformNameErrorMsg() {}
  * `numbers` specifies which arguments are numbers, if an argument is negative that
  * argument might not be a number so we can check only check for NaN
  * arrays specifies which arguments are arrays
- * 
+ *
  * `read` specifies which arguments are typedarrays for reading so no need
  * to emit the content of the array.
  *
@@ -165,8 +165,8 @@ const glFunctionInfos = {
   'texParameterf': {3: { enums: [0, 1] }},
   'texParameteri': {3: { enums: [0, 1, 2] }},
   'texImage2D': {
-    9: { enums: [0, 2, 6, 7], numbers: [1, 3, 4, 5], arrays: [-8], },
-    6: { enums: [0, 2, 3, 4], },
+    9: { enums: [0, 2, 6, 7], numbers: [1, 3, 4, 5], arrays: [8], },
+    6: { enums: [0, 2, 3, 4], numbers: [1], arrays: [5]},
     10: { enums: [0, 2, 6, 7], numbers: [1, 3, 4, 5, 9], arrays: {8: checkOptionalTypedArrayWithOffset }, }, // WebGL2
   },
   'texImage3D': {
@@ -174,8 +174,8 @@ const glFunctionInfos = {
     11: { enums: [0, 2, 7, 8], numbers: [1, 3, 4, 5, 10], arrays: {9: checkTypedArrayWithOffset}},  // WebGL2
   },
   'texSubImage2D': {
-    9: { enums: [0, 6, 7], numbers: [1, 2, 3, 4, 5] },
-    7: { enums: [0, 4, 5], numbers: [1, 2, 3] },
+    9: { enums: [0, 6, 7], numbers: [1, 2, 3, 4, 5] , arrays:[8]},
+    7: { enums: [0, 4, 5], numbers: [1, 2, 3] , arrays: [6]},
     10: { enums: [0, 6, 7], numbers: [1, 2, 3, 4, 5, 9], arrays: {9: checkTypedArrayWithOffset} },  // WebGL2
   },
   'texSubImage3D': {
@@ -670,7 +670,8 @@ class WebGLWrapper {
     this.currentProgram = null;
     this.programs = [];
     this.numImages = 0;
-    this.images = {};
+    this.imagesUrl = {};
+    this.imagesBase64 = {};
     this.extensions = {};
     this.shaderSources = [];
     const gl = this.ctx;
@@ -679,6 +680,7 @@ class WebGLWrapper {
     };
     this.ids = {
     };
+    this.imageBase64Id = 0;
 
     this.wrapper = makeWrapper("gl", gl, this, capturer);
   }
@@ -703,20 +705,27 @@ class WebGLWrapper {
       `);
     }
 
-    if (this.numImages) {
+    if (this.numImages > 0 || this.imageBase64Id > 0) {
       out.push(`
-      const images = { };
+      const imagesUrl = { };
+      const imagesBase64 = { };
       function loadImages() {
-        const imageUrls = [
-  ${Object.keys(this.images).map(v => `  "${v}",`).join('\n')}
-        ];
+        const imageUrls = ${JSON.stringify(Object.keys(this.imagesUrl))};
+        const imageBase64s = ${JSON.stringify(this.imagesBase64)};
         Promise.all(imageUrls.map((url) => {  
           const img = new Image();
           img.src = url;
           img.crossOrigin = "anonymous";
-          images[url] = img;
+          imagesUrl[url] = img;
           return img.decode();
-        })).then(render);
+        })).then(() => {
+          return Promise.all(Object.keys(imageBase64s).map((id) => {
+            const img = new Image();
+            img.src = imageBase64s[id];
+            imagesBase64[id] = img;
+            return img.decode();
+          }));
+        }).then(render);
       }
       `);
     }
@@ -742,7 +751,7 @@ class WebGLWrapper {
     });
     out.push("}");
 
-    if (this.numImages) {
+    if (this.numImages > 0 || this.imageBase64Id > 0) {
       out.push("loadImages();");
     } else {
       out.push("render();");
@@ -897,17 +906,6 @@ class WebGLWrapper {
     return resource;
   }
 
-  doTexImage2DForImage(name, image, args) {
-    console.log("aa")
-    const newArgs = [...args];
-    newArgs.pop();
-    let argStr = glArgsToString(this.ctx, name, newArgs);
-    argStr += `, images["${image.src}"]`;
-    this.images[image.src] = true;
-    ++this.numImages;
-    this.capturer.addData(`gl.${name}(${argStr});`);
-  }
-
   doTexImage2DForImageData(name, imageData, args) {
     const target = args[0];
     const level = args[1];
@@ -929,8 +927,58 @@ class WebGLWrapper {
     } else if (data instanceof ImageData) {
       this.doTexImage2DForImageData(name, data, args);
     } else if (data instanceof HTMLImageElement ||
-               data instanceof Image ||
-               data instanceof HTMLVideoElement) {
+        data instanceof Image ||
+        data instanceof HTMLVideoElement) {
+      // Extract data.
+      this.doTexImage2DForImage(name, data, args);
+    } else {
+      // Assume it's array buffer
+      this.capturer.addData(`gl.${name}(${glArgsToString(this.ctx, name, args)});`);
+    }
+  }
+
+  doTexImage2DForImage(name, image, args) {
+    const newArgs = [...args];
+    newArgs.pop();
+    let argStr = glArgsToString(this.ctx, name, newArgs);
+    if (image.src.startsWith('data:image')) {
+      if (image.__hyd_imageBase64_id__ === undefined) {
+        image.__hyd_imageBase64_id__ = this.imageBase64Id++;
+        this.imagesBase64[image.__hyd_imageBase64_id__] = image.src;
+      }
+      argStr += `, imagesBase64["${image.__hyd_imageBase64_id__}"]`;
+    } else {
+      argStr += `, imagesUrl["${image.src}"]`;
+      this.imagesUrl[image.src] = true;
+      ++this.numImages;
+    }
+    this.capturer.addData(`gl.${name}(${argStr});`);
+  }
+
+  doTexSubImage2DForImageData(name, imageData, args) {
+    const target = args[0];
+    const level = args[1];
+    const xoffset = args[2];
+    const yoffset = args[3];
+    const format = args[4];
+    const type = args[5];
+
+    const newArgs = [target, level, xoffset, yoffset, imageData.width, imageData.height, 0, format, type, imageData.data];
+    this.capturer.addData(`gl.${name}(${glArgsToString(this.ctx, name, newArgs)});`);
+  }
+  handle_texSubImage2D(name, args) {
+    // TODO: (hanyd) debug this function
+    this.ctx[name].apply(this.ctx, args);
+    // lastarg is always data.
+    const data = args[args.length - 1];
+    if (data instanceof HTMLCanvasElement) {
+      // Extract as ImageData
+      this.doTexSubImage2DForImageData(name, data.getImageData(0, 0, data.width, data.height), args);
+    } else if (data instanceof ImageData) {
+      this.doTexSubImage2DForImageData(name, data, args);
+    } else if (data instanceof HTMLImageElement ||
+        data instanceof Image ||
+        data instanceof HTMLVideoElement) {
       // Extract data.
       this.doTexImage2DForImage(name, data, args);
     } else {
