@@ -21,7 +21,7 @@ fs.mkdirSync('output/screenshots/', {recursive: true});
         const idx = element[0];
         const url = element[1];
         console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}`);
-        const error_out_path = `output/simple_json/${idx}.error.txt`;
+        const error_out_path = `output/screenshots/${idx}.error.txt`;
         const screenshot_out_path = `output/screenshots/${idx}.png`;
         if (fs.existsSync(screenshot_out_path) || fs.existsSync(error_out_path)) {
             console.info(`Skip ${idx} - ${url}`);
