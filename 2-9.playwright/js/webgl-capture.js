@@ -1,21 +1,3 @@
-window.hydUsedOffScreenCanvas = false;
-window.hydFrames = 0;
-
-OffscreenCanvas.prototype.getContext = (function(oldFn) {
-    window.hydUsedOffScreenCanvas = true;
-    return function(...args) {
-        return oldFn.apply(this, args);
-    }
-})(OffscreenCanvas.prototype.getContext);
-
-function hydFrameCount() {
-  window.hydFrames++;
-  requestAnimationFrame(hydFrameCount);
-}
-requestAnimationFrame(hydFrameCount);
-
-// **************************************************************
-
 /* global WebGLObject */
 const HydWebGLCapture = (function(){
 
@@ -597,6 +579,7 @@ function glValueToString(ctx, functionName, numArgs, argumentIndex, value) {
     } else {
       for (const type of elements) {
         if (value instanceof type.ctor) {
+          // TODO: add a way to get the resource
           return type.name + "<-----------";
         }
       }
