@@ -18,8 +18,8 @@ const END = Math.min((PART + 1) * PART_SIZE, total);
         const idx = element[0];
         const url = element[1];
         console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}`);
-        const zstd_out_path = `/storage/output/har/${idx}.har.zst`;
-        const error_out_path = `/storage/output/har/${idx}.error.txt`;
+        const zstd_out_path = `output/har/${idx}.har.zst`;
+        const error_out_path = `output/har/${idx}.error.txt`;
         if (fs.existsSync(zstd_out_path) || fs.existsSync(error_out_path)) {
             console.info(`Skip ${idx} - ${url}`);
         } else {
