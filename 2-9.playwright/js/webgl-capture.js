@@ -525,7 +525,7 @@ const eolRE = /\n/g;
 const crRE = /\r/g;
 const quoteRE = /"/g;
 
-function glValueToString(ctx, functionName, numArgs, argumentIndex, value) {
+function glValueToString(ctx, functionName, numArgs, argumentIndex, value, helper=null) {
   const funcInfos = glFunctionInfos[functionName];
   const funcInfo = funcInfos ? funcInfos[numArgs] : undefined;
   if (value === undefined) {
@@ -545,6 +545,44 @@ function glValueToString(ctx, functionName, numArgs, argumentIndex, value) {
     }
   } else if (typeof (value) === 'string') {
     return JSON.stringify(value);
+  } else if (value instanceof HTMLCanvasElement) {
+    // Extract as ImageData
+    // this.doTexImage2DForImageData(name, data.getContext("2d").getImageData(0, 0, data.width, data.height), args);
+    return helper.doTexImage2DForBase64(value.toDataURL());
+  } else if (value instanceof ImageData) {
+    const canvas = document.createElement('canvas');
+    canvas.height = value.height;
+    canvas.width = value.width;
+    const temp_context = canvas.getContext('2d');
+    temp_context.putImageData(value, 0, 0);
+    const base64 = canvas.toDataURL();
+    canvas.remove();
+    return helper.doTexImage2DForBase64(base64);
+    // helper.doTexImage2DForImageData(name, data, args);
+  } else if (value instanceof HTMLImageElement ||
+      value instanceof Image ||
+      value instanceof HTMLVideoElement) {
+    // Extract data.
+    return helper.doTexImage2DForImage(value);
+  } else if (value instanceof ImageBitmap) {
+    const canvas = document.createElement('canvas');
+    canvas.height = value.height;
+    canvas.width = value.width;
+    const temp_context = canvas.getContext('2d');
+    temp_context.drawImage(value, 0, 0);
+    const base64 = canvas.toDataURL();
+    canvas.remove();
+    return helper.doTexImage2DForBase64(base64);
+  } else if (value instanceof OffscreenCanvas) {
+    const imageBitmap = value.transferToImageBitmap();
+    const canvas = document.createElement('canvas');
+    canvas.height = value.height;
+    canvas.width = value.width;
+    const temp_context = canvas.getContext('2d');
+    temp_context.drawImage(value, 0, 0);
+    const base64 = canvas.toDataURL();
+    canvas.remove();
+    return helper.doTexImage2DForBase64(base64);
   } else if (value.length !== undefined) {
     if (funcInfo && funcInfo.read && funcInfo.read[argumentIndex]) {
       for (let ii = 0; ii < typedArrays.length; ++ii) {
@@ -594,13 +632,13 @@ function glValueToString(ctx, functionName, numArgs, argumentIndex, value) {
   return value.toString();
 }
 
-function glArgsToString(ctx, functionName, args) {
+function glArgsToString(ctx, functionName, args, helper=null) {
   if (args === undefined) {
     return "";
   }
   const values = [];
   for (let ii = 0; ii < args.length; ++ii) {
-    values.push(glValueToString(ctx, functionName, args.length, ii, args[ii]));
+    values.push(glValueToString(ctx, functionName, args.length, ii, args[ii], helper));
   }
   return values.join(", ");
 }
@@ -619,7 +657,7 @@ function makePropertyWrapper(wrapper, original, propertyName) {
 }
 
 // Makes a function that calls a function on another object.
-function makeFunctionWrapper(apiName, original, functionName, capturer) {
+function makeFunctionWrapper(apiName, original, functionName, capturer, helper) {
   //log("wrap fn: " + functionName);
   const f = original[functionName];
   return function(...args) {
@@ -628,7 +666,7 @@ function makeFunctionWrapper(apiName, original, functionName, capturer) {
     //   debugger;
     // }
     if (capturer.capture) {
-      const str = `${apiName}.${functionName}(${glArgsToString(this, functionName, args)});`;
+      const str = `${apiName}.${functionName}(${glArgsToString(this, functionName, args, helper)});`;
       capturer.addData(str);
     }
     const result = f.apply(original, args);
@@ -654,7 +692,7 @@ function makeWrapper(apiName, original, helper, capturer) {
       if (handler) {
         wrapper[propertyName] = wrapFunction(propertyName, handler, helper);
       } else {
-        wrapper[propertyName] = makeFunctionWrapper(apiName, original, propertyName, capturer);
+        wrapper[propertyName] = makeFunctionWrapper(apiName, original, propertyName, capturer, helper);
       }
     } else {
       makePropertyWrapper(wrapper, original, propertyName);
@@ -909,76 +947,25 @@ function render() {
     this.capturer.addData(`${getResourceName(resource)} = gl.${name}(${glArgsToString(this.ctx, name, args)});`);
     return resource;
   }
-
-  handle_texImage2D(name, args) {
-    this.ctx[name].apply(this.ctx, args);
-    // lastarg is always data.
-    const data = args[args.length - 1];
-    if (data instanceof HTMLCanvasElement) {
-      // Extract as ImageData
-      // this.doTexImage2DForImageData(name, data.getContext("2d").getImageData(0, 0, data.width, data.height), args);
-      this.doTexImage2DForBase64(name, data.toDataURL(), args);
-    } else if (data instanceof ImageData) {
-      const canvas = document.createElement('canvas');
-      canvas.height = data.height;
-      canvas.width = data.width;
-      const ctx = canvas.getContext('2d');
-      ctx.putImageData(data, 0, 0);
-      this.doTexImage2DForBase64(name, canvas.toDataURL(), args);
-      canvas.remove();
-      // this.doTexImage2DForImageData(name, data, args);
-    } else if (data instanceof HTMLImageElement ||
-        data instanceof Image ||
-        data instanceof HTMLVideoElement) {
-      // Extract data.
-      this.doTexImage2DForImage(name, data, args);
-    } else if (data instanceof ImageBitmap) {
-      const canvas = document.createElement('canvas');
-      canvas.height = data.height;
-      canvas.width = data.width;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(data, 0, 0);
-      this.doTexImage2DForBase64(name, canvas.toDataURL(), args);
-      canvas.remove();
-    } else if (data instanceof OffscreenCanvas) {
-      data.convertToBlob({ type: 'image/png' }).then((blob) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.doTexImage2DForBase64(name, reader.result, args);
-        };
-        reader.readAsDataURL(blob);
-      });
-    } else {
-      // Assume it's array buffer
-      this.capturer.addData(`gl.${name}(${glArgsToString(this.ctx, name, args)});`);
-    }
-  }
   
-  doTexImage2DForImageData(name, imageData, args) {
-    const target = args[0];
-    const level = args[1];
-    const internalFormat = args[2];
-    const format = args[3];
-    const type = args[4];
+  // doTexImage2DForImageData(name, imageData, args) {
+  //   const target = args[0];
+  //   const level = args[1];
+  //   const internalFormat = args[2];
+  //   const format = args[3];
+  //   const type = args[4];
 
-    const newArgs = [target, level, internalFormat, imageData.width, imageData.height, 0, format, type, imageData.data];
-    this.capturer.addData(`gl.${name}(${glArgsToString(this.ctx, name, newArgs)});`);
-  }
+  //   const newArgs = [target, level, internalFormat, imageData.width, imageData.height, 0, format, type, imageData.data];
+  //   this.capturer.addData(`gl.${name}(${glArgsToString(this.ctx, name, newArgs)});`);
+  // }
 
-  doTexImage2DForBase64(name, base64, args) {
-    const newArgs = [...args];
-    newArgs.pop();
-    let argStr = glArgsToString(this.ctx, name, newArgs);
+  doTexImage2DForBase64( base64) {
     let imageId = this.numImages++;
     this.imagesBase64[imageId] = base64;
-    argStr += `, imagesBase64[${imageId}]`;
-    this.capturer.addData(`gl.${name}(${argStr});`);
+    return `imagesBase64[${imageId}]`;
   }
 
-  doTexImage2DForImage(name, image, args) {
-    const newArgs = [...args];
-    newArgs.pop();
-    let argStr = glArgsToString(this.ctx, name, newArgs);
+  doTexImage2DForImage(image) {
     let imageId = null;
     if (!image.src.startsWith('data:image')) {
       if (this.imageUrl2Id[image.src] === undefined) {
@@ -999,13 +986,7 @@ function render() {
       }
       imageId = image.__hyd_imageBase64_id__;
     }
-    argStr += `, imagesBase64[${imageId}]`;
-    
-    this.capturer.addData(`gl.${name}(${argStr});`);
-  }
-  
-  handle_texSubImage2D(name, args) {
-    this.handle_texImage2D(name, args);
+    return `imagesBase64[${imageId}]`;
   }
 
   handle_get(name, args) {
