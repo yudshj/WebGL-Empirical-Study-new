@@ -4,16 +4,21 @@ import zlib from 'zlib';
 
 
 // const idx_url: Array<Array<String>> = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
-const idx_url = [["TEST-1", "https://viseni.com/bjsdemo/07_Island/index.html"]];
-// const total = idx_url.length;
-//
-// const PART = parseInt(process.argv[2]);
-// const TOTAL_PART = parseInt(process.argv[3]);
-// const PART_SIZE = Math.ceil(total / TOTAL_PART);
-// const START = PART * PART_SIZE;
-// const END = Math.min((PART + 1) * PART_SIZE, total);
-const START = 0;
-const END = 1;
+const idx_url = [
+  ["TEST-0", "https://www.babylonjs.com/demos/sponza/"],
+  ["TEST-1", "https://www.pola.co.jp/special/o/wecaremore/mothersday/"],
+  ["TEST-2", "https://domenicobrz.github.io/webgl/projects/SSRefractionDepthPeeling/"],
+  ["TEST-3", "https://domenicobrz.github.io/webgl/projects/experiment1/"],
+  ["TEST-4", "https://needle.tools/"],
+  ["TEST-5", "https://turbulent.ca/"],
+];
+const total = idx_url.length;
+
+const PART = parseInt(process.argv[2]);
+const TOTAL_PART = parseInt(process.argv[3]);
+const PART_SIZE = Math.ceil(total / TOTAL_PART);
+const START = PART * PART_SIZE;
+const END = Math.min((PART + 1) * PART_SIZE, total);
 
 console.log(START, "to", END)
 
