@@ -10,3 +10,6 @@ node_modules/
 *.error.txt
 .DS_Store
 output
+/test-results/
+/playwright-report/
+/playwright/.cache/
