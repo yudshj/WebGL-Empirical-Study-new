@@ -108,6 +108,9 @@ fs.mkdirSync('output/cap/', {recursive: true});
                 }
                 const compressedData = zlib.gzipSync(JSON.stringify(data))
                 fs.writeFileSync(gzip_out_path, compressedData);
+
+                // await page.waitForEvent("close", {timeout: 3600_000})
+
                 await context.close();
             } catch (error: any) {
                 console.error(`Error ${idx} - ${url}`);

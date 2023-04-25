@@ -518,6 +518,7 @@ const elements = [
   { name: "canvas", ctor: HTMLCanvasElement },
   { name: "video", ctor: HTMLVideoElement },
   { name: "imagedata", ctor: ImageData },
+  { name: "imagebitmap", ctor: ImageBitmap },
 ];
 
 const eolRE = /\n/g;
@@ -710,11 +711,11 @@ class WebGLWrapper {
       const imagesUrl = { };
       const imagesBase64 = { };
       function loadImages() {
-        const imageUrls = ${JSON.stringify(Object.keys(this.imagesUrl))};
+        const imageUrls = ${JSON.stringify(this.imagesUrl)};
         const imageBase64s = ${JSON.stringify(this.imagesBase64)};
-        Promise.all(imageUrls.map((url) => {  
+        Promise.all(Object.keys(imageUrls).map((url) => {  
           const img = new Image();
-          img.src = url;
+          img.src = imageUrls[url];
           img.crossOrigin = "anonymous";
           imagesUrl[url] = img;
           return img.decode();
@@ -722,6 +723,7 @@ class WebGLWrapper {
           return Promise.all(Object.keys(imageBase64s).map((id) => {
             const img = new Image();
             img.src = imageBase64s[id];
+            img.crossOrigin = "anonymous";
             imagesBase64[id] = img;
             return img.decode();
           }));
@@ -931,6 +933,14 @@ class WebGLWrapper {
         data instanceof HTMLVideoElement) {
       // Extract data.
       this.doTexImage2DForImage(name, data, args);
+    } else if (data instanceof ImageBitmap) {
+      const canvas = document.createElement('canvas');
+      canvas.height = data.height;
+      canvas.width = data.width;
+      const ctx = canvas.getContext('bitmaprenderer');
+      ctx.transferFromImageBitmap(data);
+      this.doTexSubImage2DForImageData(name, canvas.getImageData(0, 0, canvas.width, canvas.height), args);
+      canvas.remove();
     } else {
       // Assume it's array buffer
       this.capturer.addData(`gl.${name}(${glArgsToString(this.ctx, name, args)});`);
@@ -949,7 +959,16 @@ class WebGLWrapper {
       argStr += `, imagesBase64["${image.__hyd_imageBase64_id__}"]`;
     } else {
       argStr += `, imagesUrl["${image.src}"]`;
-      this.imagesUrl[image.src] = true;
+      if (this.imagesUrl[image.src] === undefined) {
+        const canvas = document.createElement('canvas');
+        canvas.height = image.height;
+        canvas.width = image.width;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0);
+        this.imagesUrl[image.src] = canvas.toDataURL();
+        canvas.remove();
+      }
+      // this.imagesUrl[image.src] = true;
       ++this.numImages;
     }
     this.capturer.addData(`gl.${name}(${argStr});`);
@@ -967,7 +986,7 @@ class WebGLWrapper {
     this.capturer.addData(`gl.${name}(${glArgsToString(this.ctx, name, newArgs)});`);
   }
   handle_texSubImage2D(name, args) {
-    // TODO: (hanyd) debug this function
+    console.log(args);
     this.ctx[name].apply(this.ctx, args);
     // lastarg is always data.
     const data = args[args.length - 1];
@@ -981,6 +1000,14 @@ class WebGLWrapper {
         data instanceof HTMLVideoElement) {
       // Extract data.
       this.doTexImage2DForImage(name, data, args);
+    } else if (data instanceof ImageBitmap) {
+      const canvas = document.createElement('canvas');
+      canvas.height = data.height;
+      canvas.width = data.width;
+      const ctx = canvas.getContext('bitmaprenderer');
+      ctx.transferFromImageBitmap(data);
+      this.doTexSubImage2DForImageData(name, canvas.getImageData(0, 0, canvas.width, canvas.height), args);
+      canvas.remove();
     } else {
       // Assume it's array buffer
       this.capturer.addData(`gl.${name}(${glArgsToString(this.ctx, name, args)});`);
@@ -1129,7 +1156,7 @@ class Capture {
 let autoCapture = true;
 
 // Save contexts
-let contexts = [];
+let glContexts = [];
 
 function init(ctx, opt_options) {
   // Make a an object that has a copy of every property of the WebGL context
@@ -1140,7 +1167,6 @@ function init(ctx, opt_options) {
       ctx.capture.begin();
     }
   }
-  contexts.push(ctx);
   return ctx.capture.getContext();
 }
 
@@ -1151,6 +1177,7 @@ HTMLCanvasElement.prototype.getContext = (function(oldFn) {
     if (autoCapture && (type === "experimental-webgl" || type === "webgl" || type === "webgl2")) {
       ctx.hydCanvasType = type;
       ctx = init(ctx); // 这里会改变 ctx.constructor.name
+      glContexts.push(ctx);
     }
     return ctx;
   };
@@ -1170,22 +1197,22 @@ return {
   // getContexts: getContexts,
 
   startAll: () => {
-    contexts.forEach(ctx => ctx.capture.begin());
+    glContexts.forEach(ctx => ctx.capture.begin());
   },
   stopAll: () => {
-    contexts.forEach(ctx => ctx.capture.end());
+    glContexts.forEach(ctx => ctx.capture.end());
   },
   periodAll(timeout) {
-    contexts.forEach(ctx => ctx.capture.period(timeout));
+    glContexts.forEach(ctx => ctx.capture.period(timeout));
   },
   generateAll: () => {
-    return contexts.map(ctx => ctx.capture.generate());
+    return glContexts.map(ctx => ctx.capture.generate());
   },
   allStopped: () => {
-    return contexts.length === 0 || contexts.every(ctx => !ctx.capture.capture);
+    return glContexts.length === 0 || glContexts.every(ctx => !ctx.capture.capture);
   },
   getContextsNum: () => {
-    return contexts.length;
+    return glContexts.length;
   }
 };
 
