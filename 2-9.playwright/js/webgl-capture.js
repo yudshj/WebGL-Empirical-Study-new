@@ -525,7 +525,7 @@ const eolRE = /\n/g;
 const crRE = /\r/g;
 const quoteRE = /"/g;
 
-function glValueToString(ctx, functionName, numArgs, argumentIndex, value, helper=null) {
+function glValueToString(ctx, functionName, numArgs, argumentIndex, value, helper) {
   const funcInfos = glFunctionInfos[functionName];
   const funcInfo = funcInfos ? funcInfos[numArgs] : undefined;
   if (value === undefined) {
@@ -624,7 +624,7 @@ function glValueToString(ctx, functionName, numArgs, argumentIndex, value, helpe
       }
       const values = [];
       for (const [k, v] of Object.entries(value)) {
-        values.push(`"${k}": ${glValueToString(ctx, "", 0, -1, v)}`);
+        values.push(`"${k}": ${glValueToString(ctx, "", 0, -1, v, helper)}`);
       }
       return `{\n    ${values.join(",\n    ")}}`;
     }
@@ -632,7 +632,7 @@ function glValueToString(ctx, functionName, numArgs, argumentIndex, value, helpe
   return value.toString();
 }
 
-function glArgsToString(ctx, functionName, args, helper=null) {
+function glArgsToString(ctx, functionName, args, helper) {
   if (args === undefined) {
     return "";
   }
@@ -762,7 +762,7 @@ class WebGLWrapper {
 
     out.push('const canvas = document.getElementById("__main-canvas__");');
     // out.push(`const gl = canvas.getContext("${this.ctx.texImage3D ? 'webgl2' : 'webgl'}", ${glValueToString(this.ctx, "getContextAttributes", 0, -1, this.ctx.getContextAttributes())});`);
-    out.push(`const gl = canvas.getContext("${this.ctx.hydCanvasType}", ${glValueToString(this.ctx, "getContextAttributes", 0, -1, this.ctx.getContextAttributes())});`);
+    out.push(`const gl = canvas.getContext("${this.ctx.hydCanvasType}", ${glValueToString(this.ctx, "getContextAttributes", 0, -1, this.ctx.getContextAttributes(), this)});`);
 
     // Add extension objects.
     for (const key of Object.keys(this.extensions)) {
@@ -944,7 +944,7 @@ function render() {
       id: id,
       type: shortName,
     };
-    this.capturer.addData(`${getResourceName(resource)} = gl.${name}(${glArgsToString(this.ctx, name, args)});`);
+    this.capturer.addData(`${getResourceName(resource)} = gl.${name}(${glArgsToString(this.ctx, name, args, this)});`);
     return resource;
   }
   
@@ -991,12 +991,12 @@ function render() {
 
   handle_get(name, args) {
     // Don't need the getXXX calls for playback.
-    this.capturer.addData(`// gl.${name}(${glArgsToString(this.ctx, name, args)});`);
+    this.capturer.addData(`// gl.${name}(${glArgsToString(this.ctx, name, args, this)});`);
     return this.ctx[name].apply(this.ctx, args);
   }
 
   handle_skip(name, args) {
-    this.capturer.addData(`// gl.${name}(${glArgsToString(this.ctx, name, args)});`);
+    this.capturer.addData(`// gl.${name}(${glArgsToString(this.ctx, name, args, this)});`);
     return this.ctx[name].apply(this.ctx, args);
   }
 }
