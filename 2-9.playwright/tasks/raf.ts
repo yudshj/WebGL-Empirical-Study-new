@@ -32,7 +32,7 @@ fs.mkdirSync('output/raf/', {recursive: true});
                     server: 'socks5://ss.maghsk.site:3539',
                     bypass: 'localhost,127.0.0.1'
                 },
-                headless: true,
+                headless: false,
                 launchOptions: {
                     args: [
                         "--enable-gpu",

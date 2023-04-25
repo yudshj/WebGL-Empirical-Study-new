@@ -92,7 +92,7 @@ const get_data_in_all_frames = (page: Page, str: string) => {
         await evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle');");
         const net_idle_counters = await get_data_in_all_frames(page, "window.hydGetCounters();");
 
-        await page.waitForTimeout(10_000);
+        await page.waitForTimeout(15_000);
         await evaluate_script_in_all_frames(page, "HydWebGLCapture.stopAll();");
         await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped();");
 
