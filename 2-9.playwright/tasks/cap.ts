@@ -1,17 +1,19 @@
 import { Frame, Page, chromium } from 'playwright';
-import fs from 'fs';
-import zlib from 'zlib';
+import * as fs from 'fs';
+import * as zlib from "zlib";
 
 
-// const idx_url: Array<Array<String>> = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
-const idx_url = [
-  ["TEST-0", "https://www.babylonjs.com/demos/sponza/"],
-  ["TEST-1", "https://www.pola.co.jp/special/o/wecaremore/mothersday/"],
-  ["TEST-2", "https://domenicobrz.github.io/webgl/projects/SSRefractionDepthPeeling/"],
-  ["TEST-3", "https://domenicobrz.github.io/webgl/projects/experiment1/"],
-  ["TEST-4", "https://needle.tools/"],
-  ["TEST-5", "https://turbulent.ca/"],
-];
+const idx_url: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
+// const idx_url = [
+//   ["TEST-0", "https://www.babylonjs.com/demos/sponza/"],
+//   ["TEST-1", "https://www.pola.co.jp/special/o/wecaremore/mothersday/"],
+//   ["TEST-2", "https://domenicobrz.github.io/webgl/projects/SSRefractionDepthPeeling/"],
+//   ["TEST-3", "https://domenicobrz.github.io/webgl/projects/experiment1/"],
+//   ["TEST-4", "https://needle.tools/"],
+//   ["TEST-5", "https://turbulent.ca/"],
+//   ["TEST-6", "https://vrseat.vercel.app/"],
+//   ["TEST-7", "http://campoallecomete.it/"],
+// ];
 const total = idx_url.length;
 
 const PART = parseInt(process.argv[2]);
@@ -59,7 +61,7 @@ const get_data_in_all_frames = (page: Page, str: string) => {
   for (const element of idx_url.slice(START, END)) {
     const idx = element[0];
     const url = element[1];
-    console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}`);
+    console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}  -  ${url}`);
     const gzip_out_path = `output/cap/${idx}.json.gz`;
     const error_out_path = `output/cap/${idx}.error.txt`;
     if (fs.existsSync(gzip_out_path) || fs.existsSync(error_out_path)) {
