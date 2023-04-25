@@ -745,13 +745,29 @@ class WebGLWrapper {
     for (const key of Object.keys(this.ids)) {
       out.push(`const ${key} = [];`);
     }
-    out.push("function render() {");
+    // out.push("function render() {");
+    out.push(`
+function* renderGenerator() {
+`);
 
     // FIX:
     this.capturer.data.forEach(function(func) {
       out.push(func());
     });
-    out.push("}");
+    // out.push("}");
+    out.push(`
+}
+const renderIterator = renderGenerator();
+
+function render() {
+  const a = renderIterator.next();
+  if (!a.done) {
+    requestAnimationFrame(render);
+  }
+}
+
+requestAnimationFrame(render);
+`);
 
     if (this.numImages > 0 || this.imageBase64Id > 0) {
       out.push("loadImages();");
@@ -1121,6 +1137,20 @@ class Capture {
       });
     }
   }
+  addDebugInfo(str) {
+    if (this.capture) {
+      this.addFn(function() {
+        return `// ** HAN_DEBUG_INFO ** ${str}`;
+      });
+    }
+  }
+  addYield(str) {
+    if (this.capture) {
+      this.addFn(function() {
+        return "yield;";
+      });
+    }
+  }
 
   log(msg) {
     if (this.capture) {
@@ -1187,14 +1217,11 @@ const setAutoCapture = function(capture) {
   autoCapture = capture;
 };
 
-// const getContexts = function() {
-//   return contexts;
-// }
+
 
 return {
   init: init,
   setAutoCapture: setAutoCapture,
-  // getContexts: getContexts,
 
   startAll: () => {
     glContexts.forEach(ctx => ctx.capture.begin());
@@ -1205,6 +1232,9 @@ return {
   periodAll(timeout) {
     glContexts.forEach(ctx => ctx.capture.period(timeout));
   },
+  addYieldAll: () => {
+    glContexts.forEach(ctx => ctx.capture.addYield());
+  },
   generateAll: () => {
     return glContexts.map(ctx => ctx.capture.generate());
   },
@@ -1213,11 +1243,20 @@ return {
   },
   getContextsNum: () => {
     return glContexts.length;
-  }
+  },
+  debugInfoAll: (str) => {
+    glContexts.forEach(ctx => ctx.capture.addDebugInfo(str));
+  },
 };
 
 }());
 
+function hydRaf() {
+  // HydWebGLCapture.debugInfoAll("raf");
+  HydWebGLCapture.addYieldAll();
+  requestAnimationFrame(hydRaf);
+}
+requestAnimationFrame(hydRaf);
 
 function hydGetCounters() {
   return {
