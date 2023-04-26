@@ -1,19 +1,20 @@
 import { Frame, Page, chromium } from 'playwright';
-import * as fs from 'fs';
-import * as zlib from "zlib";
+import fs from 'fs';
+import zlib from 'zlib';
+import pako from 'pako';
 
 
-const idx_url: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
-// const idx_url = [
-//   ["TEST-0", "https://www.babylonjs.com/demos/sponza/"],
-//   ["TEST-1", "https://www.pola.co.jp/special/o/wecaremore/mothersday/"],
-//   ["TEST-2", "https://domenicobrz.github.io/webgl/projects/SSRefractionDepthPeeling/"],
-//   ["TEST-3", "https://domenicobrz.github.io/webgl/projects/experiment1/"],
-//   ["TEST-4", "https://needle.tools/"],
-//   ["TEST-5", "https://turbulent.ca/"],
-//   ["TEST-6", "https://vrseat.vercel.app/"],
-//   ["TEST-7", "http://campoallecomete.it/"],
-// ];
+// const idx_url: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
+const idx_url = [
+  ["TEST-0", "https://www.babylonjs.com/demos/sponza/"],
+  ["TEST-1", "https://www.pola.co.jp/special/o/wecaremore/mothersday/"],
+  ["TEST-2", "https://domenicobrz.github.io/webgl/projects/SSRefractionDepthPeeling/"],
+  ["TEST-3", "https://domenicobrz.github.io/webgl/projects/experiment1/"],
+  ["TEST-4", "https://needle.tools/"],
+  ["TEST-5", "https://turbulent.ca/"],
+  ["TEST-6", "https://vrseat.vercel.app/"],
+  ["TEST-7", "http://campoallecomete.it/"],
+];
 const total = idx_url.length;
 
 const PART = parseInt(process.argv[2]);
@@ -34,15 +35,19 @@ const wait_for_function_in_all_frames = (page: Page, str: string) => {
   return Promise.allSettled(page.frames().map((frame: Frame) => frame.waitForFunction(str).catch(() => null)));
 }
 
-const get_data_in_all_frames = (page: Page, str: string) => {
+const get_data_in_all_frames = (page: Page, str: string, compressed: boolean) => {
   return Promise.all(
     page.frames().map(async (frame: Frame) => {
       try {
-        const data = await frame.evaluate(str);
+        let data: any = await frame.evaluate(str);
+        if (compressed) {
+          data = data.map((x: string) => pako.inflate(Buffer.from(x, 'base64'), { to: 'string' }));
+          // data = data.map((x: Uint8Array) => pako.inflate(x, { to: 'string' }));
+        }
         return {
           name: frame.name(),
           url: frame.url(),
-          data: data,
+          data,
           error: null,
         };
       } catch (error) {
@@ -50,7 +55,7 @@ const get_data_in_all_frames = (page: Page, str: string) => {
           name: frame.name(),
           url: frame.url(),
           data: null, // 或者您可以设置一个默认值
-          error: error,
+          error,
         };
       }
     })
@@ -81,6 +86,7 @@ const get_data_in_all_frames = (page: Page, str: string) => {
       });
       try {
         const context = await browser.newContext({ ignoreHTTPSErrors: true });
+        await context.addInitScript({ path: 'js/pako.min.js' });
         await context.addInitScript({ path: 'js/inject-tiny.js' });
         await context.addInitScript({ path: 'js/webgl-capture.js' });
 
@@ -94,8 +100,7 @@ const get_data_in_all_frames = (page: Page, str: string) => {
           .catch(() => null);
 
         const net_idle_time_hp = performance.now();
-        await evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle');");
-        const net_idle_counters = await get_data_in_all_frames(page, "window.hydGetCounters();");
+        const net_idle_counters = await get_data_in_all_frames(page, "window.hydGetCounters();", false);
 
         await page.waitForTimeout(15_000);
         await evaluate_script_in_all_frames(page, "HydWebGLCapture.stopAll();");
@@ -103,8 +108,9 @@ const get_data_in_all_frames = (page: Page, str: string) => {
 
         const gl_cap_time_hp = performance.now();
         await evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('gl_cap');");
-        const gl_cap_counters = await get_data_in_all_frames(page, "window.hydGetCounters();");
-        const gl_captures = await get_data_in_all_frames(page, "HydWebGLCapture.generateAll();");
+        const gl_cap_counters = await get_data_in_all_frames(page, "window.hydGetCounters();", false);
+        const decoder = new TextDecoder();
+        const gl_captures = await get_data_in_all_frames(page, "HydWebGLCapture.generateAll();", true);
 
         const data = {
           url,

@@ -800,7 +800,10 @@ function render() {
     }
     out.push("requestAnimationFrame(render);");
     out.push("</script>");
-    return out.join('\n');
+    // return out.join('\n');
+    const compressed = pako.deflate(out.join('\n'), { to: 'string' });
+    // return compressed;
+    return window.btoa(compressed.reduce((str, charCode) => str + String.fromCharCode(charCode), ''));
   }
 
   // TODO: handle extensions
