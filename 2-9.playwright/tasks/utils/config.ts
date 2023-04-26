@@ -45,7 +45,7 @@ export const launchOptions = {
       server: 'socks5://ss.maghsk.site:3536',
       bypass: 'localhost, 127.0.0.1'
     },
-    headless: false,
+    headless: true,
   },
   simple: {
     args: [
@@ -57,6 +57,22 @@ export const launchOptions = {
       server: 'socks5://ss.maghsk.site:3535',
       bypass: 'localhost, 127.0.0.1'
     },
-    headless: false,
+    headless: true,
   },
+  har: {
+    args: [
+      "--enable-gpu",
+      "--enable-unsafe-webgpu",
+      "--no-sandbox",
+    ],
+    headless: true,
+  },
+  screenshot: {
+    args: [
+      "--enable-gpu",
+      "--enable-unsafe-webgpu",
+      "--no-sandbox",
+    ],
+    headless: true,
+  }
 };
