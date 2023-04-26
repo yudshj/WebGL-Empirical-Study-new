@@ -42,27 +42,47 @@ function HydNewGetContext() {
                 // uniformSent: 0,   // byte length
                 // uniformMatrixSent: 0,   // byte length
                 vertexCount: 0,
-                semanticVertexCount: {},
-                semanticVertexCalled: {},
+                semanticVertexCount: {
+                    0: 0,
+                    1: 0,
+                    2: 0,
+                    3: 0,
+                    4: 0,
+                    5: 0,
+                    6: 0,
+                },
+                semanticVertexCalled: {
+                    0: 0,
+                    1: 0,
+                    2: 0,
+                    3: 0,
+                    4: 0,
+                    5: 0,
+                    6: 0,
+                },
+
+                texturePixelsSent: 0,
+                textureTypes: {},
+                textureBytesSent: 0,
             },
             rafList: [],
         }
 
-        context.maghsk.counter.semanticVertexCount[context.POINTS] = 0;
-        context.maghsk.counter.semanticVertexCount[context.LINES] = 0;
-        context.maghsk.counter.semanticVertexCount[context.LINE_LOOP] = 0;
-        context.maghsk.counter.semanticVertexCount[context.LINE_STRIP] = 0;
-        context.maghsk.counter.semanticVertexCount[context.TRIANGLES] = 0;
-        context.maghsk.counter.semanticVertexCount[context.TRIANGLE_STRIP] = 0;
-        context.maghsk.counter.semanticVertexCount[context.TRIANGLE_FAN] = 0;
+        // context.maghsk.counter.semanticVertexCount[context.POINTS] = 0;
+        // context.maghsk.counter.semanticVertexCount[context.LINES] = 0;
+        // context.maghsk.counter.semanticVertexCount[context.LINE_LOOP] = 0;
+        // context.maghsk.counter.semanticVertexCount[context.LINE_STRIP] = 0;
+        // context.maghsk.counter.semanticVertexCount[context.TRIANGLES] = 0;
+        // context.maghsk.counter.semanticVertexCount[context.TRIANGLE_STRIP] = 0;
+        // context.maghsk.counter.semanticVertexCount[context.TRIANGLE_FAN] = 0;
 
-        context.maghsk.counter.semanticVertexCalled[context.POINTS] = 0;
-        context.maghsk.counter.semanticVertexCalled[context.LINES] = 0;
-        context.maghsk.counter.semanticVertexCalled[context.LINE_LOOP] = 0;
-        context.maghsk.counter.semanticVertexCalled[context.LINE_STRIP] = 0;
-        context.maghsk.counter.semanticVertexCalled[context.TRIANGLES] = 0;
-        context.maghsk.counter.semanticVertexCalled[context.TRIANGLE_STRIP] = 0;
-        context.maghsk.counter.semanticVertexCalled[context.TRIANGLE_FAN] = 0;
+        // context.maghsk.counter.semanticVertexCalled[context.POINTS] = 0;
+        // context.maghsk.counter.semanticVertexCalled[context.LINES] = 0;
+        // context.maghsk.counter.semanticVertexCalled[context.LINE_LOOP] = 0;
+        // context.maghsk.counter.semanticVertexCalled[context.LINE_STRIP] = 0;
+        // context.maghsk.counter.semanticVertexCalled[context.TRIANGLES] = 0;
+        // context.maghsk.counter.semanticVertexCalled[context.TRIANGLE_STRIP] = 0;
+        // context.maghsk.counter.semanticVertexCalled[context.TRIANGLE_FAN] = 0;
 
         context.capturedFunctions = [];
         if (window.hydUsedWebgl === null) {
@@ -126,6 +146,27 @@ function HydNewGetContext() {
                             const width = arguments[2];
                             const height = arguments[3];
                             context.maghsk.pixelsRead += width * height;
+                        } else if (name.indexOf('tex') !== -1) {
+                            for (const arg of arguments) {
+                                if (typeof arg === 'object') {
+                                    if (   arg instanceof ImageData
+                                        || arg instanceof HTMLImageElement
+                                        || arg instanceof HTMLCanvasElement
+                                        || arg instanceof HTMLVideoElement
+                                        || arg instanceof OffscreenCanvas
+                                        || arg instanceof ImageBitmap) {
+                                            context.maghsk.counter.texturePixelsSent += arg.width * arg.height;
+                                            context.maghsk.counter.textureTypes[arg.constructor.name] = (context.maghsk.counter.textureTypes[arg.constructor.name] || 0) + 1;
+                                        }
+                                    else {
+                                        if ('byteLength' in arg) {
+                                            context.maghsk.counter.textureBytesSent += arg.byteLength;
+                                        } else if ('length' in arg) {
+                                            context.maghsk.counter.textureBytesSent += arg.length;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                     return ret;
