@@ -149,6 +149,7 @@ function HydNewGetContext() {
                         } else if (name.indexOf('tex') !== -1) {
                             for (const arg of arguments) {
                                 if (typeof arg === 'object') {
+                                    context.maghsk.counter.textureTypes[arg.constructor.name] = (context.maghsk.counter.textureTypes[arg.constructor.name] || 0) + 1;
                                     if (   arg instanceof ImageData
                                         || arg instanceof HTMLImageElement
                                         || arg instanceof HTMLCanvasElement
@@ -156,7 +157,6 @@ function HydNewGetContext() {
                                         || arg instanceof OffscreenCanvas
                                         || arg instanceof ImageBitmap) {
                                             context.maghsk.counter.texturePixelsSent += arg.width * arg.height;
-                                            context.maghsk.counter.textureTypes[arg.constructor.name] = (context.maghsk.counter.textureTypes[arg.constructor.name] || 0) + 1;
                                         }
                                     else {
                                         if ('byteLength' in arg) {
