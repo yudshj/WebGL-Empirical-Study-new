@@ -13,7 +13,7 @@ export const wait_for_function_in_all_frames = (page: Page, str: string, timeout
     const promises = page.frames().map((frame: Frame) => Promise.race([frame.waitForFunction(str), rejectOnTimeout(timeout)]).catch(() => null));
     return Promise.allSettled(promises);
 };
-export const get_data_in_all_frames = (page: Page, str: string, timeout: number) => {
+export const get_data_in_all_frames = (page: Page, str: string, timeout: number, dataCallback: null | ((x: any)=>any) = null) => {
     console.info(`* GET_DATA_IN_ALL_FRAMES(${str});`);
     const promises = page.frames().map((frame: Frame) => {
         return Promise.race([frame.evaluate(str), rejectOnTimeout(timeout)])
@@ -21,7 +21,7 @@ export const get_data_in_all_frames = (page: Page, str: string, timeout: number)
                 return {
                     name: frame.name(),
                     url: frame.url(),
-                    data: data,
+                    data: dataCallback ? dataCallback(data) : data,
                     error: null,
                 };
             })

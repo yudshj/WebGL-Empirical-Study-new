@@ -6,7 +6,8 @@
   "author": "Yudong Han <maghsk2017@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "^1.32.3"
+    "@playwright/test": "^1.32.3",
+    "pako": "^2.1.0"
   },
   "scripts": {
     "setup": "yarn install; yarn global add typescript ts-node"

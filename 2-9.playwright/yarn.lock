@@ -27,6 +27,11 @@ fsevents@2.3.2:
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
   integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
+pako@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/pako/-/pako-2.1.0.tgz#266cc37f98c7d883545d11335c00fbd4062c9a86"
+  integrity sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==
+
 playwright-core@1.32.3:
   version "1.32.3"
   resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.32.3.tgz#e6dc7db0b49e9b6c0b8073c4a2d789a96f519c48"
