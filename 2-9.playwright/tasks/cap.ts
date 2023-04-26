@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 import * as fs from 'fs';
-import * as zlib from "zlib";
+// import * as zlib from "zlib";
 import { get_data_in_all_frames, evaluate_script_in_all_frames, wait_for_function_in_all_frames } from './utils/utils';
 import { launchOptions, indexUrls } from './utils/config';
 
