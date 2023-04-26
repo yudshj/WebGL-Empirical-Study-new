@@ -1,10 +1,12 @@
-const { chromium } = require('playwright');
-const fs = require('fs');
-const zlib = require('zlib');
+import { chromium } from 'playwright';
+import * as fs from 'fs';
+import * as zlib from "zlib";
+import { get_data_in_all_frames } from './utils/utils';
+import { launchOptions, indexUrls } from './utils/config';
 
-const idx_url: Array<Array<String>> = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
+const NAME = 'simple';
 
-const total = idx_url.length;
+const total = indexUrls.length;
 
 const PART = parseInt(process.argv[2]);
 const TOTAL_PART = parseInt(process.argv[3]);
@@ -14,74 +16,37 @@ const END = Math.min((PART + 1) * PART_SIZE, total);
 
 console.log(START, "to", END)
 
-fs.mkdirSync('output/simple/', {recursive: true});
+fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
 (async () => {
-    for (const element of idx_url.slice(START, END)) {
-        const idx = element[0];
-        const url = element[1];
+    for (const [idx, url] of indexUrls.slice(START, END)) {
         console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}`);
-        const gzip_out_path = `output/simple/${idx}.json.gz`;
-        const error_out_path = `output/simple/${idx}.error.txt`;
+        const gzip_out_path = `output/${NAME}/${idx}.json.gz`;
+        const error_out_path = `output/${NAME}/${idx}.error.txt`;
         if (fs.existsSync(gzip_out_path) || fs.existsSync(error_out_path)) {
             console.info(`Skip ${idx} - ${url}`);
         } else {
-            const browser = await chromium.launch({
-                ignoreHTTPSErrors: true,
-                proxy: {
-                    server: 'socks5://ss.maghsk.site:3539',
-                    bypass: 'localhost,127.0.0.1'
-                },
-                headless: false,
-                launchOptions: {
-                    args: [
-                        "--enable-gpu",
-                        "--use-gl=desktop",
-                        "--enable-unsafe-webgpu",
-                    ]
-                }
-            });
+            const browser = await chromium.launch(launchOptions[NAME]);
             try {
-                const context = await browser.newContext( { ignoreHTTPSErrors: true } );
-                await context.addInitScript({path: 'js/webgl-memory.js'});
-                await context.addInitScript({path: 'js/inject-simple.js'});
+                const context = await browser.newContext({ ignoreHTTPSErrors: true });
+                await context.addInitScript({ path: 'js/webgl-memory.js' });
+                await context.addInitScript({ path: 'js/inject-simple.js' });
 
                 const page = await context.newPage();
                 const date = Date.now();
                 const start_time_hp = performance.now();
-                await page.goto(url, {waitUntil: 'networkidle', timeout: 30_000}).catch(() => {
-                });
+
+                await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 }).catch(() => { });
 
                 const net_idle_time_hp = performance.now();
-                const net_idle_counters = [];
-                for (const frame of page.frames()) {
-                    net_idle_counters.push({
-                        name: frame.name(),
-                        url: frame.url(),
-                        data: await frame.evaluate("window.hydGetCounters();").catch(() => null),
-                    });
-                }
+                const net_idle_counters: any[] = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
 
-                await page.waitForTimeout(10_000);
+                await page.waitForTimeout(15_000);
 
                 const gl_simple_time_hp = performance.now();
-                const gl_simple_counters = [];
-                for (const frame of page.frames()) {
-                    gl_simple_counters.push({
-                        name: frame.name(),
-                        url: frame.url(),
-                        data: await frame.evaluate("window.hydGetCounters();").catch(() => null),
-                    });
-                }
+                const gl_simple_counters: any[] = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
 
-                const gl_simples = [];
-                for (const frame of page.frames()) {
-                    gl_simples.push({
-                        name: frame.name(),
-                        url: frame.url(),
-                        data: await frame.evaluate("HydGetGLInfo();").catch(() => null),
-                    });
-                }
+                const gl_simples = await get_data_in_all_frames(page, "HydGetGLInfo();", 30_000);
 
                 const data = {
                     url,

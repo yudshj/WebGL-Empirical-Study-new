@@ -24,6 +24,8 @@ function hydFrameCount() {
 requestAnimationFrame(hydFrameCount);
 
 const hydOriginGetContext = HTMLCanvasElement.prototype.getContext;
+const hydOriginOffscreenGetContext = OffscreenCanvas.prototype.getContext;
+
 function HydNewGetContext() {
     let context = hydOriginGetContext.apply(this, arguments);
     if (arguments[0].indexOf('webgl') !== -1) {
@@ -145,14 +147,14 @@ function HydNewGetContext() {
     return context;
 }
 
-HTMLCanvasElement.prototype.getContext = HydNewGetContext;
-
-OffscreenCanvas.prototype.getContext = (function(oldFn) {
+function newOffscreenGetContext() {
+    let context = hydOriginOffscreenGetContext.apply(this, arguments);
     window.hydUsedOffScreenCanvas = true;
-    return function(...args) {
-        return oldFn.apply(this, args);
-    }
-})(OffscreenCanvas.prototype.getContext);
+    return context;
+}
+
+HTMLCanvasElement.prototype.getContext = HydNewGetContext;
+OffscreenCanvas.prototype.getContext = newOffscreenGetContext;
 
 function HydGetGLInfo() {
     HYD_RECORD = false;
