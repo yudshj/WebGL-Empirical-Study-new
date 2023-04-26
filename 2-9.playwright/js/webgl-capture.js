@@ -800,10 +800,10 @@ function render() {
     }
     out.push("requestAnimationFrame(render);");
     out.push("</script>");
-    // const compressed = pako.deflate(out.join('\n'), { to: 'string' });
-    // return window.btoa(compressed.reduce((str, charCode) => str + String.fromCharCode(charCode), ''));
-    return "data:json/gzip;base64," + window.btoa(pako.deflate(out.join('\n'), { to: 'string' }));
-    return out.join('\n');
+    const compressed = hydpako.gzip(out.join('\n'), { to: 'string' });
+    return "data:json/gzip;base64," + window.btoa(compressed.reduce((str, charCode) => str + String.fromCharCode(charCode), ''));
+    // return "data:json/gzip;base64," + window.btoa(hydpako.gzip(out.join('\n'), { to: 'string' }));
+    // return out.join('\n');
   }
 
   // TODO: handle extensions

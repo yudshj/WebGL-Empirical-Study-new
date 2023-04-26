@@ -31,6 +31,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             try {
                 console.info('  launch browser')
                 const context = await browser.newContext({ ignoreHTTPSErrors: true });
+                await context.addInitScript({ path: 'js/hydpako.min.js' });
                 await context.addInitScript({ path: 'js/inject-tiny.js' });
                 await context.addInitScript({ path: 'js/webgl-capture.js' });
 
