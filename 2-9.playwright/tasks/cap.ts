@@ -71,10 +71,11 @@ const get_data_in_all_frames = (page: Page, str: string) => {
         args: [
           "--enable-gpu",
           "--enable-unsafe-webgpu",
+          "--no-sandbox",
         ],
         proxy: {
           server: 'socks5://ss.maghsk.site:3536',
-          bypass: 'localhost,127.0.0.1'
+          bypass: 'localhost, 127.0.0.1'
         },
         headless: false,
       });
@@ -86,7 +87,11 @@ const get_data_in_all_frames = (page: Page, str: string) => {
         const page = await context.newPage();
         const date = Date.now();
         const start_time_hp = performance.now();
-        await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 }).catch(() => null);
+
+        await page.goto(url, { waitUntil: 'networkidle', timeout: 60_000 })
+          .then(() => evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - OK');"))
+          .catch(() => evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - ERROR (TIMEOUT?)');"))
+          .catch(() => null);
 
         const net_idle_time_hp = performance.now();
         await evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle');");
