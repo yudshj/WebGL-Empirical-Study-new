@@ -1,5 +1,6 @@
 // tests/example1.test.js
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
+
 function waitFor(delay) {
     return new Promise(resolve => setTimeout(resolve, delay));
 }
