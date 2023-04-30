@@ -22,3 +22,6 @@
 [submodule "2-8.networkCapture"]
 	path = 2-8.networkCapture
 	url = git@github.com:maghsk/WES_Capture-HAR.git
+[submodule "3-6.GLpipeline/spector-v0.9.27"]
+	path = 3-6.GLpipeline/spector-v0.9.27
+	url = https://github.com/BabylonJS/Spector.js.git
