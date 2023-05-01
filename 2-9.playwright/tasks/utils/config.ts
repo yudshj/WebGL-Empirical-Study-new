@@ -1,4 +1,9 @@
 import * as fs from 'fs';
+import { LaunchOptions } from 'playwright';
+
+interface LaunchOptionsDict {
+  [key: string]: LaunchOptions;
+}
 
 // export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
 export const indexUrls = [
@@ -22,7 +27,7 @@ export const indexUrls = [
 //   ["BUG-7", "https://www.vocedivulga.com/carrega-troca-links.php?id=782&_xafvr=ZTNkMWE2MjlhMThjNzQ2M2JlYjgyMDk5OTBhMGU3YTE1Y2ZhMDE1ZCw2NDQ4OWE1YjEzODBk"],
 // ];
 
-export const launchOptions = {
+export const launchOptions: LaunchOptionsDict = {
   cap: {
     args: [
       "--enable-gpu",
@@ -80,6 +85,10 @@ export const launchOptions = {
     args: [
       `--enable-unsafe-webgpu`,
       `--no-sandbox`,
-    ]
+    ],
+    proxy: {
+      server: 'socks5://ss.maghsk.site:3535',
+      bypass: 'localhost, 127.0.0.1'
+    },
   }
 };
