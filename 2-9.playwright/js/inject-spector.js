@@ -36,7 +36,8 @@ OffscreenCanvas.prototype.getContext = function () {
 
 function hydSpectorStart() {
     for (const [spector, gl] of window._hydSpectorContexts) {
-        spector.startCapture(gl, 100000000, true);
+        spector.captureNextFrame(gl, true);
+        // spector.startCapture(gl, 100000000, true);
     }
 }
 

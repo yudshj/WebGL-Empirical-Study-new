@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import * as fs from 'fs';
 import { evaluate_script_in_all_frames, wait_for_function_in_all_frames, get_data_in_all_frames } from './utils/utils';
-import { indexUrls, launchOptions } from './utils/config';
+import { indexUrls, launchOptions, proxyPool } from './utils/config';
 
 const NAME = 'spector';
 
@@ -26,7 +26,15 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             console.info(`Skip ${idx}`);
             continue;
         }
-        const browser = await chromium.launch(launchOptions[NAME]);
+        
+        // random select proxy
+        let launchOption = launchOptions[NAME];
+        launchOption.proxy = {
+            server: proxyPool[Math.floor(Math.random() * proxyPool.length)],
+            bypass: 'localhost,127.0.0.1'
+        };
+        console.log("PROXY:", launchOption.proxy)
+        const browser = await chromium.launch(launchOption);
     
         try {
             const browserContext = await browser.newContext({ ignoreHTTPSErrors: true });
@@ -42,7 +50,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             await page.goto(url, { timeout: 30_000, waitUntil: 'networkidle' }).catch(() => {});
             await page.waitForTimeout(10_000);
             await evaluate_script_in_all_frames(page, 'hydSpectorStart()', 10_000);
-            await page.waitForTimeout(15_000);
+            // await page.waitForTimeout(15_000);
             await wait_for_function_in_all_frames(page, 'window._hydCaptured.length === window._hydSpectors.length', 15_000);
             const spector = await get_data_in_all_frames(page, 'window._hydCaptured', 30_000);
             const data = {

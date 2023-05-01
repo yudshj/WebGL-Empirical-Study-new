@@ -1,0 +1,37 @@
+start powershell "ts-node .\tasks\raf.ts 0 5"
+start powershell "ts-node .\tasks\raf.ts 1 5"
+start powershell "ts-node .\tasks\raf.ts 2 5"
+start powershell "ts-node .\tasks\raf.ts 3 5"
+start powershell "ts-node .\tasks\raf.ts 4 5"
+
+start powershell "ts-node .\tasks\simple.ts 0 5"
+start powershell "ts-node .\tasks\simple.ts 1 5"
+start powershell "ts-node .\tasks\simple.ts 2 5"
+start powershell "ts-node .\tasks\simple.ts 3 5"
+start powershell "ts-node .\tasks\simple.ts 4 5"
+
+start powershell "ts-node .\tasks\cap.ts 0 5"
+start powershell "ts-node .\tasks\cap.ts 1 5"
+start powershell "ts-node .\tasks\cap.ts 2 5"
+start powershell "ts-node .\tasks\cap.ts 3 5"
+start powershell "ts-node .\tasks\cap.ts 4 5"
+
+
+start powershell "ts-node .\tasks\spector.ts 0 16"
+start powershell "ts-node .\tasks\spector.ts 1 16"
+start powershell "ts-node .\tasks\spector.ts 2 16"
+start powershell "ts-node .\tasks\spector.ts 3 16"
+start powershell "ts-node .\tasks\spector.ts 4 16"
+start powershell "ts-node .\tasks\spector.ts 5 16"
+start powershell "ts-node .\tasks\spector.ts 6 16"
+start powershell "ts-node .\tasks\spector.ts 7 16"
+
+start powershell "ts-node .\tasks\spector.ts 8 16"
+start powershell "ts-node .\tasks\spector.ts 9 16"
+start powershell "ts-node .\tasks\spector.ts 10 16"
+start powershell "ts-node .\tasks\spector.ts 11 16"
+start powershell "ts-node .\tasks\spector.ts 12 16"
+start powershell "ts-node .\tasks\spector.ts 13 16"
+start powershell "ts-node .\tasks\spector.ts 14 16"
+start powershell "ts-node .\tasks\spector.ts 15 16"
+
