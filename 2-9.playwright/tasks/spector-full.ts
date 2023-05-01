@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { evaluate_script_in_all_frames, wait_for_function_in_all_frames, get_data_in_all_frames } from './utils/utils';
 import { indexUrls, launchOptions, proxyPool } from './utils/config';
 
-const NAME = 'spector';
+const NAME = 'spector-full';
 
 const total = indexUrls.length;
 
