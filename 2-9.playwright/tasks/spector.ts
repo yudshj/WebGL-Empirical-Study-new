@@ -53,6 +53,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             const spector = await get_data_in_all_frames(page, 'window._hydCaptured', 30_000);
             const data = {
                 url,
+                idx,
                 date,
                 spector,
             };
