@@ -74,5 +74,12 @@ export const launchOptions = {
       "--no-sandbox",
     ],
     headless: true,
+  },
+  spector: {
+    headless: false,
+    args: [
+      `--enable-unsafe-webgpu`,
+      `--no-sandbox`,
+    ]
   }
 };

@@ -1,5 +1,5 @@
-window._hydGLContexts = [];
-window._hydSpectors = [];
+// window._hydGLContexts = [];
+window._hydSpectorContexts = [];
 window._hydCaptured = [];
 
 function hydTmp(context) {
@@ -12,8 +12,8 @@ function hydTmp(context) {
     });
     // spector.startCapture(context, 100000000, true);
 
-    window._hydSpectors.push(spector);
-    window._hydGLContexts.push(context);
+    window._hydSpectorContexts.push([spector, context]);
+    // window._hydGLContexts.push(context);
 }
 
 const hydOriginGetContext = HTMLCanvasElement.prototype.getContext;
@@ -35,14 +35,14 @@ OffscreenCanvas.prototype.getContext = function () {
 }
 
 function hydSpectorStart() {
-    for (const spector of window._hydSpectors) {
+    for (const [spector, gl] of window._hydSpectorContexts) {
         spector.startCapture(gl, 100000000, true);
     }
 }
 
 function hydSpectorStop() {
     let ret = [];
-    for (const spector of window._hydSpectors) {
+    for (const [spector, gl] of window._hydSpectorContexts) {
         // ret.push(JSON.stringify(spector.stopCapture()));
         ret.push(spector.stopCapture());
     }
