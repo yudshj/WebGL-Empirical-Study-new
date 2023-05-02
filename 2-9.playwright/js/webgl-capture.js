@@ -1150,7 +1150,7 @@ class Capture {
 let autoCapture = true;
 
 // Save contexts
-let glContexts = [];
+let glContexts = new Set();
 
 function init(ctx, opt_options) {
   // Make a an object that has a copy of every property of the WebGL context
@@ -1168,10 +1168,10 @@ HTMLCanvasElement.prototype.getContext = (function(oldFn) {
   return function(...args) {
     let ctx = oldFn.apply(this, args);
     const type = arguments[0];
-    if (autoCapture && (type === "experimental-webgl" || type === "webgl" || type === "webgl2")) {
+    if (ctx && autoCapture && (type === "experimental-webgl" || type === "webgl" || type === "webgl2") && glContexts.has(ctx) === false) {
+      glContexts.add(ctx);
       ctx.hydCanvasType = type;
       ctx = init(ctx); // 这里会改变 ctx.constructor.name
-      glContexts.push(ctx);
     }
     return ctx;
   };
@@ -1200,13 +1200,13 @@ return {
     glContexts.forEach(ctx => ctx.capture.addYield());
   },
   generateAll: () => {
-    return glContexts.map(ctx => ctx.capture.generate());
+    return Array.from(glContexts).map(ctx => ctx.capture.generate());
   },
   allStopped: () => {
-    return glContexts.length === 0 || glContexts.every(ctx => !ctx.capture.capture);
+    return glContexts.size === 0 || Array.from(glContexts).every(ctx => !ctx.capture.capture);
   },
   getContextsNum: () => {
-    return glContexts.length;
+    return glContexts.size;
   },
   debugInfoAll: (str) => {
     glContexts.forEach(ctx => ctx.capture.addDebugInfo(str));
