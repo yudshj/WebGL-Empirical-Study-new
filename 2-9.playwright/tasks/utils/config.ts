@@ -15,6 +15,7 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json
 //   ["TEST-5", "https://turbulent.ca/"],
 //   ["TEST-6", "https://vrseat.vercel.app/"],
 //   ["TEST-7", "http://campoallecomete.it/"],
+//   ["TEST-8", "http://donbeto.com/menu-restaurante/"],
 // ];
 // export const indexUrls = [
 //   ["BUG-0", "https://pt.gamcore.com/jogos/brothel_empire_unity_version"],
@@ -50,7 +51,7 @@ export const launchOptions: LaunchOptionsDict = {
       server: 'socks5://ss.maghsk.site:3536',
       bypass: 'localhost, 127.0.0.1'
     },
-    headless: true,
+    headless: false,
   },
   simple: {
     args: [
