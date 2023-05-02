@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 import * as fs from 'fs';
 import * as zlib from "zlib";
 import { get_data_in_all_frames, evaluate_script_in_all_frames } from './utils/utils';
-import { launchOptions, indexUrls } from './utils/config';
+import { getLaunchOptions, indexUrls } from './utils/config';
 
 const NAME = 'raf';
 
@@ -26,7 +26,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         if (fs.existsSync(gzip_out_path) || fs.existsSync(error_out_path)) {
             console.info(`Skip ${idx} - ${url}`);
         } else {
-            const browser = await chromium.launch(launchOptions[NAME]);
+            const browser = await chromium.launch(getLaunchOptions(NAME));
             try {
                 const context = await browser.newContext({ ignoreHTTPSErrors: true });
                 await context.addInitScript({ path: 'js/inject-gl.js' });

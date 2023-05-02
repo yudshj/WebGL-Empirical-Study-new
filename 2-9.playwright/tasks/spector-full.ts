@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import * as fs from 'fs';
 import { evaluate_script_in_all_frames, wait_for_function_in_all_frames, get_data_in_all_frames } from './utils/utils';
-import { indexUrls, launchOptions, proxyPool } from './utils/config';
+import { indexUrls, getLaunchOptions } from './utils/config';
 
 const NAME = 'spector-full';
 
@@ -27,14 +27,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             continue;
         }
         
-        // random select proxy
-        let launchOption = launchOptions[NAME];
-        launchOption.proxy = {
-            server: proxyPool[Math.floor(Math.random() * proxyPool.length)],
-            bypass: 'localhost,127.0.0.1'
-        };
-        console.log("PROXY:", launchOption.proxy)
-        const browser = await chromium.launch(launchOption);
+        const browser = await chromium.launch(getLaunchOptions(NAME));
     
         try {
             const browserContext = await browser.newContext({ ignoreHTTPSErrors: true });

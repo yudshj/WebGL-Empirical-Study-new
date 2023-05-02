@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 import * as fs from 'fs';
-import { launchOptions, indexUrls } from './utils/config';
+import { getLaunchOptions, indexUrls } from './utils/config';
 
 const NAME = 'har';
 
@@ -22,7 +22,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         if (fs.existsSync(zip_out_path) || fs.existsSync(error_out_path)) {
             console.info(`Skip ${idx} - ${url}`);
         } else {
-            const browser = await chromium.launch(launchOptions[NAME]);
+            const browser = await chromium.launch(getLaunchOptions(NAME));
             try {
                 const context = await browser.newContext( { ignoreHTTPSErrors: true, recordHar: { content: 'attach', path: zip_out_path, mode: 'full' } } );
                 const page = await context.newPage();

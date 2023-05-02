@@ -5,6 +5,9 @@ interface LaunchOptionsDict {
   [key: string]: LaunchOptions;
 }
 
+const useProxy = true;
+const headless = false;
+
 export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
 // export const indexUrls = [
 //   ["TEST-0", "https://www.babylonjs.com/demos/sponza/"],
@@ -28,18 +31,14 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json
 //   ["BUG-7", "https://www.vocedivulga.com/carrega-troca-links.php?id=782&_xafvr=ZTNkMWE2MjlhMThjNzQ2M2JlYjgyMDk5OTBhMGU3YTE1Y2ZhMDE1ZCw2NDQ4OWE1YjEzODBk"],
 // ];
 
-export const launchOptions: LaunchOptionsDict = {
+const launchOptions: LaunchOptionsDict = {
   cap: {
     args: [
       "--enable-gpu",
       "--enable-unsafe-webgpu",
       "--no-sandbox",
     ],
-    proxy: {
-      server: 'socks5://ss.maghsk.site:3539',
-      bypass: 'localhost, 127.0.0.1'
-    },
-    headless: false,
+    headless: headless,
   },
   raf: {
     args: [
@@ -47,11 +46,7 @@ export const launchOptions: LaunchOptionsDict = {
       "--enable-unsafe-webgpu",
       "--no-sandbox",
     ],
-    proxy: {
-      server: 'socks5://ss.maghsk.site:3536',
-      bypass: 'localhost, 127.0.0.1'
-    },
-    headless: false,
+    headless: headless,
   },
   simple: {
     args: [
@@ -59,11 +54,7 @@ export const launchOptions: LaunchOptionsDict = {
       "--enable-unsafe-webgpu",
       "--no-sandbox",
     ],
-    proxy: {
-      server: 'socks5://ss.maghsk.site:3535',
-      bypass: 'localhost, 127.0.0.1'
-    },
-    headless: true,
+    headless: headless,
   },
   har: {
     args: [
@@ -71,7 +62,7 @@ export const launchOptions: LaunchOptionsDict = {
       "--enable-unsafe-webgpu",
       "--no-sandbox",
     ],
-    headless: true,
+    headless: headless,
   },
   screenshot: {
     args: [
@@ -79,22 +70,31 @@ export const launchOptions: LaunchOptionsDict = {
       "--enable-unsafe-webgpu",
       "--no-sandbox",
     ],
-    headless: true,
+    headless: headless,
   },
   spector: {
-    headless: false,
+    headless: headless,
     args: [
       `--enable-unsafe-webgpu`,
       `--no-sandbox`,
     ],
-    proxy: {
-      server: 'socks5://ss.maghsk.site:3535',
-      bypass: 'localhost, 127.0.0.1'
-    },
   }
 };
 
-export const proxyPool = [
+export function getLaunchOptions(name: string): LaunchOptions {
+  let launchOption = launchOptions[name];
+  if (useProxy) {
+    launchOption.proxy = {
+      server: proxyPool[Math.floor(Math.random() * proxyPool.length)],
+      bypass: 'localhost,127.0.0.1'
+    };
+    console.log(name, " - PROXY: ", launchOption.proxy.server);
+  }
+  return launchOption;
+}
+
+
+const proxyPool = [
   'socks5://ss.maghsk.site:3539',
   'socks5://ss.maghsk.site:3536',
   'socks5://ss.maghsk.site:3535',
