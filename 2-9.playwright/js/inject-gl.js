@@ -3,7 +3,7 @@ const INJECT_GL_CALLS = true;
 let HYD_RECORD = true;
 let HYD_RECORD_RAF = false;
 
-window.hydGlContexts = [];
+window.hydGlContexts = new Set();
 window.hydUsedWebgl = null;
 window.hydUsedOffScreenCanvas = false;
 window.hydFrames = 0;
@@ -11,7 +11,7 @@ window.hydFrames = 0;
 function hydGetCounters() {
     return {
         frames: window.hydFrames,
-        contextsNum: window.hydGlContexts.length,
+        contextsNum: window.hydGlContexts.size,
         usedWebGL: window.hydUsedWebgl,
         usedOffScreenCanvas: window.hydUsedOffScreenCanvas,
     }
@@ -28,7 +28,9 @@ const hydOriginOffscreenGetContext = OffscreenCanvas.prototype.getContext;
 
 function HydNewGetContext() {
     let context = hydOriginGetContext.apply(this, arguments);
-    if (arguments[0].indexOf('webgl') !== -1) {
+    if (context && arguments[0].indexOf('webgl') !== -1 && window.hydGlContexts.has(context) === false) {
+        window.hydGlContexts.add(context);
+        
         const when = performance.now();
         context.maghsk = {
             createTime: when,
@@ -185,7 +187,6 @@ function HydNewGetContext() {
         }
         }
 
-        window.hydGlContexts.push(context);
     }
     return context;
 }

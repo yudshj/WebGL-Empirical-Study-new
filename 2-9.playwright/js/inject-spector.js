@@ -1,4 +1,4 @@
-// window._hydGLContexts = [];
+window._hydGLContexts = new Set();
 window._hydSpectorContexts = [];
 window._hydCaptured = [];
 
@@ -19,7 +19,8 @@ function hydTmp(context) {
 const hydOriginGetContext = HTMLCanvasElement.prototype.getContext;
 HTMLCanvasElement.prototype.getContext = function () {
     const context = hydOriginGetContext.apply(this, arguments);
-    if (arguments[0].indexOf('webgl') >= 0) {
+    if (context && arguments[0].indexOf('webgl') >= 0 && window._hydGLContexts.has(context) === false) {
+        window._hydGLContexts.add(context);
         hydTmp(context);
     }
     return context;
