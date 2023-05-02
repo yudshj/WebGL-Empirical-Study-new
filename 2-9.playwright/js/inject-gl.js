@@ -152,7 +152,7 @@ function HydNewGetContext() {
                                 || name.toLowerCase().indexOf('texsub') !== -1
                                 || name.toLowerCase().indexOf('texstorage') !== -1) {
                             for (const arg of arguments) {
-                                if (typeof arg === 'object') {
+                                if (arg !== null && arg.constructor !== null && name in arg.constructor && typeof arg === 'object') {
                                     context.maghsk.counter.textureTypes[arg.constructor.name] = (context.maghsk.counter.textureTypes[arg.constructor.name] || 0) + 1;
                                     if (   arg instanceof ImageData
                                         || arg instanceof HTMLImageElement
