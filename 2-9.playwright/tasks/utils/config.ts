@@ -70,15 +70,15 @@ const launchOptions: LaunchOptionsDict = {
   "spector-full": {
     headless: headless,
     args: [
-      `--enable-unsafe-webgpu`,
-      `--no-sandbox`,
+      "--enable-gpu",
+      "--no-sandbox",
     ],
   },
   "spector-one": {
     headless: headless,
     args: [
-      `--enable-unsafe-webgpu`,
-      `--no-sandbox`,
+      "--enable-gpu",
+      "--no-sandbox",
     ],
   },
 };
