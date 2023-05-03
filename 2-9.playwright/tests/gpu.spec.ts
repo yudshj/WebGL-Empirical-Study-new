@@ -18,7 +18,7 @@ test.describe('Testing 123', () => {
         let featureStatusList = page.locator(".feature-status-list")
         await waitFor(2000);
         await page.screenshot({ path: 'screens/screenshot' + currentTime + '_1.png', fullPage: true });
-        // await expect(featureStatusList).toContainText("Hardware accelerated")
+        await expect(featureStatusList).toContainText("Hardware accelerated")
     })
     test("2. webgl report", async ({ page }) => {
         await page.goto(url2)
