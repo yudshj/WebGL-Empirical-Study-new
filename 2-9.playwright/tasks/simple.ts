@@ -36,7 +36,11 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 const date = Date.now();
                 const start_time_hp = performance.now();
 
-                await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 }).catch(() => { });
+                let netIdleTimeout = -1;
+                await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 })
+                    .then(() => {netIdleTimeout = 0;})
+                    .catch(() => {netIdleTimeout = 1;})
+                    .catch(() => null);
 
                 const net_idle_time_hp = performance.now();
                 const net_idle_counters: any[] = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
@@ -51,6 +55,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 const data = {
                     url,
                     date,
+                    netIdleTimeout,
                     events_time_hp: {
                         start_time_hp,
                         net_idle_time_hp,

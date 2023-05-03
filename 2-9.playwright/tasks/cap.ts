@@ -40,9 +40,10 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 const start_time_hp = performance.now();
 
                 console.info('  goto');
+                let netIdleTimeout = -1;
                 await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 })
-                    .then(() => evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - OK');", 10_000))
-                    .catch(() => evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - ERROR (TIMEOUT?)');", 10_000))
+                    .then(() => {netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - OK');", 10_000);})
+                    .catch(() => {netIdleTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - ERROR (TIMEOUT?)');", 10_000);})
                     .catch(() => null);
 
                 console.info('  net idle');
@@ -62,6 +63,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 const data = {
                     url,
                     date,
+                    netIdleTimeout,
                     events_time_hp: {
                         start_time_hp,
                         net_idle_time_hp,

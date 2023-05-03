@@ -40,7 +40,13 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
             const page = await browserContext.newPage();
             const date = Date.now();
-            await page.goto(url, { timeout: 30_000, waitUntil: 'networkidle' }).catch(() => {});
+            
+            let netIdleTimeout = -1;
+            await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 })
+                .then(() => {netIdleTimeout = 0;})
+                .catch(() => {netIdleTimeout = 1;})
+                .catch(() => null);
+            
             await page.waitForTimeout(10_000);
             await evaluate_script_in_all_frames(page, 'hydSpectorNextFrame()', 10_000);
             // await page.waitForTimeout(15_000);
@@ -50,6 +56,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 url,
                 idx,
                 date,
+                netIdleTimeout,
                 spector,
             };
             fs.writeFileSync(json_out_path, JSON.stringify(data));
