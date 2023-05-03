@@ -7,6 +7,7 @@ window.hydGlContexts = new Set();
 window.hydUsedWebgl = null;
 window.hydUsedOffScreenCanvas = false;
 window.hydFrames = 0;
+window.hydNetIdleTimeout = -1;
 
 function hydGetCounters() {
     return {
@@ -287,6 +288,7 @@ function HydGetGLInfo() {
         when: when,
         counter: hydGetCounters(),
         contextInfo: contextInfos,
+        netIdleTimeout: window.hydNetIdleTimeout,
     };
     HYD_RECORD = true;
     return ret;
