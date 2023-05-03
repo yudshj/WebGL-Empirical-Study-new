@@ -211,7 +211,7 @@ function HydGetGLInfo() {
 
         let capturedPrograms = new Map();
         let tmpShader = new Map();
-        let extensions = [];
+        let extensions = new Set();
 
         capturedPrograms.set(
             null,
@@ -226,7 +226,7 @@ function HydGetGLInfo() {
 
         context.capturedFunctions.forEach(capturedFunction => {
             if (capturedFunction.name === 'getExtension') {
-                extensions.push(capturedFunction.args[0]);
+                extensions.add(capturedFunction.args[0]);
             } else if (capturedFunction.name === 'createProgram') {
                 capturedPrograms.set(
                     capturedFunction.ret,
@@ -269,7 +269,7 @@ function HydGetGLInfo() {
         });
         
         contextInfos.push({
-            "extensions": extensions,
+            "extensions": Array.from(extensions),
             "programInfo": Array.from(capturedPrograms.values()),
             "capturedFunctionsLength": context.capturedFunctions.length,
             "maghsk": context.maghsk,
