@@ -35,7 +35,6 @@ const launchOptions: LaunchOptionsDict = {
   cap: {
     args: [
       "--enable-gpu",
-      "--enable-unsafe-webgpu",
       "--no-sandbox",
     ],
     headless: headless,
@@ -43,7 +42,6 @@ const launchOptions: LaunchOptionsDict = {
   raf: {
     args: [
       "--enable-gpu",
-      "--enable-unsafe-webgpu",
       "--no-sandbox",
     ],
     headless: headless,
@@ -51,7 +49,6 @@ const launchOptions: LaunchOptionsDict = {
   simple: {
     args: [
       "--enable-gpu",
-      "--enable-unsafe-webgpu",
       "--no-sandbox",
     ],
     headless: headless,
@@ -59,7 +56,6 @@ const launchOptions: LaunchOptionsDict = {
   har: {
     args: [
       "--enable-gpu",
-      "--enable-unsafe-webgpu",
       "--no-sandbox",
     ],
     headless: headless,
@@ -67,7 +63,6 @@ const launchOptions: LaunchOptionsDict = {
   screenshot: {
     args: [
       "--enable-gpu",
-      "--enable-unsafe-webgpu",
       "--no-sandbox",
     ],
     headless: headless,
