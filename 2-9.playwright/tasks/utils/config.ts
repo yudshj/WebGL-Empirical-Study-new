@@ -19,6 +19,7 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json
 //   ["TEST-6", "https://vrseat.vercel.app/"],
 //   ["TEST-7", "http://campoallecomete.it/"],
 //   ["TEST-8", "http://donbeto.com/menu-restaurante/"],
+//   ["TEST-9", "https://gameofphones.rfl.dev"]
 // ];
 // export const indexUrls = [
 //   ["BUG-0", "https://pt.gamcore.com/jogos/brothel_empire_unity_version"],
