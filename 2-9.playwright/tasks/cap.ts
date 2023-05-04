@@ -53,9 +53,9 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 const net_idle_counters = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
 
                 if (HUNDRED_FRAMES) {
-                    evaluate_script_in_all_frames(page, "hydRemainFrames = 100;", 10_000);
+                    evaluate_script_in_all_frames(page, "hydRemainFrames = 300;", 10_000);
                 } else {
-                    await page.waitForTimeout(15_000);
+                    await page.waitForTimeout(5_000);
                     await evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('gl_cap'); HydWebGLCapture.stopAll();", 10_000);
                 }
 
