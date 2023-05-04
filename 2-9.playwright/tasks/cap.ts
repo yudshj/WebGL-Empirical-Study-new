@@ -14,6 +14,8 @@ const PART_SIZE = Math.ceil(total / TOTAL_PART);
 const START = PART * PART_SIZE;
 const END = Math.min((PART + 1) * PART_SIZE, total);
 
+const HUNDRED_FRAMES = false;
+
 console.info(START, "to", END);
 
 fs.mkdirSync(`output/${NAME}/`, { recursive: true });
@@ -50,15 +52,17 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 const net_idle_time_hp = performance.now();
                 const net_idle_counters = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
 
-                evaluate_script_in_all_frames(page, "hydRemainFrames = 100;", 10_000);
-
-                // await page.waitForTimeout(1_000);
+                if (HUNDRED_FRAMES) {
+                    evaluate_script_in_all_frames(page, "hydRemainFrames = 100;", 10_000);
+                } else {
+                    await page.waitForTimeout(15_000);
+                    await evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('gl_cap'); HydWebGLCapture.stopAll();", 10_000);
+                }
 
                 console.info('  capture');
                 const gl_cap_time_hp = performance.now();
-                // await wait_for_function_in_all_frames(page, "() => { HydWebGLCapture.debugInfoAll('gl_cap'); HydWebGLCapture.stopAll(); return HydWebGLCapture.allStopped(); }", 10_000);
-                await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", 10_000);
                 const gl_cap_counters = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
+                await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", 10_000);
 
                 // const gl_captures = await get_data_in_all_frames(page, "HydWebGLCapture.generateAll();", 30_000, (data: string[]) => data.map((d: string) => zlib.inflateSync(Buffer.from(d, 'base64')).toString()));
                 const gl_captures = await get_data_in_all_frames(page, "HydWebGLCapture.generateAll();", 30_000);
