@@ -1,6 +1,17 @@
 /* global WebGLObject */
 const HydWebGLCapture = (function(){
+  
+function hydArrayToBinaryString(compressed, chunkSize = 1024) {
+  let binaryStrings = [];
 
+  for (let i = 0; i < compressed.length; i += chunkSize) {
+    const chunk = compressed.subarray(i, i + chunkSize);
+    // binaryString += String.fromCharCode.apply(null, chunk);
+    binaryStrings.push(String.fromCharCode.apply(null, chunk));
+  }
+
+  return binaryStrings.join('');
+}
 
 const getResourceName = function(resource) {
   if (resource) {
@@ -723,22 +734,28 @@ class WebGLWrapper {
   }
 
   generate() {
-    const out = [];
+    // const out = [];
+    const out = new hydpako.Deflate( { to: 'string'} );
 
-    out.push(`<canvas id="__main-canvas__" width="${this.ctx.canvas.width}" height="${this.ctx.canvas.height}"></canvas>`);
-    for (const [b64_id, base64] of Object.entries(this.imagesBase64)) {
-      out.push(`<img id="__hyd_img_b64_${b64_id}__" src="${base64}" hidden>`);
+    out.pushLine = function(s, flush_mode=false) {
+      this.push(s, false);
+      this.push("\n", flush_mode);
     }
-    out.push("<script>");
 
-    out.push('const shaderSources = [');
-    out.push(this.shaderSources.map(s => `\`${s}\``).join(',\n'));
-    // out.push(this.shaderSources.map(s => `\`${s.replace(/`/g, '\\`')}\``).join(',\n'));
+    out.pushLine(`<canvas id="__main-canvas__" width="${this.ctx.canvas.width}" height="${this.ctx.canvas.height}"></canvas>`);
+    for (const [b64_id, base64] of Object.entries(this.imagesBase64)) {
+      out.pushLine(`<img id="__hyd_img_b64_${b64_id}__" src="${base64}" hidden>`);
+    }
+    out.pushLine("<script>");
 
-    out.push(`];`);
+    out.pushLine('const shaderSources = [');
+    out.pushLine(this.shaderSources.map(s => `\`${s}\``).join(',\n'));
+    // out.pushLine(this.shaderSources.map(s => `\`${s.replace(/`/g, '\\`')}\``).join(',\n'));
+
+    out.pushLine(`];`);
 
     if (this.helper) {
-      out.push(`
+      out.pushLine(`
       function setUniform(gl, type, program, name, ...args) {
         const loc = gl.getUniformLocation(program, name);  
         const newArgs = [loc, ...args];
@@ -748,44 +765,44 @@ class WebGLWrapper {
     }
 
     if (this.numImages > 0) {
-      out.push(`
+      out.pushLine(`
       const imagesUrl = { };
       const imagesBase64 = { };
       function loadImages() {
 `);
       for (const b64_id of Object.keys(this.imagesBase64)) {
-        out.push(`imagesBase64["${b64_id}"] = document.getElementById("__hyd_img_b64_${b64_id}__");`);
+        out.pushLine(`imagesBase64["${b64_id}"] = document.getElementById("__hyd_img_b64_${b64_id}__");`);
       }
-      out.push(
+      out.pushLine(
         `
       }
       `);
     }
 
-    out.push('const canvas = document.getElementById("__main-canvas__");');
-    // out.push(`const gl = canvas.getContext("${this.ctx.texImage3D ? 'webgl2' : 'webgl'}", ${glValueToString(this.ctx, "getContextAttributes", 0, -1, this.ctx.getContextAttributes())});`);
-    out.push(`const gl = canvas.getContext("${this.ctx.hydCanvasType}", ${glValueToString(this.ctx, "getContextAttributes", 0, -1, this.ctx.getContextAttributes(), this)});`);
+    out.pushLine('const canvas = document.getElementById("__main-canvas__");');
+    // out.pushLine(`const gl = canvas.getContext("${this.ctx.texImage3D ? 'webgl2' : 'webgl'}", ${glValueToString(this.ctx, "getContextAttributes", 0, -1, this.ctx.getContextAttributes())});`);
+    out.pushLine(`const gl = canvas.getContext("${this.ctx.hydCanvasType}", ${glValueToString(this.ctx, "getContextAttributes", 0, -1, this.ctx.getContextAttributes(), this)});`);
 
     // Add extension objects.
     for (const key of Object.keys(this.extensions)) {
-      out.push(`const ${key} = gl.getExtension("${key}");`);
+      out.pushLine(`const ${key} = gl.getExtension("${key}");`);
     }
 
     // Add resource arrays.
     for (const key of Object.keys(this.ids)) {
-      out.push(`const ${key} = [];`);
+      out.pushLine(`const ${key} = [];`);
     }
-    // out.push("function render() {");
-    out.push(`
+    // out.pushLine("function render() {");
+    out.pushLine(`
 function* renderGenerator() {
 `);
 
     // FIX:
     this.capturer.data.forEach(function(func) {
-      out.push(func());
+      out.pushLine(func());
     });
-    // out.push("}");
-    out.push(`
+    // out.pushLine("}");
+    out.pushLine(`
 }
 const renderIterator = renderGenerator();
 
@@ -798,14 +815,14 @@ function render() {
 `);
 
     if (this.numImages > 0) {
-      out.push("loadImages();");
+      out.pushLine("loadImages();");
     }
-    out.push("requestAnimationFrame(render);");
-    out.push("</script>");
-    const compressed = hydpako.gzip(out.join('\n'), { to: 'string' });
-    return "data:json/gzip;base64," + window.btoa(compressed.reduce((str, charCode) => str + String.fromCharCode(charCode), ''));
-    // return "data:json/gzip;base64," + window.btoa(hydpako.gzip(out.join('\n'), { to: 'string' }));
-    // return out.join('\n');
+    out.pushLine("requestAnimationFrame(render);");
+    out.pushLine("</script>", true);
+    // const compressed = hydpako.gzip(out.join('\n'), { to: 'string' });
+    // return "data:json/gzip;base64," + window.btoa(compressed.reduce((str, charCode) => str + String.fromCharCode(charCode), ''));
+    // return "data:json/gzip;base64," + window.btoa(compressed.map((charCode) => String.fromCharCode(charCode)).join(''));
+    return "data:json/gzip;base64," + window.btoa(hydArrayToBinaryString(out.result));
   }
 
   // TODO: handle extensions
@@ -1215,9 +1232,16 @@ return {
 
 }());
 
+let hydRemainFrames = -1;
+
 function hydRaf() {
-  // HydWebGLCapture.debugInfoAll("raf");
   HydWebGLCapture.addYieldAll();
+
+  hydRemainFrames -= 1;
+  if (hydRemainFrames === 0) {
+    HydWebGLCapture.stopAll();
+  }
+
   requestAnimationFrame(hydRaf);
 }
 requestAnimationFrame(hydRaf);

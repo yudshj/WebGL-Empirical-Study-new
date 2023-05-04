@@ -21,6 +21,11 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json
 //   ["TEST-8", "http://donbeto.com/menu-restaurante/"],
 //   ["TEST-9", "https://gameofphones.rfl.dev"]
 // ];
+export const indexUrls = [
+  ["HYD-0", "http://127.0.0.1:8000/test1/webgl/easy"],
+  ["HYD-1", "http://127.0.0.1:8000/test2/webgl"],
+  ["HYD-2", "http://127.0.0.1:8000/test3/webgl/easy"],
+];
 // export const indexUrls = [
 //   ["BUG-0", "https://pt.gamcore.com/jogos/brothel_empire_unity_version"],
 //   ["BUG-1", "https://www.bingoaloha.com/"],
