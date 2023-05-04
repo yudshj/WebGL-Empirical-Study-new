@@ -14,7 +14,10 @@ const PART_SIZE = Math.ceil(total / TOTAL_PART);
 const START = PART * PART_SIZE;
 const END = Math.min((PART + 1) * PART_SIZE, total);
 
-const HUNDRED_FRAMES = false;
+const SIXTY_FRAMES = false;
+const CAP_SEC = 1;
+const SLEEP_SEC = 2;
+const CAP_ROUND = 5;
 
 console.info(START, "to", END);
 
@@ -52,17 +55,29 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 const net_idle_time_hp = performance.now();
                 const net_idle_counters = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
 
-                if (HUNDRED_FRAMES) {
-                    evaluate_script_in_all_frames(page, "hydRemainFrames = 300;", 10_000);
+                if (SLEEP_SEC <= 0) {
+                    if (SIXTY_FRAMES) {
+                        await evaluate_script_in_all_frames(page, `hydRemainFrames = ${CAP_SEC*CAP_ROUND*60};`, 10_000);
+                    } else {
+                        await evaluate_script_in_all_frames(page, `HydWebGLCapture.periodAll(${CAP_SEC*CAP_ROUND*1000});`, 10_000);
+                    }
+                    await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", CAP_SEC*CAP_ROUND*1000 + 10_000);
                 } else {
-                    await page.waitForTimeout(5_000);
-                    await evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('gl_cap'); HydWebGLCapture.stopAll();", 10_000);
+                    for (let i = 0; i < CAP_ROUND; i++) {
+                        if (SIXTY_FRAMES) {
+                            await evaluate_script_in_all_frames(page, `hydRemainFrames = ${CAP_SEC*60};`, 10_000);
+                        } else {
+                            await evaluate_script_in_all_frames(page, `HydWebGLCapture.periodAll(${CAP_SEC*1000});`, 10_000);
+                        }
+                        await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", CAP_SEC*1000 + 10_000);
+                        await page.waitForTimeout(SLEEP_SEC * 1000);
+                    }
                 }
 
                 console.info('  capture');
                 const gl_cap_time_hp = performance.now();
                 const gl_cap_counters = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
-                await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", 10_000);
+                // await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", 10_000);
 
                 // const gl_captures = await get_data_in_all_frames(page, "HydWebGLCapture.generateAll();", 30_000, (data: string[]) => data.map((d: string) => zlib.inflateSync(Buffer.from(d, 'base64')).toString()));
                 const gl_captures = await get_data_in_all_frames(page, "HydWebGLCapture.generateAll();", 30_000);
