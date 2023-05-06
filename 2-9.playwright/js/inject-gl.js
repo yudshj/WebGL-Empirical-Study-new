@@ -32,6 +32,7 @@ function HydNewGetContext() {
         window.hydGlContexts.add(context);
         
         const when = performance.now();
+        context.ext_WEBGL_debug_shaders = context.getExtension("WEBGL_debug_shaders");
         context.maghsk = {
             createTime: when,
             createArguments: arguments,
@@ -98,13 +99,17 @@ function HydNewGetContext() {
                                     id: ret.__hyd_shader_id__,
                                     compiled: false,
                                     source: null,
+                                    translatedSource: null,
                                     type: args[0],
                                 });
                             }
                         } else if (name.startsWith('shaderSource')) {
                             if (args[0]) context.maghsk.shaders[args[0].__hyd_shader_id__].source = args[1];
                         } else if (name.startsWith('compileShader')) {
-                            if (args[0]) context.maghsk.shaders[args[0].__hyd_shader_id__].compiled = true;
+                            if (args[0]) {
+                                context.maghsk.shaders[args[0].__hyd_shader_id__].compiled = true;
+                                context.maghsk.shaders[args[0].__hyd_shader_id__].translatedSource = context.ext_WEBGL_debug_shaders.getTranslatedShaderSource(args[0]);
+                            }
                         } else if (name.startsWith('createProgram')) {
                             if (!("__hyd_program_id__" in ret)) {
                                 ret.__hyd_program_id__ = context.maghsk.programs.length;
