@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import { randomInt } from 'crypto';
+import shuffle from '@stdlib/random-shuffle';
 
 const proxyPool = [
     'socks5://ss.maghsk.site:3539',
@@ -18,7 +19,7 @@ const proxyPool = [
 
 (async () => {
     let json_string = fs.readFileSync('0512-df_label-raf-need_interactions.json', 'utf8');
-    let json = JSON.parse(json_string);
+    let json = Array.from(shuffle(JSON.parse(json_string)));
 
     for (const [idx, url] of json) {
         const proxy = proxyPool[randomInt(0, proxyPool.length)];
@@ -31,6 +32,11 @@ const proxyPool = [
         const cmd = `npx playwright codegen --ignore-https-errors ${url} --output ${ts_path} --proxy-server=${proxy}`;
         // const cmd = `npx playwright codegen ${url} --output ${ts_path} --proxy-server=${proxy} --save-har=${har_path}`;
         console.log(cmd);
-        execSync(cmd);
+        try {
+            execSync(cmd);
+        } catch (e) {
+            // touch file
+            fs.writeFileSync(ts_path, '');
+        }
     }
 })()
