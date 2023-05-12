@@ -3,7 +3,7 @@ node_modules/
 /playwright-report/
 /playwright/.cache/
 har
-records
+# records
 /test-results/
 /playwright-report/
 /playwright/.cache/
