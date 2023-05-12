@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
+import { randomInt } from 'crypto';
 
 const proxyPool = [
     'socks5://ss.maghsk.site:3539',
@@ -20,15 +21,16 @@ const proxyPool = [
     let json = JSON.parse(json_string);
 
     for (const [idx, url] of json) {
-        const proxy = proxyPool[idx % proxyPool.length];
+        const proxy = proxyPool[randomInt(0, proxyPool.length)];
         const ts_path = `./records/${idx}.ts`;
-        const har_path = `./har/${idx}.zip`;
-        const cmd = `npx playwright codegen ${url} --output ${ts_path} --proxy-server=${proxy} --save-har=${har_path}`;
+        if (fs.existsSync(ts_path)) {
+            console.log(`skip ${idx}`);
+            continue;
+        }
+        // const har_path = `./har/${idx}.zip`;
+        const cmd = `npx playwright codegen --ignore-https-errors ${url} --output ${ts_path} --proxy-server=${proxy}`;
+        // const cmd = `npx playwright codegen ${url} --output ${ts_path} --proxy-server=${proxy} --save-har=${har_path}`;
         console.log(cmd);
-        let childProcess = exec(cmd);
-        childProcess.on('exit', (code) => {
-            console.log(`child process exited with code ${code}`);
-        });
-        break;
+        execSync(cmd);
     }
 })()
