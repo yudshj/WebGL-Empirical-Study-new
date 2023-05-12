@@ -5,5 +5,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://www.blockscad3d.com/editor/');
+  await page.goto('https://awards.inggoodfinds.market/');
+  await page.getByRole('button', { name: 'Start exploring' }).click();
 });

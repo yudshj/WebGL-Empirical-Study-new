@@ -5,5 +5,5 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://www.blockscad3d.com/editor/');
+  await page.goto('https://photo-sphere-viewer.js.org/guide/#install-photo-sphere-viewer');
 });

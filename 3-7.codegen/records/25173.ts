@@ -5,5 +5,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://www.blockscad3d.com/editor/');
+  await page.goto('https://www.onemap3d.gov.sg/');
+  await page.goto('https://www.onemap3d.gov.sg/main/');
 });

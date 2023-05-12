@@ -5,5 +5,5 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://www.blockscad3d.com/editor/');
+  await page.goto('https://1v1lol.online/1v1-lol');
 });

@@ -5,5 +5,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://www.blockscad3d.com/editor/');
+  await page.goto('http://thesong.thanhlongbay.vn/');
+  await page.getByRole('button', { name: 'enter site' }).click();
 });
