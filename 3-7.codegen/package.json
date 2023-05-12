@@ -1,0 +1,10 @@
+{
+  "name": "3-7.codegen",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.33.0"
+  },
+  "scripts": {}
+}
