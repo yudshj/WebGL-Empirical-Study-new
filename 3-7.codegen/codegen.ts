@@ -20,6 +20,7 @@ const proxyPool = [
 (async () => {
     let json_string = fs.readFileSync('0512-df_label-raf-need_interactions.json', 'utf8');
     let json = Array.from(shuffle(JSON.parse(json_string)));
+    // let json = JSON.parse(json_string);
 
     for (const [idx, url] of json) {
         const proxy = proxyPool[randomInt(0, proxyPool.length)];
