@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as zlib from "zlib";
 import { get_data_in_all_frames, get_data_in_all_workers } from './utils/utils';
 import { getLaunchOptions, indexUrls } from './utils/config';
+import { manual } from './utils/manual';
 
 const NAME = 'worker';
 
@@ -25,6 +26,8 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}`);
         const gzip_out_path = `output/${NAME}/${idx}.json.gz`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
+        const manual_interaction = idx in manual;
+
         if (fs.existsSync(gzip_out_path) || fs.existsSync(error_out_path)) {
             console.info(`Skip ${idx} - ${url}`);
         } else {
@@ -47,6 +50,9 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                     .then(() => {netIdleTimeout = 0;})
                     .catch(() => {netIdleTimeout = 1;})
                     .catch(() => null);
+                if (manual_interaction) {
+                    await manual[idx](page);
+                }
 
                 const net_idle_time_hp = performance.now();
                 await page.waitForTimeout(10_000);
@@ -59,6 +65,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                     url,
                     date,
                     netIdleTimeout,
+                    manual_interaction,
                     events_time_hp: {
                         start_time_hp,
                         net_idle_time_hp,
