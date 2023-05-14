@@ -2,6 +2,7 @@ import { chromium } from 'playwright';
 import * as fs from 'fs';
 import { evaluate_script_in_all_frames, wait_for_function_in_all_frames, get_data_in_all_frames } from './utils/utils';
 import { indexUrls, getLaunchOptions } from './utils/config';
+import { manual } from './utils/manual';
 
 const NAME = 'spector-full';
 
@@ -22,6 +23,9 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         // const har_path = `output/har/${idx}.har.zip`;
         const json_out_path = `output/${NAME}/${idx}.json`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
+        const manual_interaction = idx in manual;
+        // if (!manual_interaction) { continue; }
+
         if (fs.existsSync(json_out_path)) {
             console.info(`Skip ${idx}`);
             continue;
@@ -46,22 +50,26 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 .then(() => {netIdleTimeout = 0;})
                 .catch(() => {netIdleTimeout = 1;})
                 .catch(() => null);
+            if (manual_interaction) {
+                await manual[idx](page);
+            }
                 
             await page.waitForTimeout(10_000);
             await evaluate_script_in_all_frames(page, 'hydSpectorStart()', 10_000);
             // await page.waitForTimeout(15_000);
             await wait_for_function_in_all_frames(page, 'window._hydCaptured.length === window._hydSpectors.length', 15_000);
-            const spector = await get_data_in_all_frames(page, 'window._hydCaptured', 30_000);
+            const spector = await get_data_in_all_frames(page, 'hydSpectorStop()', 30_000);
             const data = {
                 url,
                 idx,
                 date,
                 netIdleTimeout,
+                manual_interaction,
                 spector,
             };
-            fs.writeFileSync(json_out_path, JSON.stringify(data));
-
             // await page.waitForTimeout(3600_000);
+
+            fs.writeFileSync(json_out_path, JSON.stringify(data));
 
             browserContext.close();
         }

@@ -2,13 +2,17 @@ window._hydGLContexts = new Set();
 window._hydSpectorContexts = [];
 window._hydCaptured = [];
 
+function hydCompress(payload) {
+    const compressed = hydpako.gzip(JSON.stringify(payload), { to: 'string' });
+    const ret = "data:json/gzip;base64," + window.btoa(compressed.reduce((str, charCode) => str + String.fromCharCode(charCode), ''));
+    return ret;
+}
+
 function hydTmp(context) {
     const spector = new SPECTOR.Spector();
     spector.spyCanvases();
     spector.onCapture.add((payload) => {
-        const compressed = hydpako.gzip(JSON.stringify(payload), { to: 'string' });
-        const ret = "data:json/gzip;base64," + window.btoa(compressed.reduce((str, charCode) => str + String.fromCharCode(charCode), ''));
-        window._hydCaptured.push(ret);
+        window._hydCaptured.push(hydCompress(payload));
     });
     // spector.startCapture(context, 100000000, true);
 
@@ -50,8 +54,7 @@ function hydSpectorNextFrame() {
 function hydSpectorStop() {
     let ret = [];
     for (const [spector, gl] of window._hydSpectorContexts) {
-        // ret.push(JSON.stringify(spector.stopCapture()));
-        ret.push(spector.stopCapture());
+        ret.push(hydCompress(spector.stopCapture()));
     }
     return ret;
 }

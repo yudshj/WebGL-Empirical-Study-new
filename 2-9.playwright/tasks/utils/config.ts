@@ -9,6 +9,7 @@ const useProxy = true;
 const headless = false;
 
 export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
+// export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0512-df_label-raf-need_interactions.json', 'utf8'));
 // export const indexUrls = [
 //   ["TEST-0", "https://www.babylonjs.com/demos/sponza/"],
 //   ["TEST-1", "https://www.pola.co.jp/special/o/wecaremore/mothersday/"],
@@ -44,6 +45,8 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json
 //   ["BUG-5", "http://gym-drimou.thess.sch.gr/"],
 //   ["BUG-6", "https://www.ggpschas.org/"],
 //   ["BUG-7", "https://www.vocedivulga.com/carrega-troca-links.php?id=782&_xafvr=ZTNkMWE2MjlhMThjNzQ2M2JlYjgyMDk5OTBhMGU3YTE1Y2ZhMDE1ZCw2NDQ4OWE1YjEzODBk"],
+//   ["BUG-8", "https://particle-love.com/experiments/the-spirit/#amount=252k&motionBlurQuality=high"],
+//   ["BUG-9", "https://needle.tools/"],
 // ];
 
 const launchOptions: LaunchOptionsDict = {};

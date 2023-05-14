@@ -24,6 +24,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         const json_out_path = `output/${NAME}/${idx}.json`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
         const manual_interaction = idx in manual;
+        // if (!manual_interaction) { continue; }
 
         if (fs.existsSync(json_out_path)) {
             console.info(`Skip ${idx}`);
@@ -66,9 +67,9 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 manual_interaction,
                 spector,
             };
-            fs.writeFileSync(json_out_path, JSON.stringify(data));
-
             // await page.waitForTimeout(3600_000);
+
+            fs.writeFileSync(json_out_path, JSON.stringify(data));
 
             browserContext.close();
         }

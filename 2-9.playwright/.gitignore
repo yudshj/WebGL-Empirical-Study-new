@@ -13,3 +13,6 @@ output
 /test-results/
 /playwright-report/
 /playwright/.cache/
+/test-results/
+/playwright-report/
+/playwright/.cache/
