@@ -36,7 +36,7 @@ const proxyPool = [
             execSync(cmd);
         } catch (e) {
             // touch file
-            fs.writeFileSync(ts_path, '');
+            // fs.writeFileSync(ts_path, '');
         }
     }
 })()

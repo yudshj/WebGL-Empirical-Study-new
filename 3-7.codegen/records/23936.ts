@@ -5,6 +5,5 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://party.wearezizo.com/');
-  await page.locator('html').click();
+  await page.goto('https://www.liquidswords.com/');
 });
