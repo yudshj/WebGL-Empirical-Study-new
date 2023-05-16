@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://oddbot.oddcommon.com/');
+  await page.getByRole('button', { name: 'Get Started' }).click();
 });

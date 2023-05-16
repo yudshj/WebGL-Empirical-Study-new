@@ -6,5 +6,5 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://geoportal.rhein-sieg-kreis.de/WebOffice_extern_rsk/synserver?project=Geodatenportal_RSK');
 });

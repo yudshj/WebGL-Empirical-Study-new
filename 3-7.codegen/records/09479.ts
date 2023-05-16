@@ -6,5 +6,5 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://github.com/mhmoodlan/arabic-font-classification/releases/tag/v0.1.0');
 });

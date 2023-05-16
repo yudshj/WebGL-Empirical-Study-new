@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://custom.gomezsimindustries.com/');
+  await page.locator('#hyper').getByRole('img').click();
 });

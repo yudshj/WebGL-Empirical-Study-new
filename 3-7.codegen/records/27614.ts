@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://www.bluemarinefoundation.com/the-sea-we-breathe/');
+  await page.getByRole('button', { name: 'Let\'s Begin' }).click();
 });

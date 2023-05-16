@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://luoqi.tiancity.com/homepage/v3/');
+  await page.locator('.slogan > a').click();
 });

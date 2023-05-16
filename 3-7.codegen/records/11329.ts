@@ -6,5 +6,7 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://kopke1638.com/');
+  await page.locator('circle').click();
+  await page.locator('circle').click();
 });

@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://tote.design/cure/');
+  await page.getByRole('link', { name: '100 ENTER' }).click();
 });

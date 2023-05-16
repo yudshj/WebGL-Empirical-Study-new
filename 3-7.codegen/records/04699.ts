@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://albania.al/virtual-tour/');
+  await page.locator('#ss-btn').click();
 });

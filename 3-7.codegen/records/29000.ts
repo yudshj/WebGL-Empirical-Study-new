@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://yugenteabar.com.au/');
+  await page.getByRole('link', { name: 'Enter Site' }).click();
 });

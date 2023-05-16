@@ -6,5 +6,5 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://ts4.x1.international.travian.com/');
 });

@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://www.ubestgames.com/minecraft-online-game');
+  await page.getByRole('button', { name: 'Click To Play Now' }).click();
 });

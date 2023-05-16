@@ -6,5 +6,5 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://www.cartoonnetwork.es/juegos/ivandoe-a-la-aventura/jugar');
 });

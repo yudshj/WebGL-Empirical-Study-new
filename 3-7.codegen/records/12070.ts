@@ -6,5 +6,11 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://m.mundogaturro.com/');
+  await page.locator('canvas').click({
+    position: {
+      x: 654,
+      y: 607
+    }
+  });
 });

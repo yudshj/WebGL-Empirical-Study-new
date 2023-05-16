@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://y-n10.com/');
+  await page.getByText('Enter', { exact: true }).click();
 });

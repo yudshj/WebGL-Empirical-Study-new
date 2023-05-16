@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://3dtext2gif.com/');
+  await page.getByText('Let\'s make some!').click();
 });

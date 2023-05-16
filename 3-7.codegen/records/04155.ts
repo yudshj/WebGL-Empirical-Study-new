@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://2016.kikk.be/');
+  await page.getByRole('spinbutton').fill('111.0');
 });

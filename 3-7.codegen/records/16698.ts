@@ -6,5 +6,7 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://talmat.dk/');
+  await page.locator('.fa').first().click();
+  await page.getByRole('button', { name: 'Start' }).click();
 });

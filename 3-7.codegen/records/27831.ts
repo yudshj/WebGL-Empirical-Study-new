@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://www.trinity-trigger.com/');
+  await page.getByRole('button', { name: 'SOUND ON' }).click();
 });

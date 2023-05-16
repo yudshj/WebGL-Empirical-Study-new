@@ -6,5 +6,5 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('http://test.nie.163.com/test_html/dhxy/2022/pinpai/ftj/dev/');
 });

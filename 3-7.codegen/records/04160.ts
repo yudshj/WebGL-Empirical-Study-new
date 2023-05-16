@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://2018.14islands.com/');
+  await page.locator('div').filter({ hasText: 'Start' }).nth(2).click();
 });

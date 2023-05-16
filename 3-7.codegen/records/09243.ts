@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.use({
-  ignoreHTTPSErrors: true,
-  locale: 'en-US'
+  ignoreHTTPSErrors: true
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://gdbrowser.com/');
 });

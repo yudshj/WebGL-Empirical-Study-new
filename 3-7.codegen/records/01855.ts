@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('http://sharethehappiness.tv/');
+  await page.getByRole('link', { name: 'HD (best for fast connections)' }).click();
 });

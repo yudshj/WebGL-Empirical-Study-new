@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://customizer.hockeymonkey.com/index.php?page=home');
+  await page.getByRole('link', { name: 'START DESIGNING' }).click();
 });

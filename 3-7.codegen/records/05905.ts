@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://blue.rossinavi.it/');
+  await page.getByRole('button', { name: 'Start the experience' }).click();
 });

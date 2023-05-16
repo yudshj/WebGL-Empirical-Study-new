@@ -6,5 +6,7 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://fromhome.hellfest.fr/');
+  await page.getByText('I\'m Ready').click();
+  await page.getByText('LET’S GO BABY').click();
 });

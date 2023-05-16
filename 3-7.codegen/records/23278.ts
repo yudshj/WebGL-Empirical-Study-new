@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://www.jimmynelson.com/');
+  await page.getByRole('button', { name: 's t a r t y o u r j o u r n e y' }).click();
 });

@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://www.sbs.com.au/missing/');
+  await page.getByText('Click to continue.').click();
 });

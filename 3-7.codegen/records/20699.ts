@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://www.daijima.jp/');
+  await page.locator('#volume_announce i').nth(1).click();
 });

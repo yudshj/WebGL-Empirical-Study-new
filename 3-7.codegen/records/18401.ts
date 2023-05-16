@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://abramovic-traces-wepresent.wetransfer.com/');
+  await page.getByText('Enter Experience').click();
 });

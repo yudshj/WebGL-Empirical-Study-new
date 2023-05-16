@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://shadowart.withgoogle.com/?lang=en-us#');
+  await page.locator('#btn_play').click();
 });

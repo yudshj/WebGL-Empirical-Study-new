@@ -1,0 +1,11 @@
+import { test, expect } from '@playwright/test';
+
+test.use({
+  ignoreHTTPSErrors: true,
+  locale: 'en-US'
+});
+
+test('test', async ({ page }) => {
+  await page.goto('https://github.com/williamngan/pts/tree/master/demo/more/tfjs_posenet');
+  await page.getByRole('link', { name: 'live version here' }).click();
+});

@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://www.hotelhaffner.pl/');
+  await page.getByRole('button', { name: 'Akceptuję i kontynuuję' }).click();
 });

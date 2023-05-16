@@ -6,5 +6,6 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://discover.martell.com/en-ww');
+  await page.goto('https://placzabaw.teddyeddie.pl/v');
+  await page.goto('https://placzabaw.teddyeddie.pl/v?v=0.72');
 });
