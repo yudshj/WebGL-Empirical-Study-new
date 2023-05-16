@@ -30,7 +30,7 @@ const proxyPool = [
             continue;
         }
         // const har_path = `./har/${idx}.zip`;
-        const cmd = `npx playwright codegen --ignore-https-errors ${url} --output ${ts_path} --proxy-server=${proxy}`;
+        const cmd = `npx playwright codegen --lang en-US --ignore-https-errors ${url} --output ${ts_path} --proxy-server=${proxy}`;
         // const cmd = `npx playwright codegen ${url} --output ${ts_path} --proxy-server=${proxy} --save-har=${har_path}`;
         console.log(cmd);
         try {
