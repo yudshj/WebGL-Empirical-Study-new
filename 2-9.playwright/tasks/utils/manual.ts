@@ -2216,6 +2216,20 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.getByText('MEDIU').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
+'03402': async (page: Page) => {
+  await page.getByRole('button', { name: 'Charge into history' }).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.getByRole('button').first().click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.getByRole('heading', { name: 'Click on hotspots to explore' }).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+},
 '03471': async (page: Page) => {
   await page.locator('div:nth-child(3) > div:nth-child(29) > div').first().click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -2238,6 +2252,10 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.mouse.wheel(0, 100);
   await page.mouse.wheel(0, 100);
   await page.mouse.wheel(0, 100);
+},
+'03619': async (page: Page) => {
+  await page.locator('.landing-4 > img:nth-child(2)').click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '03620': async (page: Page) => {
   await page.locator('#preloader-container div').nth(3).click();
@@ -2291,6 +2309,41 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 },
 '04087': async (page: Page) => {
   await page.getByRole('button', { name: 'START' }).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
+'04125': async (page: Page) => {
+  await page.locator('#unity-canvas').click({
+    position: {
+      x: 659,
+      y: 513
+    }
+  });
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.locator('#unity-canvas').click({
+    position: {
+      x: 665,
+      y: 380
+    }
+  });
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.locator('#unity-canvas').click({
+    position: {
+      x: 447,
+      y: 367
+    }
+  });
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  page.once('dialog', dialog => {
+    console.log(`Dialog message: ${dialog.message()}`);
+    dialog.dismiss().catch(() => {});
+  });
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.locator('#unity-canvas').click({
+    position: {
+      x: 710,
+      y: 619
+    }
+  });
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '04145': async (page: Page) => {
@@ -2439,6 +2492,10 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.mouse.wheel(0, 100);
   await page.mouse.wheel(0, 100);
   await page.mouse.wheel(0, 100);
+},
+'04572': async (page: Page) => {
+  await page.getByRole('img').nth(2).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '04573': async (page: Page) => {
   await page.getByRole('img').nth(2).click();
@@ -2782,6 +2839,15 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.getByText('Создать').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
+'05667': async (page: Page) => {
+  await page.getByRole('link', { name: 'Yes, I am of legal drinking age' }).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.locator('body').press('ArrowDown');
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+},
 '05678': async (page: Page) => {
   await page.locator('#startWebsite').getByRole('link').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -2838,6 +2904,10 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.getByText('Freeplay').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
+'06176': async (page: Page) => {
+  await page.frameLocator('#iframehtml5').frameLocator('#iframehtml5').getByRole('button', { name: 'Play' }).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
 '06249': async (page: Page) => {
   await page.getByText('Start', { exact: true }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -2851,6 +2921,13 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 '06324': async (page: Page) => {
   await page.getByRole('button', { name: 'Accept all' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
+'06486': async (page: Page) => {
+  await page.keyboard.press('ArrowDown');
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
 },
 '06531': async (page: Page) => {
   await page.getByRole('link', { name: 'н а ш е у с л у г е' }).click();
@@ -2896,6 +2973,10 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 },
 '06660': async (page: Page) => {
   await page.locator('div').filter({ hasText: 'Click anywhere to enable the soundto start' }).nth(1).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
+'06747': async (page: Page) => {
+  await page.getByRole('button', { name: 'Kijk hier!' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '06815': async (page: Page) => {
@@ -3045,6 +3126,15 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.getByRole('button', { name: 'Start 3D Experience' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
+'07582': async (page: Page) => {
+  page.once('dialog', dialog => {
+    console.log(`Dialog message: ${dialog.message()}`);
+    dialog.dismiss().catch(() => {});
+  });
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.locator('div').filter({ hasText: /^Play$/ }).nth(2).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
 '07608': async (page: Page) => {
   await page.frameLocator('#viewport').getByText('.cls-1 { fill: none; stroke: #fff; stroke-width: 4.43px; fill-rule: evenodd; } S').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -3101,6 +3191,10 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 },
 '08180': async (page: Page) => {
   await page.locator('div').nth(2).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
+'08191': async (page: Page) => {
+  await page.getByRole('button', { name: 'ENTER EXPERIENCE' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '08245': async (page: Page) => {
@@ -3429,6 +3523,10 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.getByRole('button', { name: 'enter' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
+'09547': async (page: Page) => {
+  await page.getByText('start', { exact: true }).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
 '09750': async (page: Page) => {
   await page.getByRole('button', { name: 'Play' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -3662,6 +3760,14 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 },
 '10797': async (page: Page) => {
   await page.getByRole('button', { name: 'Ative o som' }).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
+'10809': async (page: Page) => {
+  await page.getByRole('img').nth(2).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
+'10846': async (page: Page) => {
+  await page.getByRole('button', { name: 'ENTER SITE' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '10862': async (page: Page) => {
@@ -3925,6 +4031,18 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   });
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
+'12421': async (page: Page) => {
+  await page.getByRole('button', { name: 'Profile' }).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.getByRole('button', { name: 'Profile' }).nth(2).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.getByRole('button', { name: 'Profile' }).first().click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.getByRole('button', { name: 'Profile' }).first().click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.getByRole('button', { name: 'Profile' }).nth(2).click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
 '12466': async (page: Page) => {
   await page.getByRole('link', { name: 'Start the experience' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -4112,6 +4230,10 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 },
 '14274': async (page: Page) => {
   await page.locator('div:nth-child(3) > div:nth-child(29) > div').first().click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
+'14295': async (page: Page) => {
+  await page.getByRole('button', { name: 'play' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '14311': async (page: Page) => {
@@ -4477,6 +4599,10 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.getByText('Начать работу').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
+'16370': async (page: Page) => {
+  await page.getByText('点击进入').click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
 '16376': async (page: Page) => {
   await page.getByRole('link', { name: 'Explore', exact: true }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -4697,6 +4823,16 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.locator('a').filter({ hasText: 'Start in 2DNo Headset Required' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
+'18572': async (page: Page) => {
+  await page.getByText('sound on').click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.keyboard.press('ArrowDown');
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.keyboard.press('ArrowDown');
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+  await page.keyboard.press('ArrowDown');
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
 '18618': async (page: Page) => {
   await page.frameLocator('#ifr').frameLocator('#game').locator('#prerollOverDiv').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -4840,6 +4976,10 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 },
 '21488': async (page: Page) => {
   await page.getByText('Start').click();
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
+'21530': async (page: Page) => {
+  await page.getByRole('button', { name: 'Enter' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '21574': async (page: Page) => {
