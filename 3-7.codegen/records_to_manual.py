@@ -12,7 +12,7 @@ def main():
 
 export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 ''')
-    for p in records_path.glob('*.ts'):
+    for p in sorted(records_path.glob('*.ts')):
         idx = p.stem
         txt = p.read_text(encoding='utf-8').splitlines()
         start_print = False
@@ -26,7 +26,9 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
                 if line.startswith("});"):
                     results.append("},\n")
                 elif 'page.goto' not in line:
-                    if line[-1] == ';' and line[2] != ' ':
+                    if len(line) < 3:
+                        continue
+                    if 'wheel' not in line and line[-1] == ';' and line[2] != ' ':
                         line += "\n  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});"
                     results.append(line)
         if len(results) > 2:

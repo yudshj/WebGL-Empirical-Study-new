@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 import * as fs from 'fs';
 import * as zlib from "zlib";
 import { get_data_in_all_frames, get_data_in_all_workers } from './utils/utils';
-import { getLaunchOptions, indexUrls } from './utils/config';
+import { contextOptions, getLaunchOptions, indexUrls } from './utils/config';
 import { manual } from './utils/manual';
 
 const NAME = 'worker';
@@ -33,7 +33,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         } else {
             const browser = await chromium.launch(getLaunchOptions(NAME));
             try {
-                const context = await browser.newContext({ ignoreHTTPSErrors: true });
+                const context = await browser.newContext(contextOptions);
                 await context.addInitScript({ path: 'js/inject-offscreen.js' });
 
                 const page = await context.newPage();

@@ -2,7 +2,8 @@ import { chromium } from 'playwright';
 import * as fs from 'fs';
 // import * as zlib from "zlib";
 import { get_data_in_all_frames, evaluate_script_in_all_frames, wait_for_function_in_all_frames } from './utils/utils';
-import { indexUrls, getLaunchOptions } from './utils/config';
+import { contextOptions, indexUrls, getLaunchOptions } from './utils/config';
+import { manual } from './utils/manual';
 
 const NAME = 'cap';
 
@@ -29,13 +30,15 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         const json_out_path = `output/${NAME}/${idx}.json`;
         const gzip_out_path = `output/${NAME}/${idx}.json.gz`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
+        const manual_interaction = idx in manual;
+
         if (fs.existsSync(json_out_path) || fs.existsSync(gzip_out_path) || fs.existsSync(error_out_path)) {
             console.info(`Skip ${idx} - ${url}`);
         } else {
             const browser = await chromium.launch(getLaunchOptions(NAME));
             try {
                 console.info('  launch browser')
-                const context = await browser.newContext({ ignoreHTTPSErrors: true });
+                const context = await browser.newContext(contextOptions);
                 await context.addInitScript({ path: 'js/hydpako.min.js' });
                 await context.addInitScript({ path: 'js/inject-tiny.js' });
                 await context.addInitScript({ path: 'js/webgl-capture.js' });
@@ -50,6 +53,9 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                     .then(() => {netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - OK');", 10_000);})
                     .catch(() => {netIdleTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - ERROR (TIMEOUT?)');", 10_000);})
                     .catch(() => null);
+                if (manual_interaction) {
+                    await manual[idx](page);
+                }
 
                 console.info('  net idle');
                 const net_idle_time_hp = performance.now();

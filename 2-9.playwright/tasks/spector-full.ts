@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import * as fs from 'fs';
 import { evaluate_script_in_all_frames, wait_for_function_in_all_frames, get_data_in_all_frames } from './utils/utils';
-import { indexUrls, getLaunchOptions } from './utils/config';
+import { contextOptions, indexUrls, getLaunchOptions } from './utils/config';
 import { manual } from './utils/manual';
 
 const NAME = 'spector-full';
@@ -34,7 +34,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         const browser = await chromium.launch(getLaunchOptions(NAME));
     
         try {
-            const browserContext = await browser.newContext({ ignoreHTTPSErrors: true });
+            const browserContext = await browser.newContext(contextOptions);
             // if (fs.existsSync(har_path)) {
             //     browserContext.routeFromHAR(har_path, { notFound: "fallback" });
             // }

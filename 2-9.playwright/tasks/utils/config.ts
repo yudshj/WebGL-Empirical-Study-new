@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { LaunchOptions } from 'playwright';
+import { LaunchOptions, BrowserContextOptions } from 'playwright';
 
 interface LaunchOptionsDict {
   [key: string]: LaunchOptions;
@@ -82,3 +82,5 @@ const proxyPool = [
   'socks5://162.105.175.55:10705',
   'socks5://162.105.175.55:10706',
 ];
+
+export const contextOptions: BrowserContextOptions = { locale: 'en-US', ignoreHTTPSErrors: true, permissions: ['camera', 'microphone'] };
