@@ -12,7 +12,8 @@ test('test', async ({ page }) => {
   await page.getByRole('button').first().click();
   await page.getByRole('button').first().click();
   await page.locator('section').filter({ hasText: 'SCROLL DOWN' }).getByRole('img').click();
-  await page.locator('body').press('ArrowDown');
-  await page.locator('body').press('ArrowDown');
-  await page.locator('body').press('ArrowDown');
+  await page.keyboard.press('ArrowDown', {delay: 1000});
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
 });

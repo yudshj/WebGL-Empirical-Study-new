@@ -7,5 +7,5 @@ test.use({
 
 test('test', async ({ page }) => {
   await page.goto('https://teraxxa-wins.com/');
-  await page.press('body', 'Space');
+  await page.press('body', ' ');
 });

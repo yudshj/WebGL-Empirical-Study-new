@@ -8,7 +8,8 @@ test.use({
 test('test', async ({ page }) => {
   await page.goto('https://atelier.net/social-mobility/');
   await page.getByRole('img', { name: 'Falling person' }).click();
-  await page.getByText('SOCIAL MOBILITY IN THE DIGITAL AGESOCIAL MOBILITY IN THE DIGITAL AGEThe story of').press('ArrowDown');
-  await page.getByText('SOCIAL MOBILITY IN THE DIGITAL AGESOCIAL MOBILITY IN THE DIGITAL AGEThe story of').press('ArrowDown', {delay: 5_000});
-  await page.getByText('SOCIAL MOBILITY IN THE DIGITAL AGESOCIAL MOBILITY IN THE DIGITAL AGEThe story of').press('ArrowDown');
+  await page.keyboard.press('ArrowDown', {delay: 1000});
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
 });
