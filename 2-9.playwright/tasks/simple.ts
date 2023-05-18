@@ -45,7 +45,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                     .catch(() => {netIdleTimeout = 1;})
                     .catch(() => null);
                 if (manual_interaction) {
-                    await manual[idx](page);
+                    await manual[idx](page).catch(() => null);
                 }
 
                 const net_idle_time_hp = performance.now();

@@ -51,7 +51,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 .catch(() => {netIdleTimeout = 1;})
                 .catch(() => null);
             if (manual_interaction) {
-                await manual[idx](page);
+                await manual[idx](page).catch(() => null);
             }
                 
             await page.waitForTimeout(10_000);
