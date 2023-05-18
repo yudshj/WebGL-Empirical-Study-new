@@ -20,7 +20,9 @@ console.log(START, "to", END)
 fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
 (async () => {
-    for (const [idx, url] of indexUrls.slice(START, END)) {
+    // for (const [idx, url] of indexUrls.slice(START, END)) {
+    for (let i = PART; i < total; i += TOTAL_PART) {
+        const [idx, url] = indexUrls[i];
         console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}`);
         const gzip_out_path = `output/${NAME}/${idx}.json.gz`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
