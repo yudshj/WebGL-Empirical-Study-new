@@ -1,0 +1,40 @@
+import { test, expect } from '@playwright/test';
+
+test.use({
+  ignoreHTTPSErrors: true,
+  locale: 'en-US'
+});
+
+test('test', async ({ page }) => {
+  await page.goto('https://www.cartoonnetwork.co.uk/games/ivandoe-quest-on/play');
+  await page.getByRole('button', { name: 'Accept' }).click();
+  await page.frameLocator('iframe[title="Quest On\\!"]').locator('#pixi-canvas').click({
+    position: {
+      x: 454,
+      y: 437
+    }
+  });
+  await page.frameLocator('iframe[title="Quest On\\!"]').locator('#pixi-canvas').press('ArrowRight');
+  await page.frameLocator('iframe[title="Quest On\\!"]').locator('#pixi-canvas').click({
+    position: {
+      x: 830,
+      y: 493
+    }
+  });
+  await page.frameLocator('iframe[title="Quest On\\!"]').locator('#pixi-canvas').click({
+    position: {
+      x: 830,
+      y: 493
+    }
+  });
+  await page.frameLocator('iframe[title="Quest On\\!"]').locator('#pixi-canvas').press('ArrowDown');
+  await page.frameLocator('iframe[title="Quest On\\!"]').locator('#pixi-canvas').press('ArrowUp');
+  await page.frameLocator('iframe[title="Quest On\\!"]').locator('#pixi-canvas').press('ArrowLeft');
+  await page.frameLocator('iframe[title="Quest On\\!"]').locator('#pixi-canvas').press('ArrowRight');
+  await page.frameLocator('iframe[title="Quest On\\!"]').locator('#pixi-canvas').click({
+    position: {
+      x: 830,
+      y: 493
+    }
+  });
+});
