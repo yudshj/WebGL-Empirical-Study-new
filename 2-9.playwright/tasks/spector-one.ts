@@ -17,7 +17,7 @@ const END = Math.min((PART + 1) * PART_SIZE, total);
 fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
 (async () => {
-    for (let i = START; i < END; i++) {
+    for (let i = PART; i < indexUrls.length; i += TOTAL_PART) {
         const [idx, url] = indexUrls[i];
         console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}  -  ${url}`);
         // const har_path = `output/har/${idx}.har.zip`;
