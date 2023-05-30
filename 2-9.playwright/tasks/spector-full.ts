@@ -17,19 +17,18 @@ const END = Math.min((PART + 1) * PART_SIZE, total);
 fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
 (async () => {
-    for (let i = START; i < END; i++) {
+    for (let i = PART; i < total; i += TOTAL_PART) {
         const [idx, url] = indexUrls[i];
         console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}  -  ${url}`);
-        // const har_path = `output/har/${idx}.har.zip`;
         const json_out_path = `output/${NAME}/${idx}.json`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
         const manual_interaction = idx in manual;
-        // if (!manual_interaction) { continue; }
 
-        if (fs.existsSync(json_out_path)) {
-            console.info(`Skip ${idx}`);
-            continue;
-        }
+        // if (fs.existsSync(json_out_path)) {
+        //     console.info(`Skip ${idx}`);
+        //     continue;
+        // }
+        if (!manual_interaction) { continue; }
         
         const browser = await chromium.launch(getLaunchOptions(NAME));
     

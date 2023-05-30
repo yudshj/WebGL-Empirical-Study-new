@@ -1,0 +1,77 @@
+import { test, expect } from '@playwright/test';
+
+test.use({
+  ignoreHTTPSErrors: true,
+  locale: 'en-US'
+});
+
+test('test', async ({ page }) => {
+  await page.goto('https://ultrasupernew.com/work');
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.goto('https://ultrasupernew.com/work/porsche-taycan');
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.goto('https://ultrasupernew.com/work/skyn');
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.goto('https://ultrasupernew.com/work/tabasco-japan');
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.keyboard.press('ArrowDown');
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(0, 100);
+});

@@ -8,8 +8,8 @@ interface LaunchOptionsDict {
 const useProxy = true;
 const headless = false;
 
-export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
-// export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0512-df_label-raf-need_interactions.json', 'utf8'));
+// export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
+export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0512-df_label-raf-need_interactions.json', 'utf8'));
 // export const indexUrls = [
 //   ["TEST-0", "https://www.babylonjs.com/demos/sponza/"],
 //   ["TEST-1", "https://www.pola.co.jp/special/o/wecaremore/mothersday/"],
@@ -54,10 +54,10 @@ const launchOptions: LaunchOptionsDict = {};
 export function getLaunchOptions(name: string): LaunchOptions {
   let launchOption = launchOptions[name] || {
     headless: headless,
-    args: [
-      "--enable-gpu",
-      "--no-sandbox",
-    ],
+    // args: [
+    //   "--enable-gpu",
+    //   "--no-sandbox",
+    // ],
   };
   if (useProxy) {
     launchOption.proxy = {
