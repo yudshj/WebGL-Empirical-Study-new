@@ -13,6 +13,7 @@ from pathlib import Path
 p = Path('../2-9.playwright/output/')
 oses = ['win', 'mac', 'linux']
 imr = Path('imr')
+DATE='0527'
 
 def process_json(i):
     for os in oses:
@@ -96,7 +97,7 @@ def main():
     pool.close()
     pool.join()
     results = pd.concat(results, ignore_index=True)
-    results.to_pickle(imr / 'translated_shader_preproc.pkl.zst', compression='zstd')
+    results.to_pickle(imr / f'{DATE}-translated_shader_preproc.pkl.zst', compression='zstd')
     # print(results)
     # with open(imr / 'translated_shader_preproc.json', 'wt') as f:
     #     json.dump(results, f)
