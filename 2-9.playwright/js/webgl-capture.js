@@ -749,8 +749,8 @@ class WebGLWrapper {
     out.pushLine("<script>");
 
     out.pushLine('const shaderSources = [');
-    out.pushLine(this.shaderSources.map(s => `\`${s}\``).join(',\n'));
-    // out.pushLine(this.shaderSources.map(s => `\`${s.replace(/`/g, '\\`')}\``).join(',\n'));
+    // out.pushLine(this.shaderSources.map(s => `\`${s}\``).join(',\n'));
+    out.pushLine(this.shaderSources.map(s => `\`${s.replace(/`/g, '\\`')}\``).join(',\n'));
 
     out.pushLine(`];`);
 
