@@ -28,11 +28,11 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
         const manual_interaction = idx in manual;
 
-        // if (fs.existsSync(gzip_out_path) || fs.existsSync(error_out_path)) {
-        //     console.info(`Skip ${idx} - ${url}`);
-        //     continue;
-        // }
-        if (!manual_interaction) { continue; }
+        if (fs.existsSync(gzip_out_path) || fs.existsSync(error_out_path)) {
+            console.info(`Skip ${idx} - ${url}`);
+            continue;
+        }
+        // if (!manual_interaction) { continue; }
 
         const browser = await chromium.launch(getLaunchOptions(NAME));
         try {
