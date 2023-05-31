@@ -15,7 +15,7 @@ const HydUint16Array = Uint16Array;
 const HydUint32Array = Uint32Array;
 const HydUint8Array = Uint8Array;
 const HydUint8ClampedArray = Uint8ClampedArray;
-
+const HydMaxSerializeSize = 256 * 1024 * 1024;
 
 /* global WebGLObject */
 const HydWebGLCapture = (function () {
@@ -25,7 +25,6 @@ const HydWebGLCapture = (function () {
 
     for (let i = 0; i < compressed.length; i += chunkSize) {
       const chunk = compressed.subarray(i, i + chunkSize);
-      // binaryString += String.fromCharCode.apply(null, chunk);
       binaryStrings.push(String.fromCharCode.apply(null, chunk));
     }
 
@@ -577,8 +576,14 @@ const HydWebGLCapture = (function () {
       return JSON.stringify(value);
     } else if (value instanceof HydHTMLCanvasElement) {
       // Extract as ImageData
+      if (helper.capturer.serializeLength > HydMaxSerializeSize) {
+        return `new generateZeroImageData(${value.width}, ${value.height})`;
+      }
       return helper.doTexImage2DForBase64(value.toDataURL());
     } else if (value instanceof HydImageData) {
+      if (helper.capturer.serializeLength > HydMaxSerializeSize) {
+        return `new generateZeroImageData(${value.width}, ${value.height})`;
+      } 
       const canvas = document.createElement('canvas');
       canvas.height = value.height;
       canvas.width = value.width;
@@ -594,17 +599,10 @@ const HydWebGLCapture = (function () {
     ) {
       // Extract data.
       return helper.doTexImage2DForImage(value);
-    } else if (value instanceof HydImageBitmap) {
-      const canvas = document.createElement('canvas');
-      canvas.height = value.height;
-      canvas.width = value.width;
-      const temp_context = canvas.getContext('2d');
-      temp_context.drawImage(value, 0, 0);
-      const base64 = canvas.toDataURL();
-      canvas.remove();
-      return helper.doTexImage2DForBase64(base64);
-    } else if (value instanceof HydOffscreenCanvas) {
-      const imageBitmap = value.transferToImageBitmap();
+    } else if (value instanceof HydImageBitmap || value instanceof HydOffscreenCanvas) {
+      if (helper.capturer.serializeLength > HydMaxSerializeSize) {
+        return `generateZeroImageData(${value.width}, ${value.height})`;
+      }
       const canvas = document.createElement('canvas');
       canvas.height = value.height;
       canvas.width = value.width;
@@ -622,14 +620,24 @@ const HydWebGLCapture = (function () {
           }
         }
       }
-      for (let ii = 0; ii < typedArrays.length; ++ii) {
-        const type = typedArrays[ii];
+      for (const type of typedArrays) {
         if (value instanceof type.ctor) {
-          const binaryData = new Uint8Array(value.buffer);
-          const base64String = window.btoa(hydArrayToBinaryString(binaryData));
-          const pos = helper.typedArrays.length;
-          helper.typedArrays.push([base64String, type.name]);
-          return `typedArrays[${pos}]`;
+          if (helper.capturer.serializeLength > HydMaxSerializeSize) {
+            return `new ${type.name}(${value.length})`;
+          } else {
+            const binaryData = new Uint8Array(value.buffer);
+            const base64String = window.btoa(hydArrayToBinaryString(binaryData));
+            const luv = `base64ToTypedArray("${base64String}", ${type.name})`;
+            let pos = helper.typedArraysMap.get(luv);
+          
+            if (pos === undefined) {
+              pos = helper.typedArraysMap.size;
+              helper.capturer.serializeLength += base64String.length;
+              helper.typedArraysMap.set(luv, pos);
+            }
+          
+            return `typedArrays[${pos}]`;
+          }
         }
       }
       const values = [];
@@ -644,11 +652,22 @@ const HydWebGLCapture = (function () {
       }
       return `\n[\n${values.join(",\n")}\n]`;
     } else if (value instanceof HydArrayBuffer) {
-      const binaryData = new Uint8Array(value);
-      const base64String = window.btoa(hydArrayToBinaryString(binaryData));
-      const pos = helper.typedArrays.length;
-      helper.typedArrays.push([base64String, type.name]);
-      return `typedArrays[${pos}]`;
+      if (helper.capturer.serializeLength > HydMaxSerializeSize) {
+        return `new ArrayBuffer(${value.byteLength})`;
+      } else {
+        const binaryData = new Uint8Array(value);
+        const base64String = window.btoa(hydArrayToBinaryString(binaryData));
+        const luv = `base64ToTypedArray("${base64String}", ${type.name})`;
+        let pos = helper.typedArraysMap.get(luv);
+
+        if (pos === undefined) {
+          pos = helper.typedArraysMap.size;
+          helper.capturer.serializeLength += base64String.length;
+          helper.typedArraysMap.set(luv, pos);
+        }
+
+        return `typedArrays[${pos}].buffer`;
+      }
     } else if (typeof (value) === 'object') {
       if (value.__capture_info__ !== undefined) {
         return getResourceName(value);
@@ -746,10 +765,10 @@ const HydWebGLCapture = (function () {
       this.currentProgram = null;
       this.programs = [];
       this.numImages = 0;
-      this.imageUrl2Id = {};
+      this.imageUrl2Id = new Map();
       this.imagesBase64 = {};
       this.extensions = {};
-      this.typedArrays = [];
+      this.typedArraysMap = new Map();
       this.shaderSources = [];
       const gl = this.ctx;
       this.fb = gl.createFramebuffer();
@@ -769,6 +788,9 @@ const HydWebGLCapture = (function () {
         this.push("\n", flush_mode);
       }
 
+      out.pushLine(`<!-- length of the captured commands: ${this.capturer.data.length}-->`);
+      out.pushLine(`<!-- exceeded max capture size: ${this.capturer.serializeLength > HydMaxSerializeSize}-->`);
+
       out.pushLine(`<canvas id="__main-canvas__" width="${this.ctx.canvas.width}" height="${this.ctx.canvas.height}"></canvas>`);
       for (const [b64_id, base64] of Object.entries(this.imagesBase64)) {
         out.pushLine(`<img id="__hyd_img_b64_${b64_id}__" src="${base64}" hidden>`);
@@ -783,10 +805,24 @@ function base64ToTypedArray(b64, dt) {
   }
   return new dt(u8a.buffer);
 }
+function generateZeroImageData(width, height) {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  const imageData = ctx.createImageData(width, height);
+  canvas.remove();
+  return imageData;
+}
     `);
-      out.pushLine('const typedArrays = [');
-      out.pushLine(this.typedArrays.map(ta => `base64ToTypedArray("${ta[0]}", ${ta[1]})`).join(',\n'));
-      out.pushLine(`];`);
+      // out.pushLine('const typedArrays = [');
+      // out.pushLine(this.typedArrays.map(ta => `base64ToTypedArray("${ta[0]}", ${ta[1]})`).join(',\n'));
+      // out.pushLine(`];`);
+      out.pushLine('const typedArrays = {');
+      for (const [luv, pos] of this.typedArraysMap.entries()) {
+        out.pushLine(`${pos}: ${luv},`);
+      }
+      out.pushLine(`};`);
       out.pushLine('const shaderSources = [');
       // out.pushLine(this.shaderSources.map(s => `\`${s}\``).join(',\n'));
       out.pushLine(this.shaderSources.map(s => `\`${s.replace(/`/g, '\\`')}\``).join(',\n'));
@@ -835,7 +871,6 @@ function base64ToTypedArray(b64, dt) {
       out.pushLine(`
 function* renderGenerator() {
 `);
-
       // FIX:
       this.capturer.data.forEach(function (func) {
         out.pushLine(func());
@@ -1039,23 +1074,29 @@ function render() {
     doTexImage2DForBase64(base64) {
       let imageId = this.numImages++;
       this.imagesBase64[imageId] = base64;
+      this.capturer.serializeLength += base64.length;
       return `imagesBase64[${imageId}]`;
     }
 
     doTexImage2DForImage(image) {
       let imageId = null;
       if (!image.src.startsWith('data:image')) {
-        if (this.imageUrl2Id[image.src] === undefined) {
-          this.imageUrl2Id[image.src] = this.numImages++;
+        if (this.imageUrl2Id.get(image.src) === undefined) {
+          if (this.capturer.serializeLength > HydMaxSerializeSize) {
+            return `generateZeroImageData(${image.width}, ${image.height})`;
+          }
+          const pos = this.numImages++;
+          this.imageUrl2Id.set(image.src, pos);
           const canvas = document.createElement('canvas');
           canvas.height = image.height;
           canvas.width = image.width;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(image, 0, 0);
-          this.imagesBase64[this.imageUrl2Id[image.src]] = canvas.toDataURL();
+          this.imagesBase64[pos] = canvas.toDataURL();
           canvas.remove();
+          this.capturer.serializeLength += this.imagesBase64[pos].length;
         }
-        imageId = this.imageUrl2Id[image.src];
+        imageId = this.imageUrl2Id.get(image.src);
       } else {
         if (image.__hyd_imageBase64_id__ === undefined) {
           image.__hyd_imageBase64_id__ = this.numImages++;
@@ -1157,6 +1198,7 @@ function render() {
       this.helper = options.helper === undefined ? true : options.helper;
       this.capture = false;
       this.data = [];
+      this.serializeLength = 0;
 
       const helper = new HydWebGLWrapper(ctx, this);
       this.webglHelper = helper;
@@ -1168,23 +1210,17 @@ function render() {
     }
     addData(str) {
       if (this.capture) {
-        this.addFn(function () {
-          return str;
-        });
+        this.addFn(() => str);
       }
     }
     addDebugInfo(str) {
       if (this.capture) {
-        this.addFn(function () {
-          return `// ** HAN_DEBUG_INFO ** ${str}`;
-        });
+        this.addFn(() => `// ** HAN_DEBUG_INFO ** ${str}`);
       }
     }
-    addYield(str) {
+    addYield() {
       if (this.capture) {
-        this.addFn(function () {
-          return "yield;";
-        });
+        this.addFn(() => "yield;");
       }
     }
 
@@ -1294,10 +1330,11 @@ HydOffscreenCanvas.prototype.getContext = (function (oldFn) {
     const ret = oldFn.apply(this, args);
     if (ret) {
       const type = args[0];
-      if (window.hydUsedOffScreenCanvas.indexOf(this) === -1) {
-        window.hydUsedOffScreenCanvas.push(this);
+      if (window.hydUsedOffScreenCanvas.indexOf(type) === -1) {
+        window.hydUsedOffScreenCanvas.push(type);
       }
     }
+    return ret;
   }
 })(HydOffscreenCanvas.prototype.getContext);
 
