@@ -15,9 +15,9 @@ const PART_SIZE = Math.ceil(total / TOTAL_PART);
 const START = PART * PART_SIZE;
 const END = Math.min((PART + 1) * PART_SIZE, total);
 
-const SIXTY_FRAMES = false;
+const SIXTY_FRAMES = true;
 const CAP_SEC = 1;
-const SLEEP_SEC = 2;
+const SLEEP_SEC = 0;
 const CAP_ROUND = 5;
 
 console.info(START, "to", END);
@@ -25,7 +25,8 @@ console.info(START, "to", END);
 fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
 (async () => {
-    for (const [idx, url] of indexUrls.slice(START, END)) {
+    for (let i = PART; i < total; i += TOTAL_PART) {
+        const [idx, url] = indexUrls[i];
         console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}  -  ${url}`);
         const json_out_path = `output/${NAME}/${idx}.json`;
         const gzip_out_path = `output/${NAME}/${idx}.json.gz`;
@@ -40,7 +41,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 console.info('  launch browser')
                 const context = await browser.newContext(contextOptions);
                 await context.addInitScript({ path: 'js/hydpako.min.js' });
-                await context.addInitScript({ path: 'js/inject-tiny.js' });
+                // await context.addInitScript({ path: 'js/inject-tiny.js' });
                 await context.addInitScript({ path: 'js/webgl-capture.js' });
 
                 const page = await context.newPage();
@@ -53,8 +54,16 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                     .then(() => {netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - OK');", 10_000);})
                     .catch(() => {netIdleTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - ERROR (TIMEOUT?)');", 10_000);})
                     .catch(() => null);
+                
+
+                await page.mouse.wheel(0, 500).catch(() => null);
+                await page.mouse.wheel(0, 500).catch(() => null);
+                await page.waitForTimeout(1000);
+                await page.mouse.wheel(0, -500).catch(() => null);
+                await page.mouse.wheel(0, -500).catch(() => null);
+
                 if (manual_interaction) {
-                    await manual[idx](page);
+                    await manual[idx](page).catch(() => null);
                 }
 
                 console.info('  net idle');
@@ -89,7 +98,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 // await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", 10_000);
 
                 // const gl_captures = await get_data_in_all_frames(page, "HydWebGLCapture.generateAll();", 30_000, (data: string[]) => data.map((d: string) => zlib.inflateSync(Buffer.from(d, 'base64')).toString()));
-                const gl_captures = await get_data_in_all_frames(page, "HydWebGLCapture.generateAll();", 30_000);
+                const gl_captures = await get_data_in_all_frames(page, "HydWebGLCapture.generateAll();", 100_000);
 
                 const data = {
                     url,

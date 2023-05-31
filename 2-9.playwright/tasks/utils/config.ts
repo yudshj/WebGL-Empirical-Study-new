@@ -37,16 +37,13 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json
 //   ["HYD-3", "http://localhost:8000/"],
 // ];
 // export const indexUrls = [
-//   ["BUG-0", "https://pt.gamcore.com/jogos/brothel_empire_unity_version"],
-//   ["BUG-1", "https://www.bingoaloha.com/"],
-//   ["BUG-2", "https://www.miuraz.com.tw/"],
-//   ["BUG-3", "https://automotive.products.constellium.com/"],
-//   ["BUG-4", "https://app.austrianskigame.com/game/"],
-//   ["BUG-5", "http://gym-drimou.thess.sch.gr/"],
-//   ["BUG-6", "https://www.ggpschas.org/"],
-//   ["BUG-7", "https://www.vocedivulga.com/carrega-troca-links.php?id=782&_xafvr=ZTNkMWE2MjlhMThjNzQ2M2JlYjgyMDk5OTBhMGU3YTE1Y2ZhMDE1ZCw2NDQ4OWE1YjEzODBk"],
-//   ["BUG-8", "https://particle-love.com/experiments/the-spirit/#amount=252k&motionBlurQuality=high"],
-//   ["BUG-9", "https://needle.tools/"],
+//   ["BUG-0", "http://12storytellers.hands.agency"],
+//   ["BUG-1", "http://12vendome.chaumet.com/"],
+//   ["BUG-2", "http://360.jomsborg-vineta.com/"],
+//   ["BUG-3", "http://accountsavvycpa.com"],
+//   ["BUG-4", "https://code.irobot.com"],
+//   ["BUG-5", "http://www.kleuterspel.be/"],
+//   ["BUG-6", "https://3n1gm4.space/"],
 // ];
 
 const launchOptions: LaunchOptionsDict = {};

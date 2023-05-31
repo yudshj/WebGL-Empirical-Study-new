@@ -28,7 +28,7 @@ export const get_data_in_all_workers = (page: Page, str: string, timeout: number
                 return {
                     url: worker.url(),
                     data: null,
-                    error: error,
+                    error: error.message,
                 };
             });
     });
@@ -47,12 +47,12 @@ export const get_data_in_all_frames = (page: Page, str: string, timeout: number,
                     error: null,
                 };
             })
-            .catch((error) => {
+            .catch((error: Error) => {
                 return {
                     name: frame.name(),
                     url: frame.url(),
                     data: null,
-                    error: error,
+                    error: error.message,
                 };
             });
     });
