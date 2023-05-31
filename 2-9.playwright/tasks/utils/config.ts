@@ -44,6 +44,7 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json
 //   ["BUG-4", "https://code.irobot.com"],
 //   ["BUG-5", "http://www.kleuterspel.be/"],
 //   ["BUG-6", "https://3n1gm4.space/"],
+//   ["BUG-7", "http://www.acsce.edu.in/"],
 // ];
 
 const launchOptions: LaunchOptionsDict = {};
