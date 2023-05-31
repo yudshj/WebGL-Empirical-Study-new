@@ -648,7 +648,7 @@ const HydWebGLCapture = (function () {
         for (let ii = jj; ii < end; ++ii) {
           sub.push(typeof value[ii] === 'string' ? JSON.stringify(value[ii]) : value[ii].toString());
         }
-        values.push(sub.join(", "));
+        values.push(sub.join(","));
       }
       return `\n[\n${values.join(",\n")}\n]`;
     } else if (value instanceof HydArrayBuffer) {
@@ -657,7 +657,7 @@ const HydWebGLCapture = (function () {
       } else {
         const binaryData = new Uint8Array(value);
         const base64String = window.btoa(hydArrayToBinaryString(binaryData));
-        const luv = `base64ToTypedArray("${base64String}", ${type.name})`;
+        const luv = `base64ToTypedArray("${base64String}",${type.name})`;
         let pos = helper.typedArraysMap.get(luv);
 
         if (pos === undefined) {
@@ -696,7 +696,7 @@ const HydWebGLCapture = (function () {
     for (let ii = 0; ii < args.length; ++ii) {
       values.push(glValueToString(ctx, functionName, args.length, ii, args[ii], helper));
     }
-    return values.join(", ");
+    return values.join(",");
   }
 
   function makePropertyWrapper(wrapper, original, propertyName) {
@@ -1036,20 +1036,22 @@ function render() {
           for (let ii = 0; ii < v.length; ++ii) {
             values.push(v[ii]);
           }
-          captureArgs.push("[" + values.join(", ") + "]");
+          const s = "[" + values.join(",") + "]";
+          this.capturer.serializeLength += s.length;
+          captureArgs.push(s);
         } else {
           captureArgs.push(v.toString());
         }
       }
       // TODO(gman): handle merging of arrays.
       if (location === null) {
-        this.capturer.addData(`gl.${name}(null, ${captureArgs.join(", ")});`);
+        this.capturer.addData(`gl.${name}(null,${captureArgs.join(",")});`);
       } else {
         const info = location.__capture_info__;
         if (this.helper) {
-          this.capturer.addData(`setUniform(gl, "${name}", ${getResourceName(this.currentProgram)}, "${info.name}", ${captureArgs.join(", ")}};`);
+          this.capturer.addData(`setUniform(gl,"${name}",${getResourceName(this.currentProgram)},"${info.name}",${captureArgs.join(",")}};`);
         } else {
-          this.capturer.addData(`gl.${name}(gl.getUniformLocation(${getResourceName(this.currentProgram)}, "${info.name}"), ${captureArgs.join(", ")});`);
+          this.capturer.addData(`gl.${name}(gl.getUniformLocation(${getResourceName(this.currentProgram)},"${info.name}"),${captureArgs.join(",")});`);
         }
       }
       this.ctx[name].apply(this.ctx, args);
@@ -1079,12 +1081,12 @@ function render() {
     }
 
     doTexImage2DForImage(image) {
+      if (this.capturer.serializeLength > HydMaxSerializeSize) {
+        return `generateZeroImageData(${image.width}, ${image.height})`;
+      }
       let imageId = null;
-      if (!image.src.startsWith('data:image')) {
+      if (!image.src.startsWith('data:')) {
         if (this.imageUrl2Id.get(image.src) === undefined) {
-          if (this.capturer.serializeLength > HydMaxSerializeSize) {
-            return `generateZeroImageData(${image.width}, ${image.height})`;
-          }
           const pos = this.numImages++;
           this.imageUrl2Id.set(image.src, pos);
           const canvas = document.createElement('canvas');

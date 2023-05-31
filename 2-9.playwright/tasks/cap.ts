@@ -16,9 +16,9 @@ const START = PART * PART_SIZE;
 const END = Math.min((PART + 1) * PART_SIZE, total);
 
 const SIXTY_FRAMES = true;
-const CAP_SEC = 1;
+const CAP_SEC = 10;
 const SLEEP_SEC = 0;
-const CAP_ROUND = 5;
+const CAP_ROUND = 1;
 
 console.info(START, "to", END);
 
@@ -70,25 +70,16 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 const net_idle_time_hp = performance.now();
                 const net_idle_counters = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
 
-                if (SLEEP_SEC <= 0) {
+                for (let i = 0; i < CAP_ROUND; i++) {
                     if (SIXTY_FRAMES) {
-                        await evaluate_script_in_all_frames(page, `hydRemainFrames = ${CAP_SEC*CAP_ROUND*60};`, 10_000);
+                        await evaluate_script_in_all_frames(page, `hydRemainFrames = ${CAP_SEC*60};`, 10_000);
                     } else {
-                        await evaluate_script_in_all_frames(page, `HydWebGLCapture.periodAll(${CAP_SEC*CAP_ROUND*1000});`, 10_000);
+                        await evaluate_script_in_all_frames(page, `HydWebGLCapture.periodAll(${CAP_SEC*1000});`, 10_000);
                     }
-                    await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", CAP_SEC*CAP_ROUND*1000 + 10_000);
-                } else {
-                    for (let i = 0; i < CAP_ROUND; i++) {
-                        if (SIXTY_FRAMES) {
-                            await evaluate_script_in_all_frames(page, `hydRemainFrames = ${CAP_SEC*60};`, 10_000);
-                        } else {
-                            await evaluate_script_in_all_frames(page, `HydWebGLCapture.periodAll(${CAP_SEC*1000});`, 10_000);
-                        }
-                        await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", CAP_SEC*1000 + 10_000);
-                        if (i < CAP_ROUND - 1) {
-                            console.log('  sleeping...');
-                            await page.waitForTimeout(SLEEP_SEC * 1000);
-                        }
+                    await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", CAP_SEC*1000 + 10_000);
+                    if (i < CAP_ROUND - 1) {
+                        console.log('  sleeping...');
+                        await page.waitForTimeout(SLEEP_SEC * 1000);
                     }
                 }
 
