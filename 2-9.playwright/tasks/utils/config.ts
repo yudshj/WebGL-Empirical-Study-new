@@ -52,10 +52,13 @@ const launchOptions: LaunchOptionsDict = {};
 export function getLaunchOptions(name: string): LaunchOptions {
   let launchOption = launchOptions[name] || {
     headless: headless,
-    // args: [
-    //   "--enable-gpu",
-    //   "--no-sandbox",
-    // ],
+    args: [
+      // "--enable-gpu",
+      "--no-sandbox",
+      '--disable-dev-shm-usage',
+      '--memory-pressure-off',
+      '--max-old-space-size=8192',
+    ],
   };
   if (useProxy) {
     launchOption.proxy = {
