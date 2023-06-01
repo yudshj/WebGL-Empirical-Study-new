@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import * as fs from 'fs';
 // import * as zlib from "zlib";
-import { get_data_in_all_frames, evaluate_script_in_all_frames, wait_for_function_in_all_frames } from './utils/utils';
+import { get_data_in_all_frames, evaluate_script_in_all_frames, wait_for_function_in_all_frames, rejectOnTimeout } from './utils/utils';
 import { contextOptions, indexUrls, getLaunchOptions } from './utils/config';
 import { manual } from './utils/manual';
 
@@ -37,7 +37,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             console.info(`Skip ${idx} - ${url}`);
         } else {
             const browser = await chromium.launch(getLaunchOptions(NAME));
-            try {
+            await Promise.race([rejectOnTimeout(10 * 60 * 1000), (async () => {
                 console.info('  launch browser')
                 const context = await browser.newContext(contextOptions);
                 await context.addInitScript({ path: 'js/hydpako.min.js' });
@@ -66,13 +66,15 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                     await manual[idx](page).catch(() => null);
                 }
 
+                await page.waitForLoadState("networkidle", {timeout: 30_000})
+
                 console.info('  net idle');
                 const net_idle_time_hp = performance.now();
                 const net_idle_counters = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
 
                 for (let i = 0; i < CAP_ROUND; i++) {
                     if (SIXTY_FRAMES) {
-                        await evaluate_script_in_all_frames(page, `hydRemainFrames = ${CAP_SEC*60};`, 10_000);
+                        await evaluate_script_in_all_frames(page, `HydWebGLCapture.startAll(); hydRemainFrames = ${CAP_SEC*60};`, 10_000);
                     } else {
                         await evaluate_script_in_all_frames(page, `HydWebGLCapture.periodAll(${CAP_SEC*1000});`, 10_000);
                     }
@@ -111,16 +113,17 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 // fs.writeFileSync(gzip_out_path, compressedData);
                 fs.writeFileSync(json_out_path, JSON.stringify(data));
 
-                // await page.waitForEvent("close", {timeout: 3600_000})
-                console.log("  closing");
+                // await page.waitForEvent("close", {timeout: 3600_000});
                 await context.close();
-            } catch (error: any) {
+                console.log("  closed");
+                return true;
+            })()]).catch((error) => {
                 console.error(`Error ${idx} - ${url}`);
                 if (error instanceof Error) {
                     fs.writeFileSync(error_out_path, [error.name, error.message, error.stack].join('\n++++++++++\n'));
                 }
-            }
-            await browser.close();
+            });
+            await browser.close().catch(() => null);
         }
     }
 })();

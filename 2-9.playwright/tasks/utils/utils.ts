@@ -1,6 +1,6 @@
 import { Frame, Page, Worker } from 'playwright';
 
-const rejectOnTimeout = (delay: number) => new Promise((_, reject) => {
+export const rejectOnTimeout = (delay: number) => new Promise((_, reject) => {
     setTimeout(reject, delay, new Error("rejectOnTimeout"));
 });
 export const evaluate_script_in_all_frames = (page: Page, str: string, timeout: number) => {

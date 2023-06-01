@@ -45,6 +45,8 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json
 //   ["BUG-5", "http://www.kleuterspel.be/"],
 //   ["BUG-6", "https://3n1gm4.space/"],
 //   ["BUG-7", "http://www.acsce.edu.in/"],
+//   ["BUG-8", https://eikanya.github.io/"],
+//   ["BUG-9", https://code.irobot.com/"],
 // ];
 
 const launchOptions: LaunchOptionsDict = {};
@@ -58,6 +60,7 @@ export function getLaunchOptions(name: string): LaunchOptions {
       '--disable-dev-shm-usage',
       '--memory-pressure-off',
       '--max-old-space-size=8192',
+      '--js-flags="--max_old_space_size=8192"',
     ],
   };
   if (useProxy) {

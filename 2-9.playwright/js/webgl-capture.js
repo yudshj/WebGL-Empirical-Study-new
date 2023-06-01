@@ -1016,13 +1016,11 @@ function render() {
     handle_linkProgram(name, args) {
       const program = args[0];
       // Must bind all attribs before link.
-      if (this.capturer.capture) {
-        const self = this;
-        this.capturer.addFn(function () {
-          return self.dumpAttribBindings(program);
-        });
-        this.capturer.addData(`gl.${name}(${getResourceName(program)});`);
-      }
+      const self = this;
+      this.capturer.addFn(function () {
+        return self.dumpAttribBindings(program);
+      });
+      this.capturer.addData(`gl.${name}(${getResourceName(program)});`);
       this.ctx[name].apply(this.ctx, args);
     }
 
