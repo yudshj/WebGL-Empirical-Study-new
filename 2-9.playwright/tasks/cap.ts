@@ -66,11 +66,12 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                     await manual[idx](page).catch(() => null);
                 }
 
-                await page.waitForLoadState("networkidle", {timeout: 30_000})
+                await page.waitForLoadState("networkidle", {timeout: 30_000}).catch(() => null);
 
                 console.info('  net idle');
                 const net_idle_time_hp = performance.now();
                 const net_idle_counters = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
+                await evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('capture - START');", 10_000);
 
                 for (let i = 0; i < CAP_ROUND; i++) {
                     if (SIXTY_FRAMES) {

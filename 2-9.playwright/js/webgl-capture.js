@@ -1030,11 +1030,21 @@ function render() {
       for (let jj = 1; jj < args.length; ++jj) {
         const v = args[jj];
         if (v.length) {
-          const values = [];
-          for (let ii = 0; ii < v.length; ++ii) {
-            values.push(v[ii]);
+          let s = undefined;
+          if (v.length > 1024) {
+            for (type of typedArrays) {
+              if (v instanceof type.ctor) {
+                s = `new ${type.name}(${v.length})`;
+                break;
+              }
+            }
+            if (!s) {
+              s = `new Float32Array(${v.length})`;
+            }
+          } else {
+            s = `[${Array.from(v).join(",")}]`;
           }
-          const s = "[" + values.join(",") + "]";
+
           this.capturer.serializeLength += s.length;
           captureArgs.push(s);
         } else {
