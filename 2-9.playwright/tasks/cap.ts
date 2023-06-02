@@ -50,15 +50,21 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
                 console.info('  goto');
                 let netIdleTimeout = -1;
-                await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 })
-                    .then(() => {netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - OK');", 10_000);})
-                    .catch(() => {netIdleTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('net_idle - ERROR (TIMEOUT?)');", 10_000);})
+                await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 })
+                    .then(() => {netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('domcontentloaded - OK');", 10_000);})
+                    .catch(() => {netIdleTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('domcontentloaded - ERROR (TIMEOUT?)');", 10_000);})
+                    .catch(() => null);
+                await page.waitForLoadState('networkidle', { timeout: 60_000 })
+                    .then(() => {netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('networkidle - OK');", 10_000);})
+                    .catch(() => {netIdleTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('networkidle - ERROR (TIMEOUT?)');", 10_000);})
                     .catch(() => null);
                 
 
                 await page.mouse.wheel(0, 500).catch(() => null);
                 await page.mouse.wheel(0, 500).catch(() => null);
+                await page.mouse.wheel(0, 500).catch(() => null);
                 await page.waitForTimeout(1000);
+                await page.mouse.wheel(0, -500).catch(() => null);
                 await page.mouse.wheel(0, -500).catch(() => null);
                 await page.mouse.wheel(0, -500).catch(() => null);
 
