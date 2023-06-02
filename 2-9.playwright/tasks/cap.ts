@@ -86,6 +86,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                     }
                 }
 
+                await evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('capture - STOP');", 10_000);
                 console.info('  capture');
                 const gl_cap_time_hp = performance.now();
                 const gl_cap_counters = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);

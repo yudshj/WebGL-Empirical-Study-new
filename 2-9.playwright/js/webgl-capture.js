@@ -789,7 +789,7 @@ const HydWebGLCapture = (function () {
       }
 
       out.pushLine(`<!-- length of the captured commands: ${this.capturer.data.length}-->`);
-      out.pushLine(`<!-- exceeded max capture size: ${this.capturer.serializeLength > HydMaxSerializeSize}-->`);
+      out.pushLine(`<!-- exceeded max serialize size: ${this.capturer.serializeLength > HydMaxSerializeSize}-->`);
 
       out.pushLine(`<canvas id="__main-canvas__" width="${this.ctx.canvas.width}" height="${this.ctx.canvas.height}"></canvas>`);
       for (const [b64_id, base64] of Object.entries(this.imagesBase64)) {
@@ -797,6 +797,7 @@ const HydWebGLCapture = (function () {
       }
       out.pushLine("<script>");
       out.pushLine(`
+window.captureDone = false;
 function base64ToTypedArray(b64, dt) {
   const bs = window.atob(b64);
   const u8a = new Uint8Array(bs.length);
@@ -892,6 +893,7 @@ function render() {
         out.pushLine("loadImages();");
       }
       out.pushLine("requestAnimationFrame(render);");
+      out.pushLine("window.captureDone = true;");
       out.pushLine("</script>", true);
       // const compressed = hydpako.gzip(out.join('\n'), { to: 'string' });
       // return "data:json/gzip;base64," + window.btoa(compressed.reduce((str, charCode) => str + String.fromCharCode(charCode), ''));
