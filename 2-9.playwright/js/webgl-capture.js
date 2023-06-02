@@ -882,8 +882,9 @@ function* renderGenerator() {
 const renderIterator = renderGenerator();
 
 function render() {
-  const a = renderIterator.next();
-  if (!a.done) {
+  if (renderIterator.next().done) {
+    window.captureDone = true;
+  } else {
     requestAnimationFrame(render);
   }
 }
@@ -893,7 +894,6 @@ function render() {
         out.pushLine("loadImages();");
       }
       out.pushLine("requestAnimationFrame(render);");
-      out.pushLine("window.captureDone = true;");
       out.pushLine("</script>", true);
       // const compressed = hydpako.gzip(out.join('\n'), { to: 'string' });
       // return "data:json/gzip;base64," + window.btoa(compressed.reduce((str, charCode) => str + String.fromCharCode(charCode), ''));
