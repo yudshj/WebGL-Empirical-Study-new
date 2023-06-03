@@ -25,3 +25,6 @@
 [submodule "2-9.playwright/spectorjs"]
 	path = 2-9.playwright/spectorjs
 	url = git@github.com:maghsk/Spector.js.git
+[submodule "4-1.glTraceInstrumentation"]
+	path = 4-1.glTraceInstrumentation
+	url = git@github.com:yudshj/glTraceInstrumentation.git
