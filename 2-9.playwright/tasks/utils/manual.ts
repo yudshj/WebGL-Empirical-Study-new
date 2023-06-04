@@ -9044,35 +9044,35 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.getByRole('link', { name: 'P L A Y N O W' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
-'07209': async (page: Page) => {
-  await page.locator('html').click();
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  await page.frameLocator('#sb__open-sandbox16').getByRole('link', { name: 'Open Sandbox' }).click();
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1 = await page1Promise;
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  await page.locator('html').click();
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  await page.locator('html').click();
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  await page.locator('canvas').click({
-    position: {
-      x: 74,
-      y: 134
-    }
-  });
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  await page.locator('div').nth(2).click();
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page2Promise = page.waitForEvent('popup');
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  await page.frameLocator('#sb__open-sandbox16').getByRole('link', { name: 'Open Sandbox' }).click();
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page2 = await page2Promise;
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-},
+// '07209': async (page: Page) => {
+//   await page.locator('html').click();
+//   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+//   const page1Promise = page.waitForEvent('popup');
+//   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+//   await page.frameLocator('#sb__open-sandbox16').getByRole('link', { name: 'Open Sandbox' }).click();
+//   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+//   const page1 = await page1Promise;
+//   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+//   await page.locator('html').click();
+//   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+//   await page.locator('html').click();
+//   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+//   await page.locator('canvas').click({
+//     position: {
+//       x: 74,
+//       y: 134
+//     }
+//   });
+//   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+//   await page.locator('div').nth(2).click();
+//   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+//   const page2Promise = page.waitForEvent('popup');
+//   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+//   await page.frameLocator('#sb__open-sandbox16').getByRole('link', { name: 'Open Sandbox' }).click();
+//   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+//   const page2 = await page2Promise;
+//   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+// },
 '07228': async (page: Page) => {
   await page.getByRole('button', { name: 'Permitir todo' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});

@@ -52,14 +52,14 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 console.info('  goto');
                 let netIdleTimeout = -1;
                 await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 })
-                    .then(() => {netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('domcontentloaded - OK');", 10_000);})
-                    .catch(() => {netIdleTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('domcontentloaded - ERROR (TIMEOUT?)');", 10_000);})
+                    .then(() => { netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('domcontentloaded - OK');", 10_000); })
+                    .catch(() => { netIdleTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('domcontentloaded - ERROR (TIMEOUT?)');", 10_000); })
                     .catch(() => null);
                 await page.waitForLoadState('networkidle', { timeout: 60_000 })
-                    .then(() => {netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('networkidle - OK');", 10_000);})
-                    .catch(() => {netIdleTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('networkidle - ERROR (TIMEOUT?)');", 10_000);})
+                    .then(() => { netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('networkidle - OK');", 10_000); })
+                    .catch(() => { netIdleTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('networkidle - ERROR (TIMEOUT?)');", 10_000); })
                     .catch(() => null);
-                
+
 
                 await page.mouse.wheel(0, 500).catch(() => null);
                 await page.mouse.wheel(0, 500).catch(() => null);
@@ -68,16 +68,14 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 await page.mouse.wheel(0, -500).catch(() => null);
                 await page.mouse.wheel(0, -500).catch(() => null);
                 await page.mouse.wheel(0, -500).catch(() => null);
-                if (manual_interaction) {
-                    try {
-                        await manual[idx](page);
-                    } catch (e) {
-                        console.error('  manual interaction failed', e);
-                        manual_interaction_failed = true;
-                    }
+                try {
+                    await manual[idx](page);
+                } catch (error) {
+                    console.error("manual interaction failed!!!");
+                    manual_interaction_failed = true;
                 }
 
-                await page.waitForLoadState("networkidle", {timeout: 30_000}).catch(() => null);
+                await page.waitForLoadState("networkidle", { timeout: 30_000 }).catch(() => null);
 
                 console.info('  net idle');
                 const net_idle_time_hp = performance.now();
@@ -86,11 +84,11 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
                 for (let i = 0; i < CAP_ROUND; i++) {
                     if (SIXTY_FRAMES) {
-                        await evaluate_script_in_all_frames(page, `HydWebGLCapture.startAll(); hydRemainFrames = ${CAP_SEC*60};`, 10_000);
+                        await evaluate_script_in_all_frames(page, `HydWebGLCapture.startAll(); hydRemainFrames = ${CAP_SEC * 60};`, 10_000);
                     } else {
-                        await evaluate_script_in_all_frames(page, `HydWebGLCapture.periodAll(${CAP_SEC*1000});`, 10_000);
+                        await evaluate_script_in_all_frames(page, `HydWebGLCapture.periodAll(${CAP_SEC * 1000});`, 10_000);
                     }
-                    await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", CAP_SEC*1000 + 10_000);
+                    await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", CAP_SEC * 1000 + 10_000);
                     if (i < CAP_ROUND - 1) {
                         console.log('  sleeping...');
                         await page.waitForTimeout(SLEEP_SEC * 1000);
