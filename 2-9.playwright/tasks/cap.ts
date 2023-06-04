@@ -32,6 +32,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         const gzip_out_path = `output/${NAME}/${idx}.json.gz`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
         const manual_interaction = idx in manual;
+        let manual_interaction_failed = false;
 
         if (fs.existsSync(json_out_path) || fs.existsSync(gzip_out_path) || fs.existsSync(error_out_path)) {
             console.info(`Skip ${idx} - ${url}`);
@@ -67,9 +68,13 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 await page.mouse.wheel(0, -500).catch(() => null);
                 await page.mouse.wheel(0, -500).catch(() => null);
                 await page.mouse.wheel(0, -500).catch(() => null);
-
                 if (manual_interaction) {
-                    await manual[idx](page).catch(() => null);
+                    try {
+                        await manual[idx](page);
+                    } catch (e) {
+                        console.error('  manual interaction failed', e);
+                        manual_interaction_failed = true;
+                    }
                 }
 
                 await page.waitForLoadState("networkidle", {timeout: 30_000}).catch(() => null);
@@ -105,6 +110,8 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                     url,
                     date,
                     netIdleTimeout,
+                    manual_interaction,
+                    manual_interaction_failed,
                     events_time_hp: {
                         start_time_hp,
                         net_idle_time_hp,
