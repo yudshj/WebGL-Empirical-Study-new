@@ -1218,22 +1218,26 @@ function render() {
       this.webglHelper = helper;
       this.webglWrapper = helper.wrapper;
       this.webglWrapper.capture = this;
+      this.lastIsYield = false;
     }
     addFn(fn) {
       this.data.push(fn);
     }
     addData(str) {
       if (this.capture) {
+        this.lastIsYield = false;
         this.addFn(() => str);
       }
     }
     addDebugInfo(str) {
       if (this.capture) {
+        this.lastIsYield = false;
         this.addFn(() => `// ** HAN_DEBUG_INFO ** ${str}`);
       }
     }
     addYield() {
-      if (this.capture) {
+      if (this.capture && !this.lastIsYield) {
+        this.lastIsYield = true;
         this.addFn(() => "yield;");
       }
     }

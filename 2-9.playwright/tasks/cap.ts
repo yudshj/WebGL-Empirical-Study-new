@@ -88,7 +88,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                     } else {
                         await evaluate_script_in_all_frames(page, `HydWebGLCapture.periodAll(${CAP_SEC * 1000});`, 10_000);
                     }
-                    await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", CAP_SEC * 1000 + 10_000);
+                    await wait_for_function_in_all_frames(page, "HydWebGLCapture.allStopped()", CAP_SEC * 1000 + 1_000);
                     if (i < CAP_ROUND - 1) {
                         console.log('  sleeping...');
                         await page.waitForTimeout(SLEEP_SEC * 1000);
