@@ -16,6 +16,7 @@ const HydUint32Array = Uint32Array;
 const HydUint8Array = Uint8Array;
 const HydUint8ClampedArray = Uint8ClampedArray;
 const HydMaxSerializeSize = 256 * 1024 * 1024;
+const HydMaxArraySize = 16 * 1024 * 1024;
 
 /* global WebGLObject */
 const HydWebGLCapture = (function () {
@@ -576,12 +577,12 @@ const HydWebGLCapture = (function () {
       return JSON.stringify(value);
     } else if (value instanceof HydHTMLCanvasElement) {
       // Extract as ImageData
-      if (helper.capturer.serializeLength > HydMaxSerializeSize) {
+      if (helper.capturer.serializeLength > HydMaxSerializeSize || value.width * value.height > HydMaxArraySize) {
         return `new generateZeroImageData(${value.width}, ${value.height})`;
       }
       return helper.doTexImage2DForBase64(value.toDataURL());
     } else if (value instanceof HydImageData) {
-      if (helper.capturer.serializeLength > HydMaxSerializeSize) {
+      if (helper.capturer.serializeLength > HydMaxSerializeSize || value.width * value.height > HydMaxArraySize) {
         return `new generateZeroImageData(${value.width}, ${value.height})`;
       } 
       const canvas = document.createElement('canvas');
@@ -600,7 +601,7 @@ const HydWebGLCapture = (function () {
       // Extract data.
       return helper.doTexImage2DForImage(value);
     } else if (value instanceof HydImageBitmap || value instanceof HydOffscreenCanvas) {
-      if (helper.capturer.serializeLength > HydMaxSerializeSize) {
+      if (helper.capturer.serializeLength > HydMaxSerializeSize || value.width * value.height > HydMaxArraySize) {
         return `generateZeroImageData(${value.width}, ${value.height})`;
       }
       const canvas = document.createElement('canvas');
@@ -622,10 +623,11 @@ const HydWebGLCapture = (function () {
       }
       for (const type of typedArrays) {
         if (value instanceof type.ctor) {
-          if (helper.capturer.serializeLength > HydMaxSerializeSize) {
+          if (helper.capturer.serializeLength > HydMaxSerializeSize || value.length > HydMaxArraySize) {
             return `new ${type.name}(${value.length})`;
           } else {
-            const binaryData = new Uint8Array(value.buffer);
+            const binaryData = new Uint8Array(value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength));
+            console.log(value.length);
             const base64String = window.btoa(hydArrayToBinaryString(binaryData));
             const luv = `base64ToTypedArray("${base64String}", ${type.name})`;
             let pos = helper.typedArraysMap.get(luv);
@@ -652,7 +654,7 @@ const HydWebGLCapture = (function () {
       }
       return `\n[\n${values.join(",\n")}\n]`;
     } else if (value instanceof HydArrayBuffer) {
-      if (helper.capturer.serializeLength > HydMaxSerializeSize) {
+      if (helper.capturer.serializeLength > HydMaxSerializeSize || value.byteLength > HydMaxArraySize) {
         return `new ArrayBuffer(${value.byteLength})`;
       } else {
         const binaryData = new Uint8Array(value);
