@@ -1045,6 +1045,7 @@ function render() {
         if (v.length) {
           let s = undefined;
           if (v.length > 1024) {
+            HydAllSerialized = false;
             for (type of typedArrays) {
               if (v instanceof type.ctor) {
                 s = `new ${type.name}(${v.length})`;
