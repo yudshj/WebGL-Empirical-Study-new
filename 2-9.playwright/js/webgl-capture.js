@@ -1360,8 +1360,8 @@ HydOffscreenCanvas.prototype.getContext = (function (oldFn) {
 let hydRemainFrames = -1;
 
 function hydRaf() {
+  HydWebGLCapture.addYieldAll();
   if (hydRemainFrames > 0) {
-    HydWebGLCapture.addYieldAll();
 
     hydRemainFrames -= 1;
     if (hydRemainFrames === 0) {
