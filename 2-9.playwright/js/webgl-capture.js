@@ -192,8 +192,8 @@ const HydWebGLCapture = (function () {
     'bindTexture': { 2: { enums: [0] } },
     'activeTexture': { 1: { enums: [0, 1] } },
     'getTexParameter': { 2: { enums: [0, 1] } },
-    'texParameterf': { 3: { enums: [0, 1] } },
-    'texParameteri': { 3: { enums: [0, 1, 2] } },
+    'texParameterf': { 3: { enums: [0, 1], numbers: [2] } },
+    'texParameteri': { 3: { enums: [0, 1], numbers: [2] } },
     'texImage2D': {
       9: { enums: [0, 2, 6, 7], numbers: [1, 3, 4, 5], arrays: [8], },
       6: { enums: [0, 2, 3, 4], numbers: [1], arrays: [5] },
@@ -573,6 +573,7 @@ const HydWebGLCapture = (function () {
           }
         }
       }
+      return value.toString();
     } else if (typeof (value) === 'string') {
       return JSON.stringify(value);
     } else if (value instanceof HydHTMLCanvasElement) {
@@ -627,7 +628,6 @@ const HydWebGLCapture = (function () {
             return `new ${type.name}(${value.length})`;
           } else {
             const binaryData = new Uint8Array(value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength));
-            console.log(value.length);
             const base64String = window.btoa(hydArrayToBinaryString(binaryData));
             const luv = `base64ToTypedArray("${base64String}", ${type.name})`;
             let pos = helper.typedArraysMap.get(luv);
@@ -659,7 +659,7 @@ const HydWebGLCapture = (function () {
       } else {
         const binaryData = new Uint8Array(value);
         const base64String = window.btoa(hydArrayToBinaryString(binaryData));
-        const luv = `base64ToTypedArray("${base64String}",${type.name})`;
+        const luv = `base64ToTypedArray("${base64String}",Uint8Array)`;
         let pos = helper.typedArraysMap.get(luv);
 
         if (pos === undefined) {
