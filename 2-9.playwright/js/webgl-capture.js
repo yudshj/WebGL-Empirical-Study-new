@@ -17,6 +17,7 @@ const HydUint8Array = Uint8Array;
 const HydUint8ClampedArray = Uint8ClampedArray;
 const HydMaxSerializeSize = 256 * 1024 * 1024;
 const HydMaxArraySize = 16 * 1024 * 1024;
+let HydAllSerialized = true;
 
 /* global WebGLObject */
 const HydWebGLCapture = (function () {
@@ -579,11 +580,13 @@ const HydWebGLCapture = (function () {
     } else if (value instanceof HydHTMLCanvasElement) {
       // Extract as ImageData
       if (helper.capturer.serializeLength > HydMaxSerializeSize || value.width * value.height > HydMaxArraySize) {
+        HydAllSerialized = false;
         return `new generateZeroImageData(${value.width}, ${value.height})`;
       }
       return helper.doTexImage2DForBase64(value.toDataURL());
     } else if (value instanceof HydImageData) {
       if (helper.capturer.serializeLength > HydMaxSerializeSize || value.width * value.height > HydMaxArraySize) {
+        HydAllSerialized = false;
         return `new generateZeroImageData(${value.width}, ${value.height})`;
       } 
       const canvas = document.createElement('canvas');
@@ -603,6 +606,7 @@ const HydWebGLCapture = (function () {
       return helper.doTexImage2DForImage(value);
     } else if (value instanceof HydImageBitmap || value instanceof HydOffscreenCanvas) {
       if (helper.capturer.serializeLength > HydMaxSerializeSize || value.width * value.height > HydMaxArraySize) {
+        HydAllSerialized = false;
         return `generateZeroImageData(${value.width}, ${value.height})`;
       }
       const canvas = document.createElement('canvas');
@@ -625,6 +629,7 @@ const HydWebGLCapture = (function () {
       for (const type of typedArrays) {
         if (value instanceof type.ctor) {
           if (helper.capturer.serializeLength > HydMaxSerializeSize || value.length > HydMaxArraySize) {
+            HydAllSerialized = false;
             return `new ${type.name}(${value.length})`;
           } else {
             const binaryData = new Uint8Array(value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength));
@@ -655,6 +660,7 @@ const HydWebGLCapture = (function () {
       return `\n[\n${values.join(",\n")}\n]`;
     } else if (value instanceof HydArrayBuffer) {
       if (helper.capturer.serializeLength > HydMaxSerializeSize || value.byteLength > HydMaxArraySize) {
+        HydAllSerialized = false;
         return `new ArrayBuffer(${value.byteLength})`;
       } else {
         const binaryData = new Uint8Array(value);
@@ -791,7 +797,7 @@ const HydWebGLCapture = (function () {
       }
 
       out.pushLine(`<!-- length of the captured commands: ${this.capturer.data.length}-->`);
-      out.pushLine(`<!-- exceeded max serialize size: ${this.capturer.serializeLength > HydMaxSerializeSize}-->`);
+      out.pushLine(`<!-- all serialized: ${HydAllSerialized}-->`);
 
       out.pushLine(`<canvas id="__main-canvas__" width="${this.ctx.canvas.width}" height="${this.ctx.canvas.height}"></canvas>`);
       for (const [b64_id, base64] of Object.entries(this.imagesBase64)) {
@@ -1093,7 +1099,8 @@ function render() {
     }
 
     doTexImage2DForImage(image) {
-      if (this.capturer.serializeLength > HydMaxSerializeSize) {
+      if (this.capturer.serializeLength > HydMaxSerializeSize || image.width * image.height > HydMaxArraySize) {
+        HydAllSerialized = false;
         return `generateZeroImageData(${image.width}, ${image.height})`;
       }
       let imageId = null;
