@@ -804,6 +804,9 @@ const HydWebGLCapture = (function () {
         out.pushLine(`<img id="__hyd_img_b64_${b64_id}__" src="${base64}" hidden>`);
       }
       out.pushLine("<script>");
+      out.pushLine(`window.HydAllSerialized = ${HydAllSerialized};`);
+      out.pushLine(`window.HydMaxSerializeSize = ${HydMaxSerializeSize};`);
+      out.pushLine(`window.HydMaxArraySize = ${HydMaxArraySize};`);
       out.pushLine(`
 window.captureDone = false;
 function base64ToTypedArray(b64, dt) {
