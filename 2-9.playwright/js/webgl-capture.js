@@ -90,7 +90,7 @@ const HydWebGLCapture = (function () {
   function makeBitFieldToStringFunc(enums) {
     return function (gl, value) {
       let orResult = 0;
-      const orEnums = [];
+      const orEnums = ['0'];
       for (let i = 0; i < enums.length; ++i) {
         const enumValue = enumStringToValue[enums[i]];
         if ((value & enumValue) !== 0) {
@@ -581,13 +581,21 @@ const HydWebGLCapture = (function () {
       // Extract as ImageData
       if (helper.capturer.serializeLength > HydMaxSerializeSize || value.width * value.height > HydMaxArraySize) {
         HydAllSerialized = false;
-        return `new generateZeroImageData(${value.width}, ${value.height})`;
+        const tmp = `new generateZeroImageData(${value.width}, ${value.height})`;
+        if (!helper.zeroArrays.has(tmp)) {
+          helper.zeroArrays.set(tmp, helper.zeroArrays.size);
+        }
+        return `zeroArrays[${helper.zeroArrays.get(tmp)}]`;
       }
       return helper.doTexImage2DForBase64(value.toDataURL());
     } else if (value instanceof HydImageData) {
       if (helper.capturer.serializeLength > HydMaxSerializeSize || value.width * value.height > HydMaxArraySize) {
         HydAllSerialized = false;
-        return `new generateZeroImageData(${value.width}, ${value.height})`;
+        const tmp = `new generateZeroImageData(${value.width}, ${value.height})`;
+        if (!helper.zeroArrays.has(tmp)) {
+          helper.zeroArrays.set(tmp, helper.zeroArrays.size);
+        }
+        return `zeroArrays[${helper.zeroArrays.get(tmp)}]`;
       } 
       const canvas = document.createElement('canvas');
       canvas.height = value.height;
@@ -622,7 +630,15 @@ const HydWebGLCapture = (function () {
         for (let ii = 0; ii < typedArrays.length; ++ii) {
           const type = typedArrays[ii];
           if (value instanceof type.ctor) {
-            return `new ${type.name}(${value.length})`;
+            const tmp = `new ${type.name}(${value.length})`;
+            if (helper.zeroArrays) {
+              if (!helper.zeroArrays.has(tmp)) {
+                helper.zeroArrays.set(tmp, helper.zeroArrays.size);
+              }
+              return `zeroArrays[${helper.zeroArrays.get(tmp)}]`;
+            } else {
+              return tmp;
+            }
           }
         }
       }
@@ -630,7 +646,15 @@ const HydWebGLCapture = (function () {
         if (value instanceof type.ctor) {
           if (helper.capturer.serializeLength > HydMaxSerializeSize || value.length > HydMaxArraySize) {
             HydAllSerialized = false;
-            return `new ${type.name}(${value.length})`;
+            const tmp = `new ${type.name}(${value.length})`;
+            if (helper.zeroArrays) {
+              if (!helper.zeroArrays.has(tmp)) {
+                helper.zeroArrays.set(tmp, helper.zeroArrays.size);
+              }
+              return `zeroArrays[${helper.zeroArrays.get(tmp)}]`;
+            } else {
+              return tmp;
+            }
           } else {
             const binaryData = new Uint8Array(value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength));
             const base64String = window.btoa(hydArrayToBinaryString(binaryData));
@@ -661,7 +685,15 @@ const HydWebGLCapture = (function () {
     } else if (value instanceof HydArrayBuffer) {
       if (helper.capturer.serializeLength > HydMaxSerializeSize || value.byteLength > HydMaxArraySize) {
         HydAllSerialized = false;
-        return `new ArrayBuffer(${value.byteLength})`;
+        tmp = `new ArrayBuffer(${value.byteLength})`;
+        if (helper.zeroArrays) {
+          if (!helper.zeroArrays.has(tmp)) {
+            helper.zeroArrays.set(tmp, helper.zeroArrays.size);
+          }
+          return `zeroArrays[${helper.zeroArrays.get(tmp)}]`;
+        } else {
+          return tmp;
+        }
       } else {
         const binaryData = new Uint8Array(value);
         const base64String = window.btoa(hydArrayToBinaryString(binaryData));
@@ -768,6 +800,7 @@ const HydWebGLCapture = (function () {
 
   class HydWebGLWrapper {
     constructor(ctx, capturer) {
+      this.zeroArrays = new Map();
       this.ctx = ctx;
       this.capturer = capturer;
       this.currentProgram = null;
@@ -827,19 +860,23 @@ function generateZeroImageData(width, height) {
   return imageData;
 }
     `);
-      // out.pushLine('const typedArrays = [');
-      // out.pushLine(this.typedArrays.map(ta => `base64ToTypedArray("${ta[0]}", ${ta[1]})`).join(',\n'));
-      // out.pushLine(`];`);
-      out.pushLine('const typedArrays = {');
-      for (const [luv, pos] of this.typedArraysMap.entries()) {
-        out.pushLine(`${pos}: ${luv},`);
+      if (this.zeroArrays.size > 0) {
+        out.pushLine('const zeroArrays = {');
+        this.zeroArrays.forEach((value, key) => { out.pushLine(`${value}: ${key},`); });
+        out.pushLine(`};`);
       }
-      out.pushLine(`};`);
-      out.pushLine('const shaderSources = [');
-      // out.pushLine(this.shaderSources.map(s => `\`${s}\``).join(',\n'));
-      out.pushLine(this.shaderSources.map(s => `\`${s.replace(/`/g, '\\`')}\``).join(',\n'));
 
-      out.pushLine(`];`);
+      if (this.typedArraysMap.size > 0) {
+        out.pushLine('const typedArrays = {');
+        this.typedArraysMap.forEach((value, key) => { out.pushLine(`${value}: ${key},`); });
+        out.pushLine(`};`);
+      }
+      
+      if (this.shaderSources.length > 0) {
+        out.pushLine('const shaderSources = [');
+        out.pushLine(this.shaderSources.map(s => `\`${s.replace(/`/g, '\\`')}\``).join(',\n'));
+        out.pushLine(`];`);
+      }
 
       if (this.helper) {
         out.pushLine(`
@@ -1037,33 +1074,89 @@ function render() {
       this.ctx[name].apply(this.ctx, args);
     }
 
+    handle_fenceSync(name, args) {
+      const condition = glEnums[args[0]]; // string
+      const flags = args[1]; // number
+      const resource = this.ctx[name].apply(this.ctx, args);
+      const shortName = "sync"
+
+      if (!this.ids[shortName]) {
+        this.ids[shortName] = 0;
+      }
+      const id = this.ids[shortName]++;
+      resource.__capture_info__ = {
+        id: id,
+        type: shortName,
+      };
+      this.capturer.addData(`${getResourceName(resource)} = gl.${name}(${condition}, ${flags});`);
+      return resource;
+    }
+
     handle_uniform(name, args) {
       const location = args[0];
       const captureArgs = [];
-      for (let jj = 1; jj < args.length; ++jj) {
-        const v = args[jj];
-        if (v.length) {
-          let s = undefined;
-          if (v.length > 1024) {
-            HydAllSerialized = false;
-            for (type of typedArrays) {
-              if (v instanceof type.ctor) {
-                s = `new ${type.name}(${v.length})`;
-                break;
-              }
-            }
-            if (!s) {
-              s = `new Float32Array(${v.length})`;
-            }
-          } else {
-            s = `[${Array.from(v).join(",")}]`;
-          }
+      let offset = 0;
+      let length = undefined;
 
-          this.capturer.serializeLength += s.length;
-          captureArgs.push(s);
-        } else {
-          captureArgs.push(v.toString());
-        }
+      const isMatrix = name.indexOf('Matrix') !== -1;
+      const isVector = name.endsWith('v');
+      // if (isVector) {
+      //   if (isMatrix) {
+      //     length = args[2].length;
+      //     if (args.length > 3) {
+      //       offset = args[3];
+      //     }
+      //     if (args.length > 4) {
+      //       length = args[4];
+      //     }
+      //   } else {
+      //     length = args[1].length;
+      //     if (args.length > 2) {
+      //       offset = args[2];
+      //     }
+      //     if (args.length > 3) {
+      //       length = args[3];
+      //     }
+      //   }
+        
+      //   if (isMatrix) {
+      //     captureArgs.push(args[1].toString());
+      //     captureArgs.push(`[${args[2].slice(offset, offset + length).join(",")}]`);
+      //   } else {
+      //     captureArgs.push(`[${args[1].slice(offset, offset + length).join(",")}]`);
+      //   }
+      // } else {
+        for (let jj = 1; jj < args.length; ++jj) {
+          const v = args[jj];
+          if (v.length) {
+            let s = undefined;
+            if (v.length > 128) {
+              let tmp = undefined;
+              HydAllSerialized = false;
+              for (const type of typedArrays) {
+                if (v instanceof type.ctor) {
+                  tmp = `new ${type.name}(${v.length})`;
+                  break;
+                }
+              }
+              if (!tmp) {
+                tmp = `new Float32Array(${v.length})`;
+              }
+              if (!this.zeroArrays.has(tmp)) {
+                this.zeroArrays.set(tmp, this.zeroArrays.size);
+              }
+              s = `zeroArrays[${this.zeroArrays.get(tmp)}]`;
+            } else {
+              s = `[${Array.from(v).join(",")}]`;
+            }
+            s = `[${Array.from(v).join(",")}]`;
+
+            this.capturer.serializeLength += s.length;
+            captureArgs.push(s);
+          } else {
+            captureArgs.push(v.toString());
+          }
+        // }
       }
       // TODO(gman): handle merging of arrays.
       if (location === null) {
