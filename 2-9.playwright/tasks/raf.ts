@@ -27,6 +27,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         const gzip_out_path = `output/${NAME}/${idx}.json.gz`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
         const manual_interaction = idx in manual;
+        let manual_interaction_failed = false;
 
         if (fs.existsSync(gzip_out_path) || fs.existsSync(error_out_path)) {
             console.info(`Skip ${idx} - ${url}`);
@@ -44,23 +45,37 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             const start_time_hp = performance.now();
 
             let netIdleTimeout = -1;
-            await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 })
-                .then(() => {netIdleTimeout = 0;})
-                .catch(() => {netIdleTimeout = 1;})
-                .catch(() => null);
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 }).catch(() => null);
+            await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => null);
+
+            for (let i = 0; i < 4; i++) {
+                await page.mouse.wheel(0, 512).catch(() => null);
+            }
+
+            await page.waitForTimeout(1000);
+
+            for (let i = 0; i < 4; i++) {
+                await page.mouse.wheel(0, -512).catch(() => null);
+            }
+
             if (manual_interaction) {
                 await manual[idx](page).catch(() => null);
             }
+
+            await page.waitForLoadState('networkidle', { timeout: 60_000 })
+                .then(() => { netIdleTimeout = 0; })
+                .catch(() => { netIdleTimeout = 1; })
+                .catch(() => null);
 
             const net_idle_time_hp = performance.now();
             const net_idle_counters: any[] = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
 
             // await evaluate_script_in_all_frames(page, "HYD_RECORD_RAF = true; window.requestAnimationFrame(callAllRafSignal);", 10_000);
 
-            await page.waitForTimeout(15_000);
+            await page.waitForTimeout(10_000);
 
             const gl_raf_time_hp = performance.now();
-            await evaluate_script_in_all_frames(page, "HYD_RECORD_RAF = false;", 10_000);
+            // await evaluate_script_in_all_frames(page, "HYD_RECORD_RAF = false;", 10_000);
             const gl_raf_counters: any[] = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
 
             const gl_rafs = await get_data_in_all_frames(page, "HydGetGLInfo();", 30_000);
@@ -70,6 +85,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 date,
                 netIdleTimeout,
                 manual_interaction,
+                manual_interaction_failed,
                 events_time_hp: {
                     start_time_hp,
                     net_idle_time_hp,

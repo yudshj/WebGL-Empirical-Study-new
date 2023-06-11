@@ -23,6 +23,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         const json_out_path = `output/${NAME}/${idx}.json`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
         const manual_interaction = idx in manual;
+        let manual_interaction_failed = false;
 
         if (fs.existsSync(json_out_path)) {
             console.info(`Skip ${idx}`);
@@ -45,18 +46,32 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             const date = Date.now();
 
             let netIdleTimeout = -1;
-            await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 })
-                .then(() => {netIdleTimeout = 0;})
-                .catch(() => {netIdleTimeout = 1;})
-                .catch(() => null);
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 }).catch(() => null);
+            await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => null);
+            
+            for (let i = 0; i < 4; i++) {
+                await page.mouse.wheel(0, 512).catch(() => null);
+            }
+
+            await page.waitForTimeout(1000);
+
+            for (let i = 0; i < 4; i++) {
+                await page.mouse.wheel(0, -512).catch(() => null);
+            }
+
             if (manual_interaction) {
                 await manual[idx](page).catch(() => null);
             }
+
+            await page.waitForLoadState('networkidle', { timeout: 60_000 })
+                .then(() => { netIdleTimeout = 0; })
+                .catch(() => { netIdleTimeout = 1; })
+                .catch(() => null);
                 
             await page.waitForTimeout(10_000);
             await evaluate_script_in_all_frames(page, 'hydSpectorStart()', 10_000);
             // await page.waitForTimeout(15_000);
-            await wait_for_function_in_all_frames(page, 'window._hydCaptured.length === window._hydSpectors.length', 15_000);
+            await wait_for_function_in_all_frames(page, 'window._hydCaptured.length === window._hydSpectors.length', 30_000);
             const spector = await get_data_in_all_frames(page, 'hydSpectorStop()', 30_000);
             const data = {
                 url,
@@ -64,6 +79,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 date,
                 netIdleTimeout,
                 manual_interaction,
+                manual_interaction_failed,
                 spector,
             };
             // await page.waitForTimeout(3600_000);

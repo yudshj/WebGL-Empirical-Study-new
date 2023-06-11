@@ -1095,11 +1095,11 @@ function render() {
     handle_uniform(name, args) {
       const location = args[0];
       const captureArgs = [];
-      let offset = 0;
-      let length = undefined;
+      // let offset = 0;
+      // let length = undefined;
 
-      const isMatrix = name.indexOf('Matrix') !== -1;
-      const isVector = name.endsWith('v');
+      // const isMatrix = name.indexOf('Matrix') !== -1;
+      // const isVector = name.endsWith('v');
       // if (isVector) {
       //   if (isMatrix) {
       //     length = args[2].length;

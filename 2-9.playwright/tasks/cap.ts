@@ -51,9 +51,10 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
                 console.info('  goto');
                 let netIdleTimeout = -1;
+                let domcontentTimeout = -1;
                 await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 })
-                    .then(() => { netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('domcontentloaded - OK');", 10_000); })
-                    .catch(() => { netIdleTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('domcontentloaded - ERROR (TIMEOUT?)');", 10_000); })
+                    .then(() => { domcontentTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('domcontentloaded - OK');", 10_000); })
+                    .catch(() => { domcontentTimeout = 1; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('domcontentloaded - ERROR (TIMEOUT?)');", 10_000); })
                     .catch(() => null);
                 await page.waitForLoadState('networkidle', { timeout: 60_000 })
                     .then(() => { netIdleTimeout = 0; evaluate_script_in_all_frames(page, "HydWebGLCapture.debugInfoAll('networkidle - OK');", 10_000); })
