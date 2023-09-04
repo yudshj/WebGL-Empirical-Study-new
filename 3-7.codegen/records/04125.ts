@@ -9,30 +9,20 @@ test('test', async ({ page }) => {
   await page.goto('https://17squares.com/closets/?source=%5BgetSource%5D');
   await page.locator('#unity-canvas').click({
     position: {
-      x: 659,
-      y: 513
+      x: 646,
+      y: 508
     }
   });
   await page.locator('#unity-canvas').click({
     position: {
-      x: 665,
-      y: 380
+      x: 654,
+      y: 369
     }
   });
   await page.locator('#unity-canvas').click({
     position: {
-      x: 447,
-      y: 367
-    }
-  });
-  page.once('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page.locator('#unity-canvas').click({
-    position: {
-      x: 710,
-      y: 619
+      x: 398,
+      y: 371
     }
   });
 });

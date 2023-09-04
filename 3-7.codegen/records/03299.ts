@@ -8,5 +8,4 @@ test.use({
 test('test', async ({ page }) => {
   await page.goto('http://www.moldova-map.md/');
   await page.goto('http://www.moldova-map.md/#/');
-  await page.getByText('MEDIU').click();
 });

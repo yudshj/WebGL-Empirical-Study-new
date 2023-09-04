@@ -8,6 +8,7 @@ test.use({
 test('test', async ({ page }) => {
   await page.goto('https://gis.cityofmontrose.org/montrosejs/');
   await page.getByRole('button', { name: 'Agree', exact: true }).click();
+  await page.locator('canvas').click();
   await page.getByRole('button', { name: 'Zoom in' }).click();
   await page.getByRole('button', { name: 'Zoom in' }).click();
 });

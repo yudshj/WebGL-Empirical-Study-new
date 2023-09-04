@@ -7,4 +7,10 @@ test.use({
 
 test('test', async ({ page }) => {
   await page.goto('https://casino.gp2fun.com/html5/casino/');
+  await page.locator('canvas').click({
+    position: {
+      x: 616,
+      y: 435
+    }
+  });
 });

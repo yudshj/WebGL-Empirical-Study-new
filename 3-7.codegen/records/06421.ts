@@ -9,15 +9,8 @@ test('test', async ({ page }) => {
   await page.goto('https://casino.gp2fun.net/html5/casino/');
   await page.locator('canvas').click({
     position: {
-      x: 609,
-      y: 433
-    }
-  });
-  await page.goto('https://casino.gp2fun.net/html5/casino/');
-  await page.locator('canvas').click({
-    position: {
-      x: 613,
-      y: 433
+      x: 611,
+      y: 435
     }
   });
 });

@@ -11,13 +11,4 @@ test('test', async ({ page }) => {
   await page.getByRole('link', { name: 'Go to next month' }).click();
   await page.getByRole('link', { name: 'Go to next month' }).click();
   await page.getByRole('link', { name: 'Go to next month' }).click();
-  await page.getByRole('link', { name: 'Go to next month' }).click();
-  await page.getByRole('link', { name: 'Go to next month' }).click();
-  await page.getByRole('link', { name: 'Go to next month' }).click();
-  await page.getByRole('link', { name: 'Go to next month' }).click();
-  await page.getByRole('link', { name: 'Go to next month' }).click();
-  await page.getByRole('link', { name: 'Go to next month' }).click();
-  await page.getByRole('link', { name: 'Go to next month' }).click();
-  await page.getByRole('link', { name: 'Go to next month' }).click();
-  await page.getByRole('link', { name: 'Go to next month' }).click();
 });
