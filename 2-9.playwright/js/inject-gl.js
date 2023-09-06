@@ -122,46 +122,37 @@ const inject_functions = {
         context.maghsk.pixelsRead += width * height;
     },
     'texImage': (name, args, ret, context) => {
-        for (const arg of args) {
-            if (typeof arg === 'object' && arg && arg.constructor && arg.constructor.name) {
-                context.maghsk.counter.textureTypes[arg.constructor.name] = (context.maghsk.counter.textureTypes[arg.constructor.name] || 0) + 1;
-                if (   arg instanceof ImageData
-                    || arg instanceof HTMLImageElement
-                    || arg instanceof HTMLCanvasElement
-                    // || arg instanceof HTMLVideoElement
-                    || arg instanceof OffscreenCanvas
-                    || arg instanceof ImageBitmap) {
-                        context.maghsk.counter.textureSize.push([arg.width, arg.height]);
-                    }
-                else {
-                    if (arg && 'byteLength' in arg) {
-                        context.maghsk.counter.textureBytesSent += arg.byteLength;
-                    }
+        if (context.__hyd__cache__.has(args[0])) {
+            return;
+        }
+        const internalFormat = args[2];
+        if (args.length == 6) {
+            for (const arg of args) {
+                if (typeof arg === 'object' && arg && arg.constructor && arg.constructor.name) {
+                    context.maghsk.counter.textureTypes[arg.constructor.name] = (context.maghsk.counter.textureTypes[arg.constructor.name] || 0) + 1;
+                    if (   arg instanceof ImageData
+                        || arg instanceof HTMLImageElement
+                        || arg instanceof HTMLCanvasElement
+                        // || arg instanceof HTMLVideoElement
+                        || arg instanceof OffscreenCanvas
+                        || arg instanceof ImageBitmap) {
+                            context.maghsk.counter.textureFormat.push([internalFormat, arg.width, arg.height]);
+                        }
+                    break;
                 }
-                break;
             }
+        } else {
+            context.maghsk.counter.textureFormat.push([internalFormat, args[3], args[4]]);
         }
     },
-    'texSubImage': (name, args, ret, context) => {
-        for (const arg of args) {
-            if (typeof arg === 'object' && arg && arg.constructor && arg.constructor.name) {
-                context.maghsk.counter.textureTypes[arg.constructor.name] = (context.maghsk.counter.textureTypes[arg.constructor.name] || 0) + 1;
-                if (   arg instanceof ImageData
-                    || arg instanceof HTMLImageElement
-                    || arg instanceof HTMLCanvasElement
-                    // || arg instanceof HTMLVideoElement
-                    || arg instanceof OffscreenCanvas
-                    || arg instanceof ImageBitmap) {
-                        context.maghsk.counter.textureSize.push([arg.width, arg.height]);
-                    }
-                else {
-                    if (arg && 'byteLength' in arg) {
-                        context.maghsk.counter.textureBytesSent += arg.byteLength;
-                    }
-                }
-                break;
-            }
+    'compressedTexImage': (name, args, ret, context) => {
+        if (context.__hyd__cache__.has(args[0])) {
+            return;
         }
+        const internalFormat = args[2];
+        const width = args[3];
+        const height = args[4];
+        context.maghsk.counter.compressedTextureFormat.push([internalFormat, width, height]);
     },
     'create': (name, args, ret, context) => {
         const shortName = name.substring(6);
@@ -211,6 +202,7 @@ function HydNewGetContext() {
         
         const when = performance.now();
         context.__hyd_ext_WEBGL_debug_shaders = context.getExtension("WEBGL_debug_shaders");
+        context.__hyd__cache__ = new Set();
         context.maghsk = {
             exception: "",
             createTime: when,
@@ -245,8 +237,12 @@ function HydNewGetContext() {
                     6: 0,
                 },
 
-                textureSize: [],
-                // textureBytesSent: 0,
+                textureFormat: [],
+                compressedTextureFormat: [],
+
+                // textureBytesSent: 0, // updated by sub
+                // compressedTextureBytesSent: 0, // updated by sub
+                
                 textureTypes: {},
             },
             extensions: [],
@@ -271,6 +267,8 @@ function HydNewGetContext() {
                         context[name] = function (...args) {
                             const ret = origin.apply(context, args);
                             if (HYD_RECORD) {
+                                // context.maghsk.counter.funcCount[name] = (context.maghsk.counter.funcCount[name] || [])
+                                // context.maghsk.counter.funcCount[name].push(performance.now() - when);
                                 context.maghsk.counter.funcCount[name] = (context.maghsk.counter.funcCount[name] || 0) + 1;
                                 try {
                                     func.apply(this, [name, args, ret, context]);
