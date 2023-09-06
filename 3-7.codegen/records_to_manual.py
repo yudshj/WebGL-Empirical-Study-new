@@ -7,7 +7,7 @@ def main():
         fp = out_path.open('w', encoding='utf-8')
     else:
         fp = sys.stdout
-    records_path = Path('records')
+    records_path = Path(__file__).parent / 'records'
     fp.write('''import { Page } from "@playwright/test";
 
 export const manual: { [key: string]: (page: Page) => Promise<void> } = {

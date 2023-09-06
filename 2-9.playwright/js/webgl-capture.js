@@ -15,6 +15,8 @@ const HydUint16Array = Uint16Array;
 const HydUint32Array = Uint32Array;
 const HydUint8Array = Uint8Array;
 const HydUint8ClampedArray = Uint8ClampedArray;
+// const HydSharedArrayBuffer = SharedArrayBuffer;
+const HydDataView = DataView;
 const HydMaxSerializeSize = 256 * 1024 * 1024;
 const HydMaxArraySize = 16 * 1024 * 1024;
 let HydAllSerialized = true;
@@ -118,13 +120,15 @@ const HydWebGLCapture = (function () {
     }
   }
 
-  function checkArrayForUniform() { }
-  function checkArrayForUniformWithOffset() { }
-  function checkArrayForUniformWithOffsetAndLength() { }
-  function checkTypedArrayWithOffset() { }
-  function checkOptionalTypedArrayWithOffset() { }
-  function checkBufferSourceWithOffset() { }
-  function checkBufferSourceWithOffsetAndLength() { }
+  function checkArrayForUniform(length) { return (args) => [0, length * 4, args]; }
+  function checkArrayForUniformWithOffset(offset, length) { return (args) => [args[offset], length * 4, args.slice(0, -1)]; }
+  function checkArrayForUniformWithOffsetAndLength(offset, length) { return (args) => [args[offset], length * 4, args.slice(0, -2)]; }
+  // function checkArrayForUniformWithOffsetAndLength(offset, length) { return (args) => [args[offset], args[length], args.slice(0, -2)]; }
+  function checkTypedArrayWithOffset(offset) { return (args) => [args[offset], undefined, args.slice(0, -1)]; }
+  function checkTypedArrayWithOffsetAndLength(offset, length) { return (args) => [args[offset], args[length], args.slice(0, -2)]; }
+  // function checkOptionalTypedArrayWithOffset(offset) { return (args) => [args[offset], undefined, args.slice(0, -1)]; }
+  function checkBufferSourceWithOffset(offset) { return (args) => [args[offset], undefined, args.slice(0, -1)]; }
+  function checkBufferSourceWithOffsetAndLength(offset, length) { return (args) => [args[offset], args[length], args.slice(0, -2)]; }
   function getUniformNameErrorMsg() { }
 
   /**
@@ -196,22 +200,22 @@ const HydWebGLCapture = (function () {
     'texParameterf': { 3: { enums: [0, 1], numbers: [2] } },
     'texParameteri': { 3: { enums: [0, 1], numbers: [2] } },
     'texImage2D': {
-      9: { enums: [0, 2, 6, 7], numbers: [1, 3, 4, 5], arrays: [8], },
-      6: { enums: [0, 2, 3, 4], numbers: [1], arrays: [5] },
-      10: { enums: [0, 2, 6, 7], numbers: [1, 3, 4, 5, 9], arrays: { 8: checkOptionalTypedArrayWithOffset }, }, // WebGL2
+      6: { enums: [0, 2, 3, 4], numbers: [1] },
+      9: { enums: [0, 2, 6, 7], numbers: [1, 3, 4, 5] },
+      10: { enums: [0, 2, 6, 7], numbers: [1, 3, 4, 5, 9], arrays: { 8: checkTypedArrayWithOffset(9) }, }, // WebGL2
     },
     'texImage3D': {
       10: { enums: [0, 2, 7, 8], numbers: [1, 3, 4, 5] },  // WebGL2
-      11: { enums: [0, 2, 7, 8], numbers: [1, 3, 4, 5, 10], arrays: { 9: checkTypedArrayWithOffset } },  // WebGL2
+      11: { enums: [0, 2, 7, 8], numbers: [1, 3, 4, 5, 10], arrays: { 9: checkTypedArrayWithOffset(10) } },  // WebGL2
     },
     'texSubImage2D': {
-      9: { enums: [0, 6, 7], numbers: [1, 2, 3, 4, 5], arrays: [8] },
-      7: { enums: [0, 4, 5], numbers: [1, 2, 3], arrays: [6] },
-      10: { enums: [0, 6, 7], numbers: [1, 2, 3, 4, 5, 9], arrays: { 9: checkTypedArrayWithOffset } },  // WebGL2
+      9: { enums: [0, 6, 7], numbers: [1, 2, 3, 4, 5] },
+      7: { enums: [0, 4, 5], numbers: [1, 2, 3] },
+      10: { enums: [0, 6, 7], numbers: [1, 2, 3, 4, 5, 9], arrays: { 8: checkTypedArrayWithOffset(9) } },  // WebGL2
     },
     'texSubImage3D': {
       11: { enums: [0, 8, 9], numbers: [1, 2, 3, 4, 5, 6, 7] },  // WebGL2
-      12: { enums: [0, 8, 9], numbers: [1, 2, 3, 4, 5, 6, 7, 11], arrays: { 10: checkTypedArrayWithOffset } },  // WebGL2
+      12: { enums: [0, 8, 9], numbers: [1, 2, 3, 4, 5, 6, 7, 11], arrays: { 10: checkTypedArrayWithOffset(11) } },  // WebGL2
     },
     'texStorage2D': { 5: { enums: [0, 2], numbers: [1, 3, 4] } },  // WebGL2
     'texStorage3D': { 6: { enums: [0, 2], numbers: [1, 3, 4, 6] } },  // WebGL2
@@ -221,40 +225,40 @@ const HydWebGLCapture = (function () {
     'generateMipmap': { 1: { enums: [0] } },
     'compressedTexImage2D': {
       7: { enums: [0, 2], numbers: [1, 3, 4, 5] },
-      8: { enums: [0, 2], numbers: [1, 3, 4, 5, 7] },  // WebGL2
-      9: { enums: [0, 2], numbers: [1, 3, 4, 5, 7, 8] },  // WebGL2
+      8: { enums: [0, 2], numbers: [1, 3, 4, 5, 7], arrays: { 6: checkTypedArrayWithOffset(7) } },  // WebGL2
+      9: { enums: [0, 2], numbers: [1, 3, 4, 5, 7, 8], arrays: { 6: checkTypedArrayWithOffsetAndLength(7, 8) } },  // WebGL2
     },
     'compressedTexSubImage2D': {
       8: { enums: [0, 6], numbers: [1, 2, 3, 4, 5] },
-      9: { enums: [0, 6], numbers: [1, 2, 3, 4, 5, 8] },  // WebGL2
-      10: { enums: [0, 6], numbers: [1, 2, 3, 4, 5, 8, 9] },  // WebGL2
+      9: { enums: [0, 6], numbers: [1, 2, 3, 4, 5, 8], arrays: { 7: checkTypedArrayWithOffset(8) } },  // WebGL2
+      10: { enums: [0, 6], numbers: [1, 2, 3, 4, 5, 8, 9], arrays: { 7: checkTypedArrayWithOffsetAndLength(8, 9) } },  // WebGL2
     },
     'compressedTexImage3D': {
       8: { enums: [0, 2], numbers: [1, 3, 4, 5, 6] },  // WebGL2
-      9: { enums: [0, 2], numbers: [1, 3, 4, 5, 6, -7, 8] },  // WebGL2
-      10: { enums: [0, 2], numbers: [1, 3, 4, 5, 6, 8, 9] },  // WebGL2
+      9: { enums: [0, 2], numbers: [1, 3, 4, 5, 6, 8], arrays: { 7: checkTypedArrayWithOffset(8) } },  // WebGL2
+      10: { enums: [0, 2], numbers: [1, 3, 4, 5, 6, 8, 9], arrays: { 7: checkTypedArrayWithOffsetAndLength(8, 9) } },  // WebGL2
     },
     'compressedTexSubImage3D': {
-      12: { enums: [0, 8], numbers: [1, 2, 3, 4, 5, 6, 7, 8, 10, 11] },  // WebGL2
-      11: { enums: [0, 8], numbers: [1, 2, 3, 4, 5, 6, 7, 8, -9, 10] },  // WebGL2
-      10: { enums: [0, 8], numbers: [1, 2, 3, 4, 5, 6, 7, 8] },  // WebGL2
+      10: { enums: [0, 8], numbers: [1, 2, 3, 4, 5, 6, 7] },  // WebGL2
+      11: { enums: [0, 8], numbers: [1, 2, 3, 4, 5, 6, 7, 10], arrays: { 9: checkTypedArrayWithOffset(10) } },  // WebGL2
+      12: { enums: [0, 8], numbers: [1, 2, 3, 4, 5, 6, 7, 10, 11], arrays: { 9: checkTypedArrayWithOffsetAndLength(10, 11) } },  // WebGL2
     },
 
     // Buffer objects
 
     'bindBuffer': { 2: { enums: [0] } },
     'bufferData': {
-      3: { enums: [0, 2], numbers: [-1], arrays: [-1] },
-      4: { enums: [0, 2], numbers: [-1, 3], arrays: { 1: checkBufferSourceWithOffset } },  // WebGL2
-      5: { enums: [0, 2], numbers: [-1, 3, 4], arrays: { 1: checkBufferSourceWithOffsetAndLength } },  // WebGL2
+      3: { enums: [0, 2] },
+      4: { enums: [0, 2], numbers: [3], arrays: { 1: checkBufferSourceWithOffset(3) } },  // WebGL2
+      5: { enums: [0, 2], numbers: [3, 4], arrays: { 1: checkBufferSourceWithOffsetAndLength(3, 4) } },  // WebGL2
     },
     'bufferSubData': {
-      3: { enums: [0], numbers: [1], arrays: [2] },
-      4: { enums: [0], numbers: [1, 3], arrays: { 2: checkBufferSourceWithOffset } },  // WebGL2
-      5: { enums: [0], numbers: [1, 3, 4], arrays: { 2: checkBufferSourceWithOffsetAndLength } },  // WebGL2
+      3: { enums: [0], numbers: [1] },
+      4: { enums: [0], numbers: [1, 3], arrays: { 2: checkBufferSourceWithOffset(3) } },  // WebGL2
+      5: { enums: [0], numbers: [1, 3, 4], arrays: { 2: checkBufferSourceWithOffsetAndLength(3, 4) } },  // WebGL2
     },
     'copyBufferSubData': {
-      5: { enums: [0], numbers: [2, 3, 4] },  // WebGL2
+      5: { enums: [0, 1], numbers: [2, 3, 4] },  // WebGL2
     },
     'getBufferParameter': { 2: { enums: [0, 1] } },
     'getBufferSubData': {
@@ -326,19 +330,19 @@ const HydWebGLCapture = (function () {
 
     // Multiple Render Targets
 
-    'drawBuffersWebGL': { 1: { enums: { 0: enumArrayToString, }, arrays: [0] } },  // WEBGL_draw_buffers
-    'drawBuffers': { 1: { enums: { 0: enumArrayToString, }, arrays: [0] } },  // WebGL2
+    'drawBuffersWebGL': { 1: { enums: { 0: enumArrayToString, } } },  // WEBGL_draw_buffers
+    'drawBuffers': { 1: { enums: { 0: enumArrayToString, } } },  // WebGL2
     'clearBufferfv': {
-      3: { enums: [0], numbers: [1], arrays: [2] },  // WebGL2
-      4: { enums: [0], numbers: [1, 2], arrays: [2] },  // WebGL2
+      3: { enums: [0], numbers: [1] },  // WebGL2
+      4: { enums: [0], numbers: [1, 2] },  // WebGL2
     },
     'clearBufferiv': {
-      3: { enums: [0], numbers: [1], arrays: [2] },  // WebGL2
-      4: { enums: [0], numbers: [1, 2], arrays: [2] },  // WebGL2
+      3: { enums: [0], numbers: [1] },  // WebGL2
+      4: { enums: [0], numbers: [1, 2] },  // WebGL2
     },
     'clearBufferuiv': {
-      3: { enums: [0], numbers: [1], arrays: [2] },  // WebGL2
-      4: { enums: [0], numbers: [1, 2], arrays: [2] },  // WebGL2
+      3: { enums: [0], numbers: [1] },  // WebGL2
+      4: { enums: [0], numbers: [1, 2] },  // WebGL2
     },
     'clearBufferfi': { 4: { enums: [0], numbers: [1, 2, 3] } },  // WebGL2
 
@@ -355,60 +359,71 @@ const HydWebGLCapture = (function () {
 
     'uniform1fv': {
       2: { arrays: { 1: checkArrayForUniform(1) } },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(1) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(1) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 1) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 1) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
     'uniform2fv': {
       2: { arrays: { 1: checkArrayForUniform(2) } },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(2) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 2) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 2) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
     'uniform3fv': {
       2: { arrays: { 1: checkArrayForUniform(3) } },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(3) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(3) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 3) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
     'uniform4fv': {
       2: { arrays: { 1: checkArrayForUniform(4) } },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(4) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(4) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 4) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 4) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
 
     'uniform1iv': {
       2: { arrays: { 1: checkArrayForUniform(1) } },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(1) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(1) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 1) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 1) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
     'uniform2iv': {
       2: { arrays: { 1: checkArrayForUniform(2) } },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(2) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 2) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 2) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
     'uniform3iv': {
       2: { arrays: { 1: checkArrayForUniform(3) } },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(3) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(3) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 3) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
     'uniform4iv': {
       2: { arrays: { 1: checkArrayForUniform(4) } },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(4) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(4) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 4) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 4) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
 
     'uniformMatrix2fv': {
       3: { arrays: { 2: checkArrayForUniform(4) } },
-      4: { arrays: { 2: checkArrayForUniformWithOffset(4) }, numbers: [3] },
-      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(4) }, numbers: [3, 4] },
+      4: { arrays: { 2: checkArrayForUniformWithOffset(3, 4) }, numbers: [3] },
+      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 4) }, numbers: [3] },
+      // 5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 4) }, numbers: [3, 4] },
     },
     'uniformMatrix3fv': {
       3: { arrays: { 2: checkArrayForUniform(9) } },
-      4: { arrays: { 2: checkArrayForUniformWithOffset(9) }, numbers: [3] },
-      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(9) }, numbers: [3, 4] },
+      4: { arrays: { 2: checkArrayForUniformWithOffset(3, 9) }, numbers: [3] },
+      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 9) }, numbers: [3] },
+      // 5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 4) }, numbers: [3, 4] },
     },
     'uniformMatrix4fv': {
       3: { arrays: { 2: checkArrayForUniform(16) } },
-      4: { arrays: { 2: checkArrayForUniformWithOffset(16) }, numbers: [3] },
-      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(16) }, numbers: [3, 4] },
+      4: { arrays: { 2: checkArrayForUniformWithOffset(3, 16) }, numbers: [3] },
+      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 16) }, numbers: [3] },
+      // 5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 4) }, numbers: [3, 4] },
     },
 
     'uniform1ui': { 2: { numbers: [1] } },  // WebGL2
@@ -418,55 +433,65 @@ const HydWebGLCapture = (function () {
 
     'uniform1uiv': {  // WebGL2
       2: { arrays: { 1: checkArrayForUniform(1) }, },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(1) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(1) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 1) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 1) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
     'uniform2uiv': {  // WebGL2
       2: { arrays: { 1: checkArrayForUniform(2) }, },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(2) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 2) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 2) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
     'uniform3uiv': {  // WebGL2
       2: { arrays: { 1: checkArrayForUniform(3) }, },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(3) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(3) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 3) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
     'uniform4uiv': {  // WebGL2
       2: { arrays: { 1: checkArrayForUniform(4) }, },
-      3: { arrays: { 1: checkArrayForUniformWithOffset(4) }, numbers: [2] },
-      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(4) }, numbers: [2, 3] },
+      3: { arrays: { 1: checkArrayForUniformWithOffset(2, 4) }, numbers: [2] },
+      4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 4) }, numbers: [2] },
+      // 4: { arrays: { 1: checkArrayForUniformWithOffsetAndLength(2, 3) }, numbers: [2, 3] },
     },
     'uniformMatrix3x2fv': {  // WebGL2
       3: { arrays: { 2: checkArrayForUniform(6) }, },
-      4: { arrays: { 2: checkArrayForUniformWithOffset(6) }, numbers: [3] },
-      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(6) }, numbers: [3, 4] },
+      4: { arrays: { 2: checkArrayForUniformWithOffset(3, 6) }, numbers: [3] },
+      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 6) }, numbers: [3] },
+      // 5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 4) }, numbers: [3, 4] },
     },
     'uniformMatrix4x2fv': {  // WebGL2
       3: { arrays: { 2: checkArrayForUniform(8) }, },
-      4: { arrays: { 2: checkArrayForUniformWithOffset(8) }, numbers: [3] },
-      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(8) }, numbers: [3, 4] },
+      4: { arrays: { 2: checkArrayForUniformWithOffset(3, 8) }, numbers: [3] },
+      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 8) }, numbers: [3] },
+      // 5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 4) }, numbers: [3, 4] },
     },
 
     'uniformMatrix2x3fv': {  // WebGL2
       3: { arrays: { 2: checkArrayForUniform(6) }, },
-      4: { arrays: { 2: checkArrayForUniformWithOffset(6) }, numbers: [3] },
-      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(6) }, numbers: [3, 4] },
+      4: { arrays: { 2: checkArrayForUniformWithOffset(3, 6) }, numbers: [3] },
+      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 6) }, numbers: [3] },
+      // 5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 4) }, numbers: [3, 4] },
     },
     'uniformMatrix4x3fv': {  // WebGL2
       3: { arrays: { 2: checkArrayForUniform(12) }, },
-      4: { arrays: { 2: checkArrayForUniformWithOffset(12) }, numbers: [3] },
-      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(12) }, numbers: [3, 4] },
+      4: { arrays: { 2: checkArrayForUniformWithOffset(3, 12) }, numbers: [3] },
+      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 12) }, numbers: [3] },
+      // 5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 4) }, numbers: [3, 4] },
     },
 
     'uniformMatrix2x4fv': {  // WebGL2
       3: { arrays: { 2: checkArrayForUniform(8) }, },
-      4: { arrays: { 2: checkArrayForUniformWithOffset(8) }, numbers: [3] },
-      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(8) }, numbers: [3, 4] },
+      4: { arrays: { 2: checkArrayForUniformWithOffset(3, 8) }, numbers: [3] },
+      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 8) }, numbers: [3] },
+      // 5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 4) }, numbers: [3, 4] },
     },
     'uniformMatrix3x4fv': {  // WebGL2
       3: { arrays: { 2: checkArrayForUniform(12) }, },
-      4: { arrays: { 2: checkArrayForUniformWithOffset(12) }, numbers: [3] },
-      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(12) }, numbers: [3, 4] },
+      4: { arrays: { 2: checkArrayForUniformWithOffset(3, 12) }, numbers: [3] },
+      5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 12) }, numbers: [3] },
+      // 5: { arrays: { 2: checkArrayForUniformWithOffsetAndLength(3, 4) }, numbers: [3, 4] },
     },
 
     // attribute value setters
@@ -475,15 +500,15 @@ const HydWebGLCapture = (function () {
     'vertexAttrib3f': { 4: { numbers: [0, 1, 2, 3] } },
     'vertexAttrib4f': { 5: { numbers: [0, 1, 2, 3, 4] } },
 
-    'vertexAttrib1fv': { 2: { numbers: [0], arrays: [1] } },
-    'vertexAttrib2fv': { 2: { numbers: [0], arrays: [1] } },
-    'vertexAttrib3fv': { 2: { numbers: [0], arrays: [1] } },
-    'vertexAttrib4fv': { 2: { numbers: [0], arrays: [1] } },
+    'vertexAttrib1fv': { 2: { numbers: [0] } },
+    'vertexAttrib2fv': { 2: { numbers: [0] } },
+    'vertexAttrib3fv': { 2: { numbers: [0] } },
+    'vertexAttrib4fv': { 2: { numbers: [0] } },
 
     'vertexAttribI4i': { 5: { numbers: [0, 1, 2, 3, 4] } },  // WebGL2
-    'vertexAttribI4iv': { 2: { numbers: [0], arrays: [1] } },  // WebGL2
+    'vertexAttribI4iv': { 2: { numbers: [0] } },  // WebGL2
     'vertexAttribI4ui': { 5: { numbers: [0, 1, 2, 3, 4] } },  // WebGL2
-    'vertexAttribI4uiv': { 2: { numbers: [0], arrays: [1] } },  // WebGL2
+    'vertexAttribI4uiv': { 2: { numbers: [0] } },  // WebGL2
 
     // QueryObjects
 
@@ -513,7 +538,7 @@ const HydWebGLCapture = (function () {
     'bindBufferBase': { 3: { enums: [0], numbers: [1] } },  // WebGL2
     'bindBufferRange': { 5: { enums: [0], numbers: [1, 3, 4] } },  // WebGL2
     'getIndexedParameter': { 2: { enums: [0], numbers: [1] } },  // WebGL2
-    'getActiveUniforms': { 3: { enums: [2] }, arrays: [1] },  // WebGL2
+    'getActiveUniforms': { 3: { enums: [2] } },  // WebGL2
     'getActiveUniformBlockParameter': { 3: { enums: [2], numbers: [1] } },  // WebGL2
     'getActiveUniformBlockName': { 2: { numbers: [1] } }, // WebGL2
     'transformFeedbackVaryings': { 3: { enums: [2] } }, // WebGL2
@@ -556,9 +581,10 @@ const HydWebGLCapture = (function () {
   const crRE = /\r/g;
   const quoteRE = /"/g;
 
-  function glValueToString(ctx, functionName, numArgs, argumentIndex, value, helper) {
+  function glValueToString(ctx, functionName, numArgs, argumentIndex, value, helper, args) {
     const funcInfos = glFunctionInfos[functionName];
     const funcInfo = funcInfos ? funcInfos[numArgs] : undefined;
+
     if (value === undefined) {
       return 'undefined';
     } else if (value === null) {
@@ -596,7 +622,7 @@ const HydWebGLCapture = (function () {
           helper.zeroArrays.set(tmp, helper.zeroArrays.size);
         }
         return `zeroArrays[${helper.zeroArrays.get(tmp)}]`;
-      } 
+      }
       const canvas = document.createElement('canvas');
       canvas.height = value.height;
       canvas.width = value.width;
@@ -627,8 +653,7 @@ const HydWebGLCapture = (function () {
       return helper.doTexImage2DForBase64(base64);
     } else if (value.length !== undefined) {
       if (funcInfo && funcInfo.read && funcInfo.read[argumentIndex]) {
-        for (let ii = 0; ii < typedArrays.length; ++ii) {
-          const type = typedArrays[ii];
+        for (const type of typedArrays) {
           if (value instanceof type.ctor) {
             const tmp = `new ${type.name}(${value.length})`;
             if (helper.zeroArrays) {
@@ -660,13 +685,13 @@ const HydWebGLCapture = (function () {
             const base64String = window.btoa(hydArrayToBinaryString(binaryData));
             const luv = `base64ToTypedArray("${base64String}", ${type.name})`;
             let pos = helper.typedArraysMap.get(luv);
-          
+
             if (pos === undefined) {
               pos = helper.typedArraysMap.size;
               helper.capturer.serializeLength += base64String.length;
               helper.typedArraysMap.set(luv, pos);
             }
-          
+
             return `typedArrays[${pos}]`;
           }
         }
@@ -682,7 +707,7 @@ const HydWebGLCapture = (function () {
         values.push(sub.join(","));
       }
       return `\n[\n${values.join(",\n")}\n]`;
-    } else if (value instanceof HydArrayBuffer) {
+    } else if (value instanceof HydArrayBuffer || value instanceof HydDataView) {
       if (helper.capturer.serializeLength > HydMaxSerializeSize || value.byteLength > HydMaxArraySize) {
         HydAllSerialized = false;
         tmp = `new ArrayBuffer(${value.byteLength})`;
@@ -720,7 +745,7 @@ const HydWebGLCapture = (function () {
         }
         const values = [];
         for (const [k, v] of Object.entries(value)) {
-          values.push(`"${k}": ${glValueToString(ctx, "", 0, -1, v, helper)}`);
+          values.push(`"${k}": ${glValueToString(ctx, "", 0, -1, v, helper, null)}`);
         }
         return `{\n    ${values.join(",\n    ")}}`;
       }
@@ -728,15 +753,68 @@ const HydWebGLCapture = (function () {
     return value.toString();
   }
 
-  function glArgsToString(ctx, functionName, args, helper) {
+  function glArgsToStringList(ctx, functionName, args, helper) {
     if (args === undefined) {
-      return "";
+      return [];
+    }
+
+    const funcInfos = glFunctionInfos[functionName];
+    const funcInfo = funcInfos ? funcInfos[args.length] : undefined;
+    if (funcInfo && funcInfo.arrays) {
+      for (let argumentIndex = 0; argumentIndex < args.length; ++argumentIndex) {
+        if (funcInfo.arrays[argumentIndex] && typeof (funcInfo.arrays[argumentIndex]) === 'function') {
+          let value = args[argumentIndex];
+          if (value instanceof HydArrayBuffer || value instanceof HydDataView) {
+            const [offset, length, newArgs] = funcInfo.arrays[argumentIndex](args);
+            if (newArgs) {
+              args = newArgs;
+            }
+            if (offset) {
+              if (length) {
+                value = value.slice(offset, offset + length);
+              } else {
+                value = value.slice(offset);
+              }
+            }
+            args[argumentIndex] = value;
+            break;
+          } else {
+            let found = false;
+            for (const type of typedArrays) {
+              if (value instanceof type.ctor) {
+                const b = value.BYTES_PER_ELEMENT;
+                found = true;
+                const [offset, length, newArgs] = funcInfo.arrays[argumentIndex](args);
+                if (newArgs) {
+                  args = newArgs;
+                }
+                if (offset) {
+                  if (length) {
+                    value = value.slice(offset / b, offset / b + length / b);
+                  } else {
+                    value = value.slice(offset / b);
+                  }
+                }
+                args[argumentIndex] = value;
+                break;
+              }
+            }
+            if (found) {
+              break;
+            }
+          }
+        }
+      }
     }
     const values = [];
     for (let ii = 0; ii < args.length; ++ii) {
-      values.push(glValueToString(ctx, functionName, args.length, ii, args[ii], helper));
+      values.push(glValueToString(ctx, functionName, args.length, ii, args[ii], helper, args));
     }
-    return values.join(",");
+    return values;
+  }
+
+  function glArgsToString(ctx, functionName, args, helper) {
+    return glArgsToStringList(ctx, functionName, args, helper).join(",");
   }
 
   function makePropertyWrapper(wrapper, original, propertyName) {
@@ -871,7 +949,7 @@ function generateZeroImageData(width, height) {
         this.typedArraysMap.forEach((value, key) => { out.pushLine(`${value}: ${key},`); });
         out.pushLine(`};`);
       }
-      
+
       if (this.shaderSources.length > 0) {
         out.pushLine('const shaderSources = [');
         out.pushLine(this.shaderSources.map(s => `\`${s.replace(/`/g, '\\`')}\``).join(',\n'));
@@ -905,7 +983,7 @@ function generateZeroImageData(width, height) {
 
       out.pushLine('const canvas = document.getElementById("__main-canvas__");');
       // out.pushLine(`const gl = canvas.getContext("${this.ctx.texImage3D ? 'webgl2' : 'webgl'}", ${glValueToString(this.ctx, "getContextAttributes", 0, -1, this.ctx.getContextAttributes())});`);
-      out.pushLine(`const gl = canvas.getContext("${this.ctx.hydCanvasType}", ${glValueToString(this.ctx, "getContextAttributes", 0, -1, this.ctx.getContextAttributes(), this)});`);
+      out.pushLine(`const gl = canvas.getContext("${this.ctx.hydCanvasType}", ${glValueToString(this.ctx, "getContextAttributes", 0, -1, this.ctx.getContextAttributes(), this, null)});`);
 
       // Add extension objects.
       for (const key of Object.keys(this.extensions)) {
@@ -1094,79 +1172,16 @@ function render() {
 
     handle_uniform(name, args) {
       const location = args[0];
-      const captureArgs = [];
-      // let offset = 0;
-      // let length = undefined;
-
-      // const isMatrix = name.indexOf('Matrix') !== -1;
-      // const isVector = name.endsWith('v');
-      // if (isVector) {
-      //   if (isMatrix) {
-      //     length = args[2].length;
-      //     if (args.length > 3) {
-      //       offset = args[3];
-      //     }
-      //     if (args.length > 4) {
-      //       length = args[4];
-      //     }
-      //   } else {
-      //     length = args[1].length;
-      //     if (args.length > 2) {
-      //       offset = args[2];
-      //     }
-      //     if (args.length > 3) {
-      //       length = args[3];
-      //     }
-      //   }
-        
-      //   if (isMatrix) {
-      //     captureArgs.push(args[1].toString());
-      //     captureArgs.push(`[${args[2].slice(offset, offset + length).join(",")}]`);
-      //   } else {
-      //     captureArgs.push(`[${args[1].slice(offset, offset + length).join(",")}]`);
-      //   }
-      // } else {
-        for (let jj = 1; jj < args.length; ++jj) {
-          const v = args[jj];
-          if (v.length) {
-            let s = undefined;
-            if (v.length > 128) {
-              let tmp = undefined;
-              HydAllSerialized = false;
-              for (const type of typedArrays) {
-                if (v instanceof type.ctor) {
-                  tmp = `new ${type.name}(${v.length})`;
-                  break;
-                }
-              }
-              if (!tmp) {
-                tmp = `new Float32Array(${v.length})`;
-              }
-              if (!this.zeroArrays.has(tmp)) {
-                this.zeroArrays.set(tmp, this.zeroArrays.size);
-              }
-              s = `zeroArrays[${this.zeroArrays.get(tmp)}]`;
-            } else {
-              s = `[${Array.from(v).join(",")}]`;
-            }
-            s = `[${Array.from(v).join(",")}]`;
-
-            this.capturer.serializeLength += s.length;
-            captureArgs.push(s);
-          } else {
-            captureArgs.push(v.toString());
-          }
-        // }
-      }
+      const captureArgs = glArgsToStringList(this.ctx, name, args, this);
       // TODO(gman): handle merging of arrays.
       if (location === null) {
-        this.capturer.addData(`gl.${name}(null,${captureArgs.join(",")});`);
+        this.capturer.addData(`gl.${name}(null,${captureArgs.slice(1).join(",")});`);
       } else {
         const info = location.__capture_info__;
         if (this.helper) {
-          this.capturer.addData(`setUniform(gl,"${name}",${getResourceName(this.currentProgram)},"${info.name}",${captureArgs.join(",")}};`);
+          this.capturer.addData(`setUniform(gl,"${name}",${getResourceName(this.currentProgram)},"${info.name}",${captureArgs.slice(1).join(",")}};`);
         } else {
-          this.capturer.addData(`gl.${name}(gl.getUniformLocation(${getResourceName(this.currentProgram)},"${info.name}"),${captureArgs.join(",")});`);
+          this.capturer.addData(`gl.${name}(gl.getUniformLocation(${getResourceName(this.currentProgram)},"${info.name}"),${captureArgs.slice(1).join(",")});`);
         }
       }
       this.ctx[name].apply(this.ctx, args);
