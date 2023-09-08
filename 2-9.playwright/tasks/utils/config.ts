@@ -38,18 +38,21 @@ const headless = false;
 //   ["HYD-3", "http://localhost:8000/"],
 // ];
 export const indexUrls = [
-  ["BUG-0", "http://12storytellers.hands.agency"],
-  ["BUG-1", "http://12vendome.chaumet.com/"],
-  ["BUG-2", "http://360.jomsborg-vineta.com/"],
-  ["BUG-3", "http://accountsavvycpa.com"],
-  ["BUG-4", "https://code.irobot.com"],
-  ["BUG-5", "http://www.kleuterspel.be/"],
-  ["BUG-6", "https://3n1gm4.space/"],
-  ["BUG-7", "http://www.acsce.edu.in/"],
-  ["BUG-8", "https://eikanya.github.io/"],
-  ["BUG-9", "https://code.irobot.com/"],
-  ["BUG-10", "https://www.stickittothestickman.com/"],
+  ["aquarium-0", "https://webglsamples.org/aquarium/aquarium.html?numFish=100000"],
 ];
+// export const indexUrls = [
+//   ["BUG-0", "http://12storytellers.hands.agency"],
+//   ["BUG-1", "http://12vendome.chaumet.com/"],
+//   ["BUG-2", "http://360.jomsborg-vineta.com/"],
+//   ["BUG-3", "http://accountsavvycpa.com"],
+//   ["BUG-4", "https://code.irobot.com"],
+//   ["BUG-5", "http://www.kleuterspel.be/"],
+//   ["BUG-6", "https://3n1gm4.space/"],
+//   ["BUG-7", "http://www.acsce.edu.in/"],
+//   ["BUG-8", "https://eikanya.github.io/"],
+//   ["BUG-9", "https://code.irobot.com/"],
+//   ["BUG-10", "https://www.stickittothestickman.com/"],
+// ];
 
 const launchOptions: LaunchOptionsDict = {};
 
@@ -119,8 +122,18 @@ export const myStartParameters: Protocol.Tracing.startParameters = {
           "browser",
           "cc",
           "cpu_profiler",
+          "devtools",
+          "devtools.contrast",
+          "devtools.timeline",
           "disabled-by-default-cpu_profiler.debug",
           "disabled-by-default-cpu_profiler",
+          "disabled-by-default-devtools.timeline",
+          "disabled-by-default-devtools.timeline.stack",
+          "disabled-by-default-devtools.timeline.picture",
+          "disabled-by-default-devtools.timeline.layers",
+          "disabled-by-default-devtools.timeline.invalidationTracking",
+          "disabled-by-default-devtools.timeline.inputs",
+          "disabled-by-default-devtools.timeline.frame",
           "disabled-by-default-gpu_cmd_queue",
           "disabled-by-default-gpu.dawn",
           "disabled-by-default-gpu.debug",
@@ -156,16 +169,6 @@ export const myStartParameters: Protocol.Tracing.startParameters = {
           "v8",
           "views",
           "viz",
-          "devtools.timeline",
-          "devtools.contrast",
-          "devtools",
-          "disabled-by-default-devtools.timeline.stack",
-          "disabled-by-default-devtools.timeline.picture",
-          "disabled-by-default-devtools.timeline.layers",
-          "disabled-by-default-devtools.timeline.invalidationTracking",
-          "disabled-by-default-devtools.timeline.inputs",
-          "disabled-by-default-devtools.timeline.frame",
-          "disabled-by-default-devtools.timeline"
       ],
       excludedCategories: [
           "*"

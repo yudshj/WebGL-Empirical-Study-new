@@ -46,7 +46,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             let netIdleTimeout = -1;
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 }).catch(() => null);
             await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => null);
-            
+            console.log("network idle 1");
             for (let i = 0; i < 4; i++) {
                 await page.mouse.wheel(0, 512).catch(() => null);
             }
@@ -65,6 +65,9 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 .then(() => { netIdleTimeout = 0; })
                 .catch(() => { netIdleTimeout = 1; })
                 .catch(() => null);
+
+            console.log("network idle 2");
+            console.log("wait for 10 seconds");
                 
             await page.waitForTimeout(10_000);
             
