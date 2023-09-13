@@ -68,16 +68,11 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 .catch(() => null);
 
             const net_idle_time_hp = performance.now();
-            const net_idle_counters: any[] = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
-
-            // await evaluate_script_in_all_frames(page, "HYD_RECORD_RAF = true; window.requestAnimationFrame(callAllRafSignal);", 10_000);
+            const net_idle_rafs = await get_data_in_all_frames(page, "HydGetGLInfo();", 30_000);
 
             await page.waitForTimeout(10_000);
 
             const gl_raf_time_hp = performance.now();
-            // await evaluate_script_in_all_frames(page, "HYD_RECORD_RAF = false;", 10_000);
-            const gl_raf_counters: any[] = await get_data_in_all_frames(page, "window.hydGetCounters();", 10_000);
-
             const gl_rafs = await get_data_in_all_frames(page, "HydGetGLInfo();", 30_000);
 
             const data = {
@@ -92,8 +87,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                     gl_raf_time_hp,
                 },
                 frame: {
-                    net_idle_counters,
-                    gl_raf_counters,
+                    net_idle_rafs,
                     gl_rafs,
                 }
             }
