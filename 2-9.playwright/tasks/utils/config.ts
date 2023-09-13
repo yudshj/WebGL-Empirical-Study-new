@@ -83,9 +83,9 @@ export function getLaunchOptions(name: string): LaunchOptions {
 const proxyPool = [
   // 'socks5://ss.maghsk.site:3539',
   // 'socks5://ss.maghsk.site:3535',
-  // 'socks5://162.105.175.55:10701',
+  'socks5://162.105.175.55:10701',
   'socks5://162.105.175.55:13838',
-  // 'socks5://162.105.175.55:13839',
+  'socks5://162.105.175.55:13839',
 ];
 
 export const contextOptions: BrowserContextOptions = { locale: 'en-US', ignoreHTTPSErrors: true, permissions: ['camera', 'microphone'] };

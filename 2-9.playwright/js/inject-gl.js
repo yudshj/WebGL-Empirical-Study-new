@@ -8,14 +8,14 @@ window.hydUsedWebgl = null;
 window.hydUsedOffScreenCanvasTypes = new Set();
 window.hydFrames = 0;
 
-function hydGetCounters() {
-    return {
-        frames: window.hydFrames,
-        contextsNum: window.hydGlContexts.size,
-        usedWebGL: window.hydUsedWebgl,
-        usedOffScreenCanvas: Array.from(window.hydUsedOffScreenCanvasTypes).sort(),
-    }
-}
+// function hydGetCounters() {
+//     return {
+//         frames: window.hydFrames,
+//         contextsNum: window.hydGlContexts.size,
+//         usedWebGL: window.hydUsedWebgl,
+//         usedOffScreenCanvas: Array.from(window.hydUsedOffScreenCanvasTypes).sort(),
+//     }
+// }
 
 function hydFrameCount() {
     window.hydFrames++;
@@ -60,37 +60,55 @@ const inject_functions = {
         }
     },
     'useProgram': (name, args, ret, context) => {
-        if (args[0]) context.maghsk.programs[args[0].__hyd_program_id__].useCounts += 1;
+        if (args[0]) {
+            context.maghsk.programs[args[0].__hyd_program_id__].useCounts += 1;
+        }
+        context.__hyd_program__ = args[0];
     },
     'drawArrays': (name, args, ret, context) => {
         const count = args[2];
         context.maghsk.counter.vertexCount += count;
-        context.maghsk.counter.semanticVertexCount[args[0]] += count;
-        context.maghsk.counter.semanticVertexCalled[args[0]] += 1;
+        if (context.__hyd_program__) {
+            context.maghsk.programs[context.__hyd_program__.__hyd_program_id__].vertexCount += count;
+        }
+        // context.maghsk.counter.semanticVertexCount[args[0]] += count;
+        // context.maghsk.counter.semanticVertexCalled[args[0]] += 1;
     },
     'drawElements': (name, args, ret, context) => {
         const count = args[1];
         context.maghsk.counter.vertexCount += count;
-        context.maghsk.counter.semanticVertexCount[args[0]] += count;
-        context.maghsk.counter.semanticVertexCalled[args[0]] += 1;
+        if (context.__hyd_program__) {
+            context.maghsk.programs[context.__hyd_program__.__hyd_program_id__].vertexCount += count;
+        }
+        // context.maghsk.counter.semanticVertexCount[args[0]] += count;
+        // context.maghsk.counter.semanticVertexCalled[args[0]] += 1;
     },
     'drawArraysInstanced': (name, args, ret, context) => {
         const count = args[2] * args[3];
         context.maghsk.counter.vertexCount += count;
-        context.maghsk.counter.semanticVertexCount[args[0]] += count;
-        context.maghsk.counter.semanticVertexCalled[args[0]] += 1;
+        if (context.__hyd_program__) {
+            context.maghsk.programs[context.__hyd_program__.__hyd_program_id__].vertexCount += count;
+        }
+        // context.maghsk.counter.semanticVertexCount[args[0]] += count;
+        // context.maghsk.counter.semanticVertexCalled[args[0]] += 1;
     },
     'drawElementsInstanced': (name, args, ret, context) => {
         const count = args[1] * args[4];
         context.maghsk.counter.vertexCount += count;
-        context.maghsk.counter.semanticVertexCount[args[0]] += count;
-        context.maghsk.counter.semanticVertexCalled[args[0]] += 1;
+        if (context.__hyd_program__) {
+            context.maghsk.programs[context.__hyd_program__.__hyd_program_id__].vertexCount += count;
+        }
+        // context.maghsk.counter.semanticVertexCount[args[0]] += count;
+        // context.maghsk.counter.semanticVertexCalled[args[0]] += 1;
     },
     'drawRangeElements': (name, args, ret, context) => {
         const count = args[3];
         context.maghsk.counter.vertexCount += count;
-        context.maghsk.counter.semanticVertexCount[args[0]] += count;
-        context.maghsk.counter.semanticVertexCalled[args[0]] += 1;
+        if (context.__hyd_program__) {
+            context.maghsk.programs[context.__hyd_program__.__hyd_program_id__].vertexCount += count;
+        }
+        // context.maghsk.counter.semanticVertexCount[args[0]] += count;
+        // context.maghsk.counter.semanticVertexCalled[args[0]] += 1;
     },
     'bufferData': (name, args, ret, context) => {
         if (args.length == 5) {
@@ -109,7 +127,7 @@ const inject_functions = {
             context.maghsk.counter.bufferSubDataSent += args[4];
         } else {
             for (const arg of args) {
-                if (arg && 'byteLength' in arg) {
+                if (arg && typeof(arg) === 'object' && 'byteLength' in arg) {
                     context.maghsk.counter.bufferSubDataSent += arg['byteLength'];
                     break;
                 }
@@ -122,9 +140,10 @@ const inject_functions = {
         context.maghsk.pixelsRead += width * height;
     },
     'texImage': (name, args, ret, context) => {
-        if (context.__hyd__cache__.has(args[0])) {
+        if (context.__hyd_cache__.has(args[0])) {
             return;
         }
+        context.__hyd_cache__.add(args[0]);
         const internalFormat = args[2];
         if (args.length == 6) {
             for (const arg of args) {
@@ -146,9 +165,10 @@ const inject_functions = {
         }
     },
     'compressedTexImage': (name, args, ret, context) => {
-        if (context.__hyd__cache__.has(args[0])) {
+        if (context.__hyd_cache__.has(args[0])) {
             return;
         }
+        context.__hyd_cache__.add(args[0]);
         const internalFormat = args[2];
         const width = args[3];
         const height = args[4];
@@ -180,6 +200,7 @@ const inject_functions = {
                     linked: false,
                     shaders: [],
                     useCounts: 0,
+                    vertexCount: 0,
                     attributes_num: null,
                     uniforms_num: null,
                 });
@@ -197,12 +218,13 @@ const inject_functions = {
 
 function HydNewGetContext() {
     let context = hydOriginGetContext.apply(this, arguments);
-    if (context && arguments[0].indexOf('webgl') !== -1 && window.hydGlContexts.has(context) === false) {
+    if (context && typeof(context) === 'object' && arguments[0].indexOf('webgl') !== -1 && window.hydGlContexts.has(context) === false) {
         window.hydGlContexts.add(context);
         
         const when = performance.now();
         context.__hyd_ext_WEBGL_debug_shaders = context.getExtension("WEBGL_debug_shaders");
-        context.__hyd__cache__ = new Set();
+        context.__hyd_cache__ = new Set();
+        context.__hyd_program__ = null;
         context.maghsk = {
             exception: "",
             createTime: when,
@@ -218,24 +240,24 @@ function HydNewGetContext() {
                 // uniformSent: 0,   // byte length
                 // uniformMatrixSent: 0,   // byte length
                 vertexCount: 0,
-                semanticVertexCount: {
-                    0: 0,
-                    1: 0,
-                    2: 0,
-                    3: 0,
-                    4: 0,
-                    5: 0,
-                    6: 0,
-                },
-                semanticVertexCalled: {
-                    0: 0,
-                    1: 0,
-                    2: 0,
-                    3: 0,
-                    4: 0,
-                    5: 0,
-                    6: 0,
-                },
+                // semanticVertexCount: {
+                //     0: 0,
+                //     1: 0,
+                //     2: 0,
+                //     3: 0,
+                //     4: 0,
+                //     5: 0,
+                //     6: 0,
+                // },
+                // semanticVertexCalled: {
+                //     0: 0,
+                //     1: 0,
+                //     2: 0,
+                //     3: 0,
+                //     4: 0,
+                //     5: 0,
+                //     6: 0,
+                // },
 
                 textureFormat: [],
                 compressedTextureFormat: [],
@@ -308,12 +330,12 @@ OffscreenCanvas.prototype.getContext = HydNewOffscreenGetContext;
 
 function HydGetGLInfo() {
     HYD_RECORD = false;
-    return {
+    const ret = {
         url: window.location.href,
         title: document.title,
         date: Date.now(),
         when: performance.now(),
-        counter: hydGetCounters(),
+        // counter: hydGetCounters(),
         contextInfo: Array.from(window.hydGlContexts).map(context => {
             return {
                 "maghsk": context.maghsk,
@@ -325,6 +347,8 @@ function HydGetGLInfo() {
             };
         }),
     };
+    HYD_RECORD = true;
+    return ret;
 }
 
 // check if rendered 10 seconds

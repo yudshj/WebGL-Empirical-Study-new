@@ -37,12 +37,13 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         
         const browser = await chromium.launch(getLaunchOptions(NAME));
         try {
+            const time_hp_base = performance.now();
             const context = await browser.newContext(contextOptions);
             await context.addInitScript({ path: 'js/inject-gl.js' });
 
             const page = await context.newPage();
             const date = Date.now();
-            const start_time_hp = performance.now();
+            const start_time_hp = performance.now() - time_hp_base;
 
             let netIdleTimeout = -1;
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 }).catch(() => null);
@@ -67,13 +68,15 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 .catch(() => { netIdleTimeout = 1; })
                 .catch(() => null);
 
-            const net_idle_time_hp = performance.now();
-            const net_idle_rafs = await get_data_in_all_frames(page, "HydGetGLInfo();", 30_000);
+            await page.waitForTimeout(10_000);
+
+            const a_time_hp = performance.now() - time_hp_base;
+            const a_rafs = await get_data_in_all_frames(page, "HydGetGLInfo();", 30_000);
 
             await page.waitForTimeout(10_000);
 
-            const gl_raf_time_hp = performance.now();
-            const gl_rafs = await get_data_in_all_frames(page, "HydGetGLInfo();", 30_000);
+            const b_time_hp = performance.now() - time_hp_base;
+            const b_rafs = await get_data_in_all_frames(page, "HydGetGLInfo();", 30_000);
 
             const data = {
                 url,
@@ -83,14 +86,15 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 manual_interaction_failed,
                 events_time_hp: {
                     start_time_hp,
-                    net_idle_time_hp,
-                    gl_raf_time_hp,
+                    a_time_hp,
+                    b_time_hp,
                 },
                 frame: {
-                    net_idle_rafs,
-                    gl_rafs,
+                    a_rafs,
+                    b_rafs,
                 }
             }
+            // await page.waitForTimeout(3600 * 1000);
             const compressedData = zlib.gzipSync(JSON.stringify(data))
             fs.writeFileSync(gzip_out_path, compressedData);
             await context.close();
