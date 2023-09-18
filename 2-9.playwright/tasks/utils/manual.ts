@@ -1361,7 +1361,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '00874': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('[id="c"]').click({
     position: {
@@ -1958,7 +1958,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 '01419': async (page: Page) => {
   await page.frameLocator('iframe').getByText('Mythomagic Online has moved to mythogame.com. the game is no longer actively mai').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.frameLocator('iframe').getByRole('link', { name: 'mythogame.com' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -2070,7 +2070,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '01604': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'ИГРАТЬ' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -2919,7 +2919,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.mouse.wheel(0, 100);
 },
 '02192': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'Live Preview' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -3041,7 +3041,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '02253': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: '立即开始' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -3331,7 +3331,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '02479': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'WEBGL GLOBE COLLECTION' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -3856,7 +3856,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '02866': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('[id="c"]').click({
     position: {
@@ -3867,7 +3867,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   const page1 = await page1Promise;
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page2Promise = page.waitForEvent('popup');
+  const page2Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('[id="c"]').click({
     position: {
@@ -3986,7 +3986,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.mouse.wheel(0, 100);
   await page.mouse.wheel(0, 100);
   await page.mouse.wheel(0, 100);
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('.thumb > img').first().click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -5902,7 +5902,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('paragraph').filter({ hasText: 'Escrita porCesáreo Marqués Valle →' }).getByRole('link', { name: 'Cesáreo Marqués Valle →' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('button', { name: 'Pixuetu Valley' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -6004,7 +6004,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
     }
   });
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('#unity-canvas').click({
     position: {
@@ -7485,7 +7485,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '05272': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'Syýahata başlamak' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -9557,7 +9557,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 '07209': async (page: Page) => {
   await page.locator('html').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.frameLocator('#sb__open-sandbox16').getByRole('link', { name: 'Open Sandbox' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -9576,7 +9576,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('div').nth(2).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page2Promise = page.waitForEvent('popup');
+  const page2Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.frameLocator('#sb__open-sandbox16').getByRole('link', { name: 'Open Sandbox' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -9845,7 +9845,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '07506': async (page: Page) => {
-  const page2Promise = page.waitForEvent('popup');
+  const page2Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'VR Browser' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -10649,7 +10649,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByText('FAIRER TOMORROW Solutions to the issues highlighted by COVID ENTERENTER Center f').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'Will We Face Depression-Era Job Losses? Will We Face Depression-Era Job Losses? Let’s Not Find Out Let’s Not Find Out (read by Darrick Hamilton)' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -12120,7 +12120,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 '09419': async (page: Page) => {
   await page.getByRole('link', { name: 'Experience Girmit' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'Open Mozilla Hub' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -12249,13 +12249,13 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '09464': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'bit.ly/2VbsgmL' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   const page1 = await page1Promise;
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page2Promise = page.waitForEvent('popup');
+  const page2Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'bit.ly/2VbsgmL' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -12267,7 +12267,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '09466': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'rishit-dagli.github.io/MIRNet-TFJS/' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -12289,7 +12289,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '09467': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'adityathebe.github.io/evolutionSimulator/' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -12321,7 +12321,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '09471': async (page: Page) => {
-  const page2Promise = page.waitForEvent('popup');
+  const page2Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'cjbayron.github.io/audiate/' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -12339,7 +12339,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '09476': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'nsfwjs.com/', exact: true }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -12355,7 +12355,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '09481': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'neuroneural.github.io/brainchop/' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -12397,7 +12397,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '09487': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'tensorspace.org', exact: true }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -12457,7 +12457,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 '09490': async (page: Page) => {
   await page.getByRole('link', { name: 'here', exact: true }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('.tensorsite-content__cta').first().click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -12543,7 +12543,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.mouse.wheel(0, 100);
 },
 '09660': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByText('Play Tutorial').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -15103,7 +15103,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('img').nth(1).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'Go To Playground' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -15521,7 +15521,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
     }
   });
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('img:nth-child(56)').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -15537,7 +15537,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('li:nth-child(2) > a').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('img:nth-child(37)').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -15912,7 +15912,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('list').filter({ hasText: '최소희 개인전 <결계 結界>서금앵 개인전 <그대 머문 자리 Where you stayed>장윤지 개인전 <우리가 밤에 본 것들 What we s' }).getByRole('img', { name: '최소희 개인전 <결계 結界>' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page2Promise = page.waitForEvent('popup');
+  const page2Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('button', { name: '전시 입장하기' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -16478,7 +16478,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '13262': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.frameLocator('iframe[name="iframe"]').getByRole('button', { name: 'OK' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -16740,7 +16740,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '13764': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'Interessiert? Kostenlose Testphase!' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -17469,7 +17469,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByText('Easy').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'Featured Plot' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -17833,7 +17833,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
     }
   });
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('#unity-canvas').click({
     position: {
@@ -18930,7 +18930,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('button', { name: '' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'Tout savoir sur les cookies et leurs usages' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -20089,7 +20089,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
 '16736': async (page: Page) => {
   await page.getByText('Start', { exact: true }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('#uniswap-button-wrapper #uniswap_button').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -22774,7 +22774,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '20794': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('button', { name: 'ЧИТАТИ' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -23192,7 +23192,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '22585': async (page: Page) => {
-  const page3Promise = page.waitForEvent('popup');
+  const page3Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: '▼' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -23909,7 +23909,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '24657': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'Shopier hızlı alışveriş' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -24122,7 +24122,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '24874': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('.section-main-bg-1').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -24723,7 +24723,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '25602': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('#loginFB_btn').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -24753,7 +24753,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '25895': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'Play with Proxi' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -24896,7 +24896,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '25955': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: 'Infobits Academy Infobits Academy' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -25139,7 +25139,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.locator('#tour').click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('row', { name: 'MAY 6th 2023 FLOWFEST VALENCIA url' }).getByRole('link', { name: 'url' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -25485,7 +25485,7 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
 },
 '27812': async (page: Page) => {
-  const page1Promise = page.waitForEvent('popup');
+  const page1Promise = page.waitForEvent('popup').catch(() => page);
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('link', { name: '3D Experience' }).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
@@ -26488,6 +26488,11 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
   await page.getByRole('img').nth(2).click();
   await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+},
+'29217': async (page: Page) => {
+  for (let i = 0; i < 20; i++) {
+    await page.mouse.wheel(0, 10);
+  }
 },
 '29219': async (page: Page) => {
   await page.keyboard.press('ArrowDown');

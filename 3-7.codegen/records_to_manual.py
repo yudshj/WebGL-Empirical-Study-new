@@ -23,6 +23,8 @@ export const manual: { [key: string]: (page: Page) => Promise<void> } = {
                 results.append("'%s': async (page: Page) => {" % idx)
                 continue
             if start_print:
+                if "page.waitForEvent('popup')" in line:
+                    line = line[:-1] + ".catch(() => page);"
                 if line.startswith("});"):
                     results.append("},\n")
                 elif 'page.goto' not in line:

@@ -1,7 +1,7 @@
 echo $@
 echo "..."
 
-N=10
+N=8
 
 for NAME in $@
 do

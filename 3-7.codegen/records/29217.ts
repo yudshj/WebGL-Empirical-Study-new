@@ -6,5 +6,7 @@ test.use({
 });
 
 test('test', async ({ page }) => {
-  await page.goto('https://zulu.longines.com/');
+  for (let i = 0; i < 20; i++) {
+    await page.mouse.wheel(0, 10);
+  }
 });
