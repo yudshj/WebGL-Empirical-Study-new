@@ -6,19 +6,19 @@ let HYD_RECORD_RAF = false;
 window.hydGlContexts = new Set();
 window.hydUsedWebgl = null;
 window.hydUsedOffScreenCanvasTypes = new Set();
-window.hydFrames = 0;
+window.hydRenderedFrames = 0;
 
-// function hydGetCounters() {
-//     return {
-//         frames: window.hydFrames,
-//         contextsNum: window.hydGlContexts.size,
-//         usedWebGL: window.hydUsedWebgl,
-//         usedOffScreenCanvas: Array.from(window.hydUsedOffScreenCanvasTypes).sort(),
-//     }
-// }
+function hydGetCounters() {
+    return {
+        frames: window.hydRenderedFrames,
+        contextsNum: window.hydGlContexts.size,
+        usedWebGL: window.hydUsedWebgl,
+        usedOffScreenCanvas: Array.from(window.hydUsedOffScreenCanvasTypes).sort(),
+    }
+}
 
 function hydFrameCount() {
-    window.hydFrames++;
+    window.hydRenderedFrames++;
     requestAnimationFrame(hydFrameCount);
 }
 requestAnimationFrame(hydFrameCount);
@@ -335,7 +335,7 @@ function HydGetGLInfo() {
         title: document.title,
         date: Date.now(),
         when: performance.now(),
-        // counter: hydGetCounters(),
+        counter: hydGetCounters(),
         contextInfo: Array.from(window.hydGlContexts).map(context => {
             return {
                 "maghsk": context.maghsk,
