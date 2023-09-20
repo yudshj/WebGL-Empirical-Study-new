@@ -40,7 +40,7 @@ export default defineConfig({
             screenshot: 'on',
             video: 'on',
             launchOptions: {
-                args: ["--no-sandbox", "--enable-gpu", "--use-gl=desktop"]
+                args: ["--no-sandbox", "--enable-gpu", "--use-gl=angle", "--use-vulkan"]
             }
         },
     },

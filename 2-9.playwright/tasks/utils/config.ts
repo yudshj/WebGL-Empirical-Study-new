@@ -7,7 +7,7 @@ interface LaunchOptionsDict {
 }
 
 const useProxy = true;
-const headless = false;
+const headless = true;
 
 export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
 // export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0512-df_label-raf-need_interactions.json', 'utf8'));
@@ -67,6 +67,9 @@ export function getLaunchOptions(name: string): LaunchOptions {
       '--max-old-space-size=8192',
       '--js-flags="--max_old_space_size=8192"',
       '--ignore-certificate-errors',
+      "--enable-gpu",
+      "--use-gl=angle",
+      "--use-vulkan"
     ],
   };
   if (useProxy) {

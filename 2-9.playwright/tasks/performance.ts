@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { evaluate_script_in_all_frames, wait_for_function_in_all_frames, get_data_in_all_frames } from './utils/utils';
 import { contextOptions, indexUrls, getLaunchOptions, myStartParameters } from './utils/config';
 import { manual } from './utils/manual';
+import { checkGpu } from './utils/check';
 
 const NAME = 'performance';
 
@@ -14,6 +15,11 @@ const TOTAL_PART = parseInt(process.argv[3]);
 fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
 (async () => {
+    const browser = await chromium.launch(getLaunchOptions(NAME));
+    checkGpu(browser).catch(() => {throw new Error("GPU acceleration is not enabled")});
+    console.log("GPU acceleration is enabled");
+    await browser.close();
+
     for (let i = PART; i < total; i += TOTAL_PART) {
         const [idx, url] = indexUrls[i];
         console.info(`${i} -  ${url}`);
@@ -114,7 +120,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
             // fs.writeFileSync(json_out_path, JSON.stringify(data));
 
-            browserContext.close();
+            await browserContext.close();
         }
         catch (error: any) {
             console.error(error);
@@ -123,6 +129,6 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             }
         }
     
-        browser.close();
+        await browser.close();
     }
 })();

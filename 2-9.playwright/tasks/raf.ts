@@ -4,6 +4,7 @@ import * as zlib from "zlib";
 import { get_data_in_all_frames, evaluate_script_in_all_frames } from './utils/utils';
 import { contextOptions, getLaunchOptions, indexUrls } from './utils/config';
 import { manual } from './utils/manual';
+import { checkGpu } from './utils/check';
 
 const NAME = 'raf';
 
@@ -20,6 +21,11 @@ console.log(START, "to", END)
 fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
 (async () => {
+    const browser = await chromium.launch(getLaunchOptions(NAME));
+    checkGpu(browser).catch(() => {throw new Error("GPU acceleration is not enabled")});
+    console.log("GPU acceleration is enabled");
+    await browser.close();
+    
     // for (const [idx, url] of indexUrls.slice(START, END)) {
     for (let i = PART; i < total; i += TOTAL_PART) {
         const [idx, url] = indexUrls[i];
