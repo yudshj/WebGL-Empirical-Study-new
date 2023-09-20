@@ -22,7 +22,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
 (async () => {
     const browser = await chromium.launch(getLaunchOptions(NAME));
-    checkGpu(browser).catch(() => {throw new Error("GPU acceleration is not enabled")});
+    await checkGpu(browser);
     console.log("GPU acceleration is enabled");
     await browser.close();
     
