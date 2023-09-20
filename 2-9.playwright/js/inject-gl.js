@@ -68,6 +68,7 @@ const inject_functions = {
     'drawArrays': (name, args, ret, context) => {
         const count = args[2];
         context.maghsk.counter.vertexCount += count;
+        context.maghsk.counter.primitiveCount[args[0]] += count;
         if (context.__hyd_program__) {
             context.maghsk.programs[context.__hyd_program__.__hyd_program_id__].vertexCount += count;
         }
@@ -77,6 +78,7 @@ const inject_functions = {
     'drawElements': (name, args, ret, context) => {
         const count = args[1];
         context.maghsk.counter.vertexCount += count;
+        context.maghsk.counter.primitiveCount[args[0]] += count;
         if (context.__hyd_program__) {
             context.maghsk.programs[context.__hyd_program__.__hyd_program_id__].vertexCount += count;
         }
@@ -86,6 +88,7 @@ const inject_functions = {
     'drawArraysInstanced': (name, args, ret, context) => {
         const count = args[2] * args[3];
         context.maghsk.counter.vertexCount += count;
+        context.maghsk.counter.primitiveCount[args[0]] += count;
         if (context.__hyd_program__) {
             context.maghsk.programs[context.__hyd_program__.__hyd_program_id__].vertexCount += count;
         }
@@ -95,6 +98,7 @@ const inject_functions = {
     'drawElementsInstanced': (name, args, ret, context) => {
         const count = args[1] * args[4];
         context.maghsk.counter.vertexCount += count;
+        context.maghsk.counter.primitiveCount[args[0]] += count;
         if (context.__hyd_program__) {
             context.maghsk.programs[context.__hyd_program__.__hyd_program_id__].vertexCount += count;
         }
@@ -104,6 +108,7 @@ const inject_functions = {
     'drawRangeElements': (name, args, ret, context) => {
         const count = args[3];
         context.maghsk.counter.vertexCount += count;
+        context.maghsk.counter.primitiveCount[args[0]] += count;
         if (context.__hyd_program__) {
             context.maghsk.programs[context.__hyd_program__.__hyd_program_id__].vertexCount += count;
         }
@@ -137,7 +142,7 @@ const inject_functions = {
     'readPixels': (name, args, ret, context) => {
         const width = args[2];
         const height = args[3];
-        context.maghsk.pixelsRead += width * height;
+        context.maghsk.counter.pixelsRead += width * height;
     },
     'texImage': (name, args, ret, context) => {
         if (context.__hyd_cache__.has(args[0])) {
@@ -230,6 +235,7 @@ function HydNewGetContext() {
             createTime: when,
             createArguments: arguments,
             counter: {
+                pixelsRead: 0,
                 resources: {},
                 deleted_resources: {},
                 funcCount: {},
@@ -240,24 +246,15 @@ function HydNewGetContext() {
                 // uniformSent: 0,   // byte length
                 // uniformMatrixSent: 0,   // byte length
                 vertexCount: 0,
-                // semanticVertexCount: {
-                //     0: 0,
-                //     1: 0,
-                //     2: 0,
-                //     3: 0,
-                //     4: 0,
-                //     5: 0,
-                //     6: 0,
-                // },
-                // semanticVertexCalled: {
-                //     0: 0,
-                //     1: 0,
-                //     2: 0,
-                //     3: 0,
-                //     4: 0,
-                //     5: 0,
-                //     6: 0,
-                // },
+                primitiveCount: {
+                    0: 0,
+                    1: 0,
+                    2: 0,
+                    3: 0,
+                    4: 0,
+                    5: 0,
+                    6: 0,
+                },
 
                 textureFormat: [],
                 compressedTextureFormat: [],
