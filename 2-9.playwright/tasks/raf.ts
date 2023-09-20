@@ -29,7 +29,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
     // for (const [idx, url] of indexUrls.slice(START, END)) {
     for (let i = PART; i < total; i += TOTAL_PART) {
         const [idx, url] = indexUrls[i];
-        console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}`);
+        console.info(`${PART.toString()}  ${START.toString().padStart(5, '0')}/${idx}/${END}`);
         const gzip_out_path = `output/${NAME}/${idx}.json.gz`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
         const manual_interaction = idx in manual;
