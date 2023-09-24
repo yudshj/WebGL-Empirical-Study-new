@@ -1,7 +1,0 @@
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\raf.ts 0 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\raf.ts 1 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\raf.ts 2 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\raf.ts 3 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\raf.ts 4 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\raf.ts 5 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\raf.ts 6 7"
