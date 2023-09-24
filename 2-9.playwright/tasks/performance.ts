@@ -22,7 +22,8 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
     for (let i = PART; i < total; i += TOTAL_PART) {
         const [idx, url] = indexUrls[i];
-        console.info(`${i} -  ${url}`);
+        // log date in hh:mm:ss
+        console.info(new Date().toLocaleString(), `${i} -  ${url}`);
         const proto_gz_out_path = `output/${NAME}/${idx}.proto.gz`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
         const manual_interaction = idx in manual;

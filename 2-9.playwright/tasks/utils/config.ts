@@ -69,7 +69,6 @@ export function getLaunchOptions(name: string): LaunchOptions {
       '--ignore-certificate-errors',
       "--enable-gpu",
       "--use-gl=angle",
-      "--use-vulkan"
     ],
   };
   if (useProxy) {
@@ -98,83 +97,83 @@ export const myStartParameters: Protocol.Tracing.startParameters = {
   streamCompression: "gzip",
   streamFormat: "proto",
   traceConfig: {
-      recordMode: "recordAsMuchAsPossible",
-      enableSampling: true,
-      enableSystrace: false,
-      traceBufferSizeInKb: 2097152,
-      memoryDumpConfig: {
-          // @ts-ignore
-          allowed_dump_modes: [
-              "background",
-              "light",
-              "detailed"
-          ],
-          // @ts-ignore
-          triggers: [
-              {
-                  "min_time_between_dumps_ms": 500,
-                  "mode": "detailed",
-                  "type": "periodic_interval"
-              }
-          ]
-      },
-      includedCategories: [
-          "base",
-          "benchmark",
-          "blink",
-          "browser",
-          "cc",
-          "cpu_profiler",
-          "devtools",
-          "devtools.contrast",
-          "devtools.timeline",
-          "disabled-by-default-cpu_profiler.debug",
-          "disabled-by-default-cpu_profiler",
-          "disabled-by-default-devtools.timeline",
-          "disabled-by-default-devtools.timeline.stack",
-          "disabled-by-default-devtools.timeline.picture",
-          "disabled-by-default-devtools.timeline.layers",
-          "disabled-by-default-devtools.timeline.invalidationTracking",
-          "disabled-by-default-devtools.timeline.inputs",
-          "disabled-by-default-devtools.timeline.frame",
-          "disabled-by-default-gpu_cmd_queue",
-          "disabled-by-default-gpu.dawn",
-          "disabled-by-default-gpu.debug",
-          "disabled-by-default-gpu.decoder",
-          "disabled-by-default-gpu.device",
-          "disabled-by-default-gpu.service",
-          "disabled-by-default-ipc.flow",
-          "disabled-by-default-memory-infra",
-          "disabled-by-default-memory-infra.v8.code_stats",
-          "disabled-by-default-mojom",
-          "disabled-by-default-toplevel.flow",
-          "disabled-by-default-toplevel.ipc",
-          "disabled-by-default-v8.cpu_profiler",
-          "gpu.angle",
-          "gpu",
-          "gpu.capture",
-          "ipc",
-          "loading",
-          "log",
-          "memory",
-          "mojom",
-          "navigation",
-          "native",
-          "net",
-          "netlog",
-          "scheduler",
-          "sequence_manager",
-          "toplevel.flow",
-          "toplevel",
-          "ui",
-          "v8.execute",
-          "v8.wasm",
-          "v8",
-          "views",
-          "viz",
+    recordMode: "recordAsMuchAsPossible",
+    enableSampling: true,
+    enableSystrace: false,
+    traceBufferSizeInKb: 2097152,
+    memoryDumpConfig: {
+      // @ts-ignore
+      allowed_dump_modes: [
+        "background",
+        "light",
+        "detailed"
       ],
-      excludedCategories: [
-          "*"
-      ],
+      // @ts-ignore
+      triggers: [
+        {
+          "min_time_between_dumps_ms": 500,
+          "mode": "detailed",
+          "type": "periodic_interval"
+        }
+      ]
+    },
+    includedCategories: [
+      "base",
+      "benchmark",
+      "blink",
+      "browser",
+      "cc",
+      "cpu_profiler",
+      "devtools",
+      "devtools.contrast",
+      "devtools.timeline",
+      "disabled-by-default-cpu_profiler.debug",
+      "disabled-by-default-cpu_profiler",
+      "disabled-by-default-devtools.timeline",
+      "disabled-by-default-devtools.timeline.stack",
+      "disabled-by-default-devtools.timeline.picture",
+      "disabled-by-default-devtools.timeline.layers",
+      "disabled-by-default-devtools.timeline.invalidationTracking",
+      "disabled-by-default-devtools.timeline.inputs",
+      "disabled-by-default-devtools.timeline.frame",
+      "disabled-by-default-gpu_cmd_queue",
+      "disabled-by-default-gpu.dawn",
+      "disabled-by-default-gpu.debug",
+      "disabled-by-default-gpu.decoder",
+      "disabled-by-default-gpu.device",
+      "disabled-by-default-gpu.service",
+      "disabled-by-default-ipc.flow",
+      "disabled-by-default-memory-infra",
+      "disabled-by-default-memory-infra.v8.code_stats",
+      "disabled-by-default-mojom",
+      "disabled-by-default-toplevel.flow",
+      "disabled-by-default-toplevel.ipc",
+      "disabled-by-default-v8.cpu_profiler",
+      "gpu.angle",
+      "gpu",
+      "gpu.capture",
+      "ipc",
+      "loading",
+      "log",
+      "memory",
+      "mojom",
+      "navigation",
+      "native",
+      "net",
+      "netlog",
+      "scheduler",
+      "sequence_manager",
+      "toplevel.flow",
+      "toplevel",
+      "ui",
+      "v8.execute",
+      "v8.wasm",
+      "v8",
+      "views",
+      "viz",
+    ],
+    excludedCategories: [
+      "*"
+    ],
   }
 };
