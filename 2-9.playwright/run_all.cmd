@@ -1,8 +1,0 @@
-start powershell "ts-node .\tasks\performance.ts 0 8"
-start powershell "ts-node .\tasks\performance.ts 1 8"
-start powershell "ts-node .\tasks\performance.ts 2 8"
-start powershell "ts-node .\tasks\performance.ts 3 8"
-start powershell "ts-node .\tasks\performance.ts 4 8"
-start powershell "ts-node .\tasks\performance.ts 5 8"
-start powershell "ts-node .\tasks\performance.ts 6 8"
-start powershell "ts-node .\tasks\performance.ts 7 8"
