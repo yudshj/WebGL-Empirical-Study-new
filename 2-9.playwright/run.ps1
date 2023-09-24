@@ -1,8 +1,6 @@
 $task = $Args[0]
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\$task.ts 0 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\$task.ts 1 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\$task.ts 2 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\$task.ts 3 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\$task.ts 4 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\$task.ts 5 7"
-wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\$task.ts 6 7"
+$num = $Args[1]
+for ($i = 0; $i -lt $num; $i++) {
+    wt --window 0 nt -p "Windows Powershell" -d "$pwd" powershell -noExit "ts-node .\tasks\$task.ts $i $num"
+    sleep 1
+}
