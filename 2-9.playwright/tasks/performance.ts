@@ -1,6 +1,5 @@
 import { chromium } from 'playwright';
 import * as fs from 'fs';
-import { evaluate_script_in_all_frames, wait_for_function_in_all_frames, get_data_in_all_frames } from './utils/utils';
 import { contextOptions, indexUrls, getLaunchOptions, myStartParameters } from './utils/config';
 import { manual } from './utils/manual';
 import { checkGpu } from './utils/check';
@@ -23,7 +22,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
     for (let i = PART; i < total; i += TOTAL_PART) {
         const [idx, url] = indexUrls[i];
         // log date in hh:mm:ss
-        console.info(new Date().toLocaleString(), `${i} -  ${url}`);
+        console.info(new Date().toLocaleString(), `${PART}/${TOTAL_PART}`);
         const proto_gz_out_path = `output/${NAME}/${idx}.proto.gz`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
         const manual_interaction = idx in manual;
@@ -43,12 +42,9 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             // if (fs.existsSync(har_path)) {
             //     browserContext.routeFromHAR(har_path, { notFound: "fallback" });
             // }
-            await browserContext.addInitScript({ path: 'js/spector.bundle.js' });
-            await browserContext.addInitScript({ path: 'js/hydpako.min.js' });
-            await browserContext.addInitScript({ path: 'js/inject-spector.js' });
+            await browserContext.addInitScript({ path: 'js/empty_raf.js' });
 
             const page = await browserContext.newPage();
-            const date = Date.now();
 
             let netIdleTimeout = -1;
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 }).catch(() => null);
