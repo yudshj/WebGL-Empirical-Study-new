@@ -2,15 +2,18 @@ import pickle
 import pandas as pd
 from pathlib import Path
 
+OS = 'linux'
 d = {}
 for p in sorted(Path('./output/pickle/').glob('*/*.pkl')):
     with p.open('rb') as fp:
         d[p.name] = pickle.load(fp)
 
-INDEX = [
+COLUMNS = [
     "status",
-    "cpu_real",
-    "cpu_full",
+    "js_real",
+    "js_full",
+    "render_real",
+    "render_full",
     "gpu_real",
     "gpu_full",
     "webgl_time",
@@ -23,11 +26,13 @@ INDEX = [
     "mem_detail",
 ]
 
-df = pd.DataFrame(d, index=INDEX).T
+df = pd.DataFrame(d, index=COLUMNS).T
 df = df.astype({
     "status": 'category',
-    "cpu_real": float,
-    "cpu_full": float,
+    "js_real": float,
+    "js_full": float,
+    "render_real": float,
+    "render_full": float,
     "gpu_real": float,
     "gpu_full": float,
     "webgl_time": float,
@@ -40,4 +45,4 @@ df = df.astype({
     "mem_detail": object,
 })
 df.index = df.index.map(lambda x: int(x[:5]))
-df.to_pickle('./output/df_performance-win-0924.pkl.zstd', compression='zstd')
+df.to_pickle(f'./output/df_performance-{OS}-0924.pkl.zstd', compression='zstd')

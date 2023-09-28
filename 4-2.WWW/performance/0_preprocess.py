@@ -9,18 +9,22 @@ import pandas as pd
 import tqdm
 from perfetto.trace_processor import TraceProcessor, TraceProcessorConfig
 
+OS = 'linux'
+
 TRACE_PROCESSOR_PATH = "/home/yudonghan/.local/share/perfetto/prebuilts/trace_processor_shell"
-TRACE_OUTPUT_PATH = Path("./input/performance")
+TRACE_OUTPUT_PATH = Path(f"./input/performance-{OS}")
 
 DF_OUTPUT_DIR = Path("./output/dataframe/")
 PICKLE_OUTPUT_DIR = Path("./output/pickle/")
-DF_ZSTD_OUTPUT_NAME = "performance-win-0924.pkl.zstd"
-DF_CSV_OUTPUT_NAME = "performance-win-0924.csv"
+DF_ZSTD_OUTPUT_NAME = f"performance-{OS}-0924.pkl.zstd"
+DF_CSV_OUTPUT_NAME = f"performance-{OS}-0924.csv"
 
 COLUMNS = [
     "status",
-    "cpu_real",
-    "cpu_full",
+    "js_real",
+    "js_full",
+    "render_real",
+    "render_full",
     "gpu_real",
     "gpu_full",
     "webgl_time",
@@ -42,9 +46,11 @@ def get_parent_slices(df, row) -> pd.DataFrame:
     return pd.DataFrame(parent_slices)
 
 
-def get_cpu_gpu_webgl_time(trace_path: Path) -> List[Optional[float] | str | Dict]:
-    cpu_real = None
-    cpu_full = None
+def get_cpu_gpu_webgl_time(trace_path: Path) -> List[Optional[float] | str | Dict | list[int]]:
+    js_real = None
+    js_full = None
+    render_real = None
+    render_full = None
     gpu_real = None
     gpu_full = None
     webgl_time = None
@@ -63,8 +69,11 @@ def get_cpu_gpu_webgl_time(trace_path: Path) -> List[Optional[float] | str | Dic
             'SELECT * FROM slice WHERE name LIKE "%StartProfiling"'
         ).as_pandas_dataframe()
 
+        js_mainThread_v8execute = tp.query(
+            'SELECT * FROM slice WHERE name="FunctionCall" AND dur >= 0'
+        ).as_pandas_dataframe()
         render_mainThread_v8execute = tp.query(
-            'SELECT * FROM slice WHERE name="v8.callFunction" AND dur >= 0'
+            'SELECT * FROM slice WHERE name="UpdateLayer" AND dur >= 0'
         ).as_pandas_dataframe()
         gpu_mainThread_slices_WebGL = tp.query(
             'SELECT slice.* FROM slice JOIN process_track ON slice.track_id=process_track.id WHERE dur >= 0 AND process_track.name LIKE "WebGL%";'
@@ -77,24 +86,29 @@ def get_cpu_gpu_webgl_time(trace_path: Path) -> List[Optional[float] | str | Dic
         ''').as_pandas_dataframe()
         frames_df = tp.query('''
             SELECT
-                id as id,
+                ts as ts,
                 dur as dur,
-                category as category,
-                name as name,
-                track_id as track_id
+                process_track.upid as pid
             FROM slice
-            WHERE dur >= 0 AND name = 'MainFrame.BeginMainFrameOnMain'
+            JOIN process_track ON slice.track_id=process_track.id
+            WHERE dur >= 0 AND slice.name = 'SendBeginMainFrameToCommit'
         ''').as_pandas_dataframe()
-        frames_count = frames_df.groupby('track_id')['id'].count().min()
+        frames_count = frames_df.drop_duplicates().groupby('pid')['ts'].count().to_list()
 
         # CPU time spent in V8.Execute (1e-9 秒)
-        cpu_real = (
-            render_mainThread_v8execute.thread_dur.sum()
+        js_real = (
+            js_mainThread_v8execute.thread_dur.sum()
             - render_mainThread_startProfiling.thread_dur.sum()
         ) / 1e9
-        cpu_full = (
-            render_mainThread_v8execute.dur.sum()
+        js_full = (
+            js_mainThread_v8execute.dur.sum()
             - render_mainThread_startProfiling.dur.sum()
+        ) / 1e9
+        render_real = (
+            render_mainThread_v8execute.thread_dur.sum()
+        ) / 1e9
+        render_full = (
+            render_mainThread_v8execute.dur.sum()
         ) / 1e9
         # GPU time spent in GPUTask (1e-9 秒)
         gpu_real = gpu_mainThread_slices_GPUTask.thread_dur.sum() / 1e9
@@ -147,8 +161,10 @@ def get_cpu_gpu_webgl_time(trace_path: Path) -> List[Optional[float] | str | Dic
     tp.close()
     return [
         status,
-        cpu_real,
-        cpu_full,
+        js_real,
+        js_full,
+        render_real,
+        render_full,
         gpu_real,
         gpu_full,
         webgl_time,
