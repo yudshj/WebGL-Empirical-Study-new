@@ -9,6 +9,7 @@ export async function checkGpu(browser: Browser) {
     await page.goto(url1);
     // await waitFor(2000);
     await page.waitForTimeout(500);
+    // await page.screenshot({ path: 'screenshot_1.png', fullPage: true });
     let featureStatusList = page.locator(".feature-status-list")
     // await expect(featureStatusList).toContainText("Hardware accelerated")
     const text = await featureStatusList.textContent()

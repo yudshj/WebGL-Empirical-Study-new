@@ -7,9 +7,10 @@ interface LaunchOptionsDict {
 }
 
 const useProxy = true;
-const headless = true;
+const headless = false;
 
-export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
+// export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0928.json', 'utf8'));
+// export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
 // export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0512-df_label-raf-need_interactions.json', 'utf8'));
 // export const indexUrls = [
 //   ["TEST-0", "https://www.babylonjs.com/demos/sponza/"],
@@ -37,9 +38,9 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json
 //   ["HYD-2", "http://127.0.0.1:8000/test3/webgl/easy"],
 //   ["HYD-3", "http://localhost:8000/"],
 // ];
-// export const indexUrls = [
-//   ["aquarium-0", "https://webglsamples.org/aquarium/aquarium.html?numFish=100000"],
-// ];
+export const indexUrls = [
+  ["babylon-0", "https://playground.babylonjs.com/"],
+];
 // export const indexUrls = [
 //   ["BUG-0", "http://12storytellers.hands.agency"],
 //   ["BUG-1", "http://12vendome.chaumet.com/"],
@@ -68,7 +69,8 @@ export function getLaunchOptions(name: string): LaunchOptions {
       '--js-flags="--max_old_space_size=8192"',
       '--ignore-certificate-errors',
       "--enable-gpu",
-      "--use-gl=angle",
+      // "--use-gl=angle",
+      // '--force-gpu-rasterization',
     ],
   };
   if (useProxy) {
@@ -127,18 +129,11 @@ export const myStartParameters: Protocol.Tracing.startParameters = {
       "devtools",
       "devtools.contrast",
       "devtools.timeline",
-      "disabled-by-default-cpu_profiler.debug",
       "disabled-by-default-cpu_profiler",
       "disabled-by-default-devtools.timeline",
-      "disabled-by-default-devtools.timeline.stack",
-      "disabled-by-default-devtools.timeline.picture",
-      "disabled-by-default-devtools.timeline.layers",
-      "disabled-by-default-devtools.timeline.invalidationTracking",
-      "disabled-by-default-devtools.timeline.inputs",
       "disabled-by-default-devtools.timeline.frame",
       "disabled-by-default-gpu_cmd_queue",
       "disabled-by-default-gpu.dawn",
-      "disabled-by-default-gpu.debug",
       "disabled-by-default-gpu.decoder",
       "disabled-by-default-gpu.device",
       "disabled-by-default-gpu.service",
@@ -159,16 +154,16 @@ export const myStartParameters: Protocol.Tracing.startParameters = {
       "mojom",
       "navigation",
       "native",
-      "net",
-      "netlog",
+      // "net",
+      // "netlog",
       "scheduler",
       "sequence_manager",
       "toplevel.flow",
       "toplevel",
       "ui",
-      "v8.execute",
-      "v8.wasm",
-      "v8",
+      // "v8.execute",
+      // "v8.wasm",
+      // "v8",
       "views",
       "viz",
     ],
