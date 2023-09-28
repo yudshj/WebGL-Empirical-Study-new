@@ -9,17 +9,13 @@ import pandas as pd
 import tqdm
 from perfetto.trace_processor import TraceProcessor, TraceProcessorConfig
 
-TRACE_PROCESSOR_PATH = (
-    "/home/yudonghan/.local/share/perfetto/prebuilts/trace_processor_shell"
-)
-TRACE_OUTPUT_PATH = Path("output/performance")
-DF_OUTPUT_DIR = Path("output/dataframe/")
-PICKLE_OUTPUT_DIR = Path("output/pickle/")
-DF_ZSTD_OUTPUT_NAME = "performance.pkl.zstd"
-DF_CSV_OUTPUT_NAME = "performance.csv"
+TRACE_PROCESSOR_PATH = "/home/yudonghan/.local/share/perfetto/prebuilts/trace_processor_shell"
+TRACE_OUTPUT_PATH = Path("./input/performance")
 
-DF_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-PICKLE_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+DF_OUTPUT_DIR = Path("./output/dataframe/")
+PICKLE_OUTPUT_DIR = Path("./output/pickle/")
+DF_ZSTD_OUTPUT_NAME = "performance-win-0924.pkl.zstd"
+DF_CSV_OUTPUT_NAME = "performance-win-0924.csv"
 
 COLUMNS = [
     "status",
@@ -28,6 +24,8 @@ COLUMNS = [
     "gpu_real",
     "gpu_full",
     "webgl_time",
+    "dropped_frame_duration",
+    "frames_count",
     "mem_mean_browser",
     "mem_mean_gpu_process",
     "mem_mean_renderer",
@@ -66,14 +64,28 @@ def get_cpu_gpu_webgl_time(trace_path: Path) -> List[Optional[float] | str | Dic
         ).as_pandas_dataframe()
 
         render_mainThread_v8execute = tp.query(
-            'SELECT * FROM slice WHERE name="v8.callFunction" AND dur > 0'
+            'SELECT * FROM slice WHERE name="v8.callFunction" AND dur >= 0'
         ).as_pandas_dataframe()
         gpu_mainThread_slices_WebGL = tp.query(
-            f'SELECT slice.* FROM slice JOIN process_track ON slice.track_id=process_track.id WHERE dur > 0 AND process_track.name LIKE "WebGL%";'
+            'SELECT slice.* FROM slice JOIN process_track ON slice.track_id=process_track.id WHERE dur >= 0 AND process_track.name LIKE "WebGL%";'
         ).as_pandas_dataframe()
         gpu_mainThread_slices_GPUTask = tp.query(
-            'SELECT * FROM slice WHERE name="GPUTask" AND dur > 0'
+            'SELECT * FROM slice WHERE name="GPUTask" AND dur >= 0'
         ).as_pandas_dataframe()
+        dropped_frame_duration_df = tp.query('''
+            SELECT id as id, dur as dur, name as name FROM slice WHERE dur >= 0 AND name = 'DroppedFrameDuration'
+        ''').as_pandas_dataframe()
+        frames_df = tp.query('''
+            SELECT
+                id as id,
+                dur as dur,
+                category as category,
+                name as name,
+                track_id as track_id
+            FROM slice
+            WHERE dur >= 0 AND name = 'MainFrame.BeginMainFrameOnMain'
+        ''').as_pandas_dataframe()
+        frames_count = frames_df.groupby('track_id')['id'].count().min()
 
         # CPU time spent in V8.Execute (1e-9 秒)
         cpu_real = (
@@ -87,20 +99,21 @@ def get_cpu_gpu_webgl_time(trace_path: Path) -> List[Optional[float] | str | Dic
         # GPU time spent in GPUTask (1e-9 秒)
         gpu_real = gpu_mainThread_slices_GPUTask.thread_dur.sum() / 1e9
         gpu_full = gpu_mainThread_slices_GPUTask.dur.sum() / 1e9
+        dropped_frame_duration = dropped_frame_duration_df.dur.sum() / 1e9
 
-        process_df = tp.query(
-            """SELECT 
-    process.id,
-    process.pid,
-    process.name AS process_name,
-    process_counter_track.id as track_id
-FROM 
-    process_counter_track
-JOIN 
-    process ON process.id = process_counter_track.upid
-WHERE 
-    process_counter_track.name = "chrome.private_footprint_kb"  """
-        ).as_pandas_dataframe()
+        process_df = tp.query('''
+            SELECT 
+                process.id,
+                process.pid,
+                process.name AS process_name,
+                process_counter_track.id as track_id
+            FROM 
+                process_counter_track
+            JOIN 
+                process ON process.id = process_counter_track.upid
+            WHERE 
+                process_counter_track.name = "chrome.private_footprint_kb"
+        ''').as_pandas_dataframe()
         _mem_mean = {
             "Browser": 0.0,
             "GPU Process": 0.0,
@@ -139,6 +152,8 @@ WHERE
         gpu_real,
         gpu_full,
         webgl_time,
+        dropped_frame_duration,
+        frames_count,
         mem_mean["Browser"],
         mem_mean["GPU Process"],
         mem_mean["Renderer"],
@@ -227,6 +242,8 @@ def work(trace_list: List[Path]):
 
 
 def main():
+    DF_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    PICKLE_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     trace_list = sorted(TRACE_OUTPUT_PATH.glob("*.proto.gz"), key=lambda x: x.stem)
     # work(trace_list)
     with mp.Pool(32) as pool:
