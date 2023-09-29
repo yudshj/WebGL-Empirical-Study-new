@@ -26,7 +26,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
         const proto_gz_out_path = `output/${NAME}/${idx}.proto.gz`;
         const error_out_path = `output/${NAME}/${idx}.error.txt`;
         const manual_interaction = idx in manual;
-        let manual_interaction_failed = false;
+        // let manual_interaction_failed = false;
 
         if (fs.existsSync(proto_gz_out_path) || fs.existsSync(error_out_path)) {
             console.info(`Skip ${idx}`);
@@ -97,7 +97,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             //     console.warn('captureDone timeout')
             // });
             // console.log(await page.evaluate('window.captureDone'));
-            await page.waitForTimeout(10_000);
+            await page.waitForTimeout(15_000);
             await client.send('Tracing.end');
             console.debug('Tracing.end');
             while (!done) {
