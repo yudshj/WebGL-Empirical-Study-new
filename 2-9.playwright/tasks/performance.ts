@@ -91,6 +91,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 fs.writeFileSync(proto_gz_out_path, Buffer.concat(chunks));
                 done = true;
             });
+            page.screenshot({ path: `screens/${idx}-A.png` }).catch(() => null);
             await client.send('Tracing.start', myStartParameters);
             console.debug('Tracing.start');
             // await page.waitForFunction('window.captureDone', null, { timeout: 60_000 }).catch(() => {
@@ -103,6 +104,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             while (!done) {
                 await page.waitForTimeout(500);
             }
+            page.screenshot({ path: `screens/${idx}-B.png` }).catch(() => null);
 
             // const data = {
             //     url,
