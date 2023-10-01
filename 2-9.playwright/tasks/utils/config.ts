@@ -39,7 +39,7 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0928.json
 //   ["HYD-3", "http://localhost:8000/"],
 // ];
 // export const indexUrls = [
-//   ["babylon-0", "https://playground.babylonjs.com/"],
+//   ["GG-0", "https://elisabeth.pointal.org/"],
 // ];
 // export const indexUrls = [
 //   ["BUG-0", "http://12storytellers.hands.agency"],
@@ -164,6 +164,59 @@ export const myStartParameters: Protocol.Tracing.startParameters = {
       // "v8",
       "views",
       "viz",
+    ],
+    excludedCategories: [
+      "*"
+    ],
+  }
+};
+export const simpleParameters: Protocol.Tracing.startParameters = {
+  transferMode: "ReturnAsStream",
+  streamCompression: "gzip",
+  streamFormat: "proto",
+  traceConfig: {
+    includedCategories: [
+      "base",
+      "benchmark",
+      "blink",
+      "browser",
+      "cpu_profiler",
+      "devtools",
+      "devtools.contrast",
+      "devtools.timeline",
+      "disabled-by-default-cpu_profiler",
+      "disabled-by-default-devtools.timeline",
+      "disabled-by-default-devtools.timeline.frame",
+      "disabled-by-default-gpu_cmd_queue",
+      "disabled-by-default-gpu.dawn",
+      "disabled-by-default-gpu.decoder",
+      "disabled-by-default-gpu.device",
+      "disabled-by-default-gpu.service",
+      "disabled-by-default-ipc.flow",
+      "disabled-by-default-memory-infra",
+      "disabled-by-default-memory-infra.v8.code_stats",
+      "disabled-by-default-mojom",
+      "disabled-by-default-toplevel.flow",
+      "disabled-by-default-toplevel.ipc",
+      "disabled-by-default-v8.cpu_profiler",
+      "gpu.angle",
+      "gpu",
+      "gpu.capture",
+      "ipc",
+      "memory",
+      "mojom",
+      "navigation",
+      "native",
+      // "net",
+      // "netlog",
+      "scheduler",
+      "sequence_manager",
+      "toplevel.flow",
+      "toplevel",
+      "ui",
+      // "v8.execute",
+      // "v8.wasm",
+      // "v8",
     ],
     excludedCategories: [
       "*"
