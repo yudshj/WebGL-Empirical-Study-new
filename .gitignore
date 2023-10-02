@@ -26,4 +26,6 @@ _gh_token
 *.pkl
 *.zstd
 4-2.WWW/raf/input/raf
-4-2.WWW/performance/input/performance
+4-2.WWW/performance/input
+4-2.WWW/performance/input
+2-9.playwright/pnpm-lock.yaml
