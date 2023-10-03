@@ -4,18 +4,20 @@ import pickle
 from abc import abstractmethod
 from pathlib import Path
 from typing import Dict, List, Optional
+import sys
 
 import pandas as pd
 import tqdm
 from perfetto.trace_processor import TraceProcessor, TraceProcessorConfig
 
-OS = 'mac-15s'
+OS = sys.argv[1]
+print('OS:', OS)
 
 TRACE_PROCESSOR_PATH = "/home/yudonghan/.local/share/perfetto/prebuilts/trace_processor_shell"
 TRACE_OUTPUT_PATH = Path(f"./input/performance-{OS}")
 
-DF_OUTPUT_DIR = Path("./output/dataframe/")
-PICKLE_OUTPUT_DIR = Path("./output/pickle/")
+DF_OUTPUT_DIR = Path(f"./output/dataframe/{OS}")
+PICKLE_OUTPUT_DIR = Path(f"./output/pickle/{OS}")
 DF_ZSTD_OUTPUT_NAME = f"performance-{OS}-0924.pkl.zstd"
 DF_CSV_OUTPUT_NAME = f"performance-{OS}-0924.csv"
 
@@ -28,6 +30,9 @@ COLUMNS = [
     "webgl_time",
     "dropped_frame_duration",
     "frames_count",
+    "frames_dur_var",
+    "frames_dur_mean",
+    "frames_dur_highest_10percent_mean",
     # "mem_mean_browser",
     # "mem_mean_gpu_process",
     # "mem_mean_renderer",
@@ -51,6 +56,9 @@ def get_cpu_gpu_webgl_time(trace_path: Path) -> List[Optional[float] | str | Dic
     gpu_full = None
     dropped_frame_duration = None
     frames_count = None
+    frames_dur_std = None
+    frames_dur_mean = None
+    frames_dur_highest_10percent_mean = None
     webgl_time = None
     status = "Ok"
     tpconfig = TraceProcessorConfig(bin_path=TRACE_PROCESSOR_PATH)
@@ -107,13 +115,11 @@ def get_cpu_gpu_webgl_time(trace_path: Path) -> List[Optional[float] | str | Dic
         frames_df = tp.query('''
             SELECT
                 ts as ts,
-                dur as dur,
                 process_track.upid as pid
             FROM slice
             JOIN process_track ON slice.track_id=process_track.id
             WHERE dur >= 0 AND slice.name = 'SendBeginMainFrameToCommit' AND ts >= {} AND ts <= {}
         '''.format(ts_left, ts_right)).as_pandas_dataframe()
-        frames_count = frames_df.drop_duplicates().groupby('pid')['ts'].count().to_list()
 
         # CPU time spent in V8.Execute (1e-9 秒)
         cpu_real = cpu_utility.thread_dur.sum() / 1e9
@@ -131,6 +137,12 @@ def get_cpu_gpu_webgl_time(trace_path: Path) -> List[Optional[float] | str | Dic
             dropped_frame_duration = -1
         else:
             dropped_frame_duration = dropped_frame_duration_df.dur.sum() / 1e9
+        frames_count = frames_df.sort_values(['pid','ts']).drop_duplicates().groupby('pid')['ts'].count().to_list()
+        frames_df = frames_df.sort_values(['pid','ts']).drop_duplicates().copy()
+        frames_df['delta'] = frames_df.groupby('pid')['ts'].diff().astype(float) / 1e6
+        frames_dur_std = frames_df.groupby('pid')['delta'].std().tolist()
+        frames_dur_mean = frames_df.groupby('pid')['delta'].mean().tolist()
+        frames_dur_highest_10percent_mean = frames_df.groupby('pid')['delta'].quantile(0.9).tolist()
 
         # process_df = tp.query('''
         #     SELECT 
@@ -186,6 +198,9 @@ def get_cpu_gpu_webgl_time(trace_path: Path) -> List[Optional[float] | str | Dic
         webgl_time,
         dropped_frame_duration,
         frames_count,
+        frames_dur_std,
+        frames_dur_mean,
+        frames_dur_highest_10percent_mean,
         # mem_mean["Browser"],
         # mem_mean["GPU Process"],
         # mem_mean["Renderer"],

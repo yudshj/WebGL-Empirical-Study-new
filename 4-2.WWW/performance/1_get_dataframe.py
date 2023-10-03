@@ -1,10 +1,12 @@
 import pickle
 import pandas as pd
 from pathlib import Path
+import sys
 
-OS = 'mac-15s'
+OS = sys.argv[1] or "nuc9"
+print('OS:', OS)
 d = {}
-for p in sorted(Path('./output/pickle/').glob('*/*.pkl')):
+for p in sorted(Path(f'./output/pickle/{OS}').glob('*/*.pkl')):
     with p.open('rb') as fp:
         d[p.name] = pickle.load(fp)
 
@@ -17,6 +19,9 @@ COLUMNS = [
     "webgl_time",
     "dropped_frame_duration",
     "frames_count",
+    "frames_dur_std",
+    "frames_dur_mean",
+    "frames_dur_highest_10percent_mean",
     # "mem_mean_browser",
     # "mem_mean_gpu_process",
     # "mem_mean_renderer",
@@ -34,6 +39,9 @@ df = df.astype({
     "webgl_time": float,
     "dropped_frame_duration": float,
     "frames_count": object,
+    "frames_dur_std": object,
+    "frames_dur_mean": object,
+    "frames_dur_highest_10percent_mean": object,
     # "mem_mean_browser": float,
     # "mem_mean_gpu_process": float,
     # "mem_mean_renderer": float,
