@@ -13,12 +13,15 @@ const PART = parseInt(process.argv[2]);
 const TOTAL_PART = parseInt(process.argv[3]);
 
 fs.mkdirSync(`output/${NAME}/`, { recursive: true });
+const HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/117.0.5938.62 Safari/537.36',
+    'Accept-Language': 'en-US,en;q=0.9',
+};
 
 (async () => {
     const browser = await chromium.connectOverCDP('http://localhost:19222');
     const context = browser.contexts()[0];
-    await context.setExtraHTTPHeaders({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116 Safari/537.36'});
-    await context.setExtraHTTPHeaders({'Accept-Language': 'en-US,en;q=0.9'});
+    await context.setExtraHTTPHeaders(HEADERS);
     await context.grantPermissions(['camera', 'microphone']);
 
     for (let i = PART; i < total; i += TOTAL_PART) {
@@ -42,7 +45,8 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 await page.close();
             }
             const page = await context.newPage();
-            page.bringToFront();
+            await page.setExtraHTTPHeaders(HEADERS);
+            await page.bringToFront();
 
             let netIdleTimeout = -1;
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 }).catch(() => null);
