@@ -145,39 +145,38 @@ const inject_functions = {
         context.maghsk.counter.pixelsRead += width * height;
     },
     'texImage': (name, args, ret, context) => {
-        if (context.__hyd_cache__.has(args[0])) {
+        if (context.__hyd_cache__.has(ret)) {
             return;
         }
-        context.__hyd_cache__.add(args[0]);
+        context.__hyd_cache__.add(ret);
         const internalFormat = args[2];
-        if (args.length == 6) {
-            for (const arg of args) {
-                if (typeof arg === 'object' && arg && arg.constructor && arg.constructor.name) {
-                    context.maghsk.counter.textureTypes[arg.constructor.name] = (context.maghsk.counter.textureTypes[arg.constructor.name] || 0) + 1;
-                    if (   arg instanceof ImageData
-                        || arg instanceof HTMLImageElement
-                        || arg instanceof HTMLCanvasElement
-                        // || arg instanceof HTMLVideoElement
-                        || arg instanceof OffscreenCanvas
-                        || arg instanceof ImageBitmap) {
-                            context.maghsk.counter.textureFormat.push([internalFormat, arg.width, arg.height]);
-                        }
-                    break;
+        let width = args[3];
+        let height = args[4];
+        for (const arg of args) {
+            if (typeof arg === 'object' && arg && arg.constructor && arg.constructor.name) {
+                if ('width' in arg) {
+                    width = arg.width;
+                    height = arg.height;
                 }
+                context.maghsk.counter.textureTypes[arg.constructor.name] = (context.maghsk.counter.textureTypes[arg.constructor.name] || 0) + 1;
             }
-        } else {
-            context.maghsk.counter.textureFormat.push([internalFormat, args[3], args[4]]);
         }
+        context.maghsk.counter.textureFormat.push([internalFormat, width, height]);
     },
     'compressedTexImage': (name, args, ret, context) => {
-        if (context.__hyd_cache__.has(args[0])) {
+        if (context.__hyd_cache__.has(ret)) {
             return;
         }
-        context.__hyd_cache__.add(args[0]);
+        context.__hyd_cache__.add(ret);
         const internalFormat = args[2];
+        for (const arg of args) {
+            if (typeof arg === 'object' && arg && arg.constructor && arg.constructor.name) {
+                context.maghsk.counter.textureTypes[arg.constructor.name] = (context.maghsk.counter.textureTypes[arg.constructor.name] || 0) + 1;
+            }
+        }
         const width = args[3];
         const height = args[4];
-        context.maghsk.counter.compressedTextureFormat.push([internalFormat, width, height]);
+        context.maghsk.counter.textureFormat.push([internalFormat, width, height]);
     },
     'create': (name, args, ret, context) => {
         const shortName = name.substring(6);

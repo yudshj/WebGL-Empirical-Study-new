@@ -33,10 +33,11 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0928.json
 //   ["TEST-17", "https://codepen.io/Murugan1982/pen/WNojEXP"], // offscreencanvas
 // ];
 // export const indexUrls = [
-//   ["HYD-0", "http://127.0.0.1:8000/test1/webgl/easy"],
-//   ["HYD-1", "http://127.0.0.1:8000/test2/webgl"],
-//   ["HYD-2", "http://127.0.0.1:8000/test3/webgl/easy"],
-//   ["HYD-3", "http://localhost:8000/"],
+//   ["BENCH-0", "https://webglsamples.org/aquarium/aquarium.html?numFish=30000"],
+//   ["BENCH-1", "https://web.basemark.com/run/tests/30/graphics_suite/webgl_102_test/"],
+//   ["BENCH-2", "https://pkuhydnas.synology.me/MotionMark-GL/MotionMark/"],
+//   ["BENCH-3", "https://pkuhydnas.synology.me/luic/benchmark/cubes.html"],
+//   ["BENCH-4", "https://pkuhydnas.synology.me/bmark"],
 // ];
 // export const indexUrls = [
 //   ["GG-0", "https://elisabeth.pointal.org/"],
@@ -76,7 +77,7 @@ export function getLaunchOptions(name: string): LaunchOptions {
   if (useProxy) {
     launchOption.proxy = {
       server: proxyPool[Math.floor(Math.random() * proxyPool.length)],
-      bypass: 'localhost,127.0.0.1'
+      bypass: 'localhost,127.0.0.1,pkuhydnas.synology.me,*.pku.edu.cn'
     };
     console.log(name, " - PROXY: ", launchOption.proxy.server);
   }

@@ -6,6 +6,8 @@ import { contextOptions, getLaunchOptions, indexUrls } from './utils/config';
 import { manual } from './utils/manual';
 import { checkGpu } from './utils/check';
 
+import * as readline from 'readline';
+
 const NAME = 'raf';
 
 const total = indexUrls.length;
@@ -25,6 +27,11 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
     await checkGpu(browser);
     console.log("GPU acceleration is enabled");
     await browser.close();
+
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
     
     // for (const [idx, url] of indexUrls.slice(START, END)) {
     for (let i = PART; i < total; i += TOTAL_PART) {
@@ -74,7 +81,9 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 .catch(() => { netIdleTimeout = 1; })
                 .catch(() => null);
 
-            await page.waitForTimeout(10_000);
+            await page.waitForTimeout(5_000);
+
+            console.log("start recording");
 
             const a_time_hp = performance.now() - time_hp_base;
             const a_rafs = await get_data_in_all_frames(page, "HydGetGLInfo();", 30_000);
