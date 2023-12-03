@@ -6,10 +6,10 @@ interface LaunchOptionsDict {
   [key: string]: LaunchOptions;
 }
 
-const useProxy = true;
-const headless = true;
+const useProxy = false;
+const headless = false;
 
-export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0928.json', 'utf8'));
+// export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0928.json', 'utf8'));
 // export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0422.json', 'utf8'));
 // export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0512-df_label-raf-need_interactions.json', 'utf8'));
 // export const indexUrls = [
@@ -42,19 +42,10 @@ export const indexUrls: string[][] = JSON.parse(fs.readFileSync('input/0928.json
 // export const indexUrls = [
 //   ["GG-0", "https://elisabeth.pointal.org/"],
 // ];
-// export const indexUrls = [
-//   ["BUG-0", "http://12storytellers.hands.agency"],
-//   ["BUG-1", "http://12vendome.chaumet.com/"],
-//   ["BUG-2", "http://360.jomsborg-vineta.com/"],
-//   ["BUG-3", "http://accountsavvycpa.com"],
-//   ["BUG-4", "https://code.irobot.com"],
-//   ["BUG-5", "http://www.kleuterspel.be/"],
-//   ["BUG-6", "https://3n1gm4.space/"],
-//   ["BUG-7", "http://www.acsce.edu.in/"],
-//   ["BUG-8", "https://eikanya.github.io/"],
-//   ["BUG-9", "https://code.irobot.com/"],
-//   ["BUG-10", "https://www.stickittothestickman.com/"],
-// ];
+export const indexUrls = [
+  ["PERF-1", "https://pkuhydnas.synology.me/gl-samples/aquarium/aquarium.html?numFish=11000"],
+  ["PERF-0", "https://pkuhydnas.synology.me/MotionMark-GL/MotionMark/"],
+];
 
 const launchOptions: LaunchOptionsDict = {};
 
