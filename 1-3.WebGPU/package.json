@@ -1,0 +1,16 @@
+{
+  "name": "playwright-capturer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:maghsk/WebGL-Empirical-Study-new.git",
+  "author": "Yudong Han <maghsk2017@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.14.11"
+  },
+  "scripts": {},
+  "dependencies": {
+    "playwright": "^1.45.2",
+    "typescript": "^5.5.3"
+  }
+}

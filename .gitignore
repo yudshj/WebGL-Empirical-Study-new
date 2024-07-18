@@ -3,7 +3,6 @@
 .vscode
 venv
 
-*.json
 *.zst
 *.log
 *.tar*
@@ -29,3 +28,5 @@ _gh_token
 4-2.WWW/performance/input
 4-2.WWW/performance/input
 2-9.playwright/pnpm-lock.yaml
+
+node_modules
