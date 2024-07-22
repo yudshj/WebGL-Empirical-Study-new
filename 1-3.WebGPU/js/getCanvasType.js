@@ -1,10 +1,12 @@
 // inject CanvasElement.getContext() to get the type of canvas
 
 window.aiPhie9cein7Thie_Map = new Map();
+window.bozooch6abaiquaM_gpu = navigator.gpu;
+window.cei3ieXi3zi8da2m = false;
 
 navigator.__defineGetter__('gpu', function() {
-    window.aiPhie9cein7Thie_Map['navigator.gpu'] = 1;
-    return null;
+    window.cei3ieXi3zi8da2m = true;
+    return window.bozooch6abaiquaM_gpu;
 });
 
 (function() {
@@ -28,5 +30,6 @@ window.koo7Gae7eire3Lit_getCounter = () => {
             ret[context_type] += 1;
         }
     }
+    ret['navigator.gpu'] = window.cei3ieXi3zi8da2m;
     return ret;
 }
