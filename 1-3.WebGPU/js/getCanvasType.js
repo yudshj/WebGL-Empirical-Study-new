@@ -2,6 +2,11 @@
 
 window.aiPhie9cein7Thie_Map = new Map();
 
+navigator.__defineGetter__('gpu', function() {
+    window.aiPhie9cein7Thie_Map['navigator.gpu'] = 1;
+    return null;
+});
+
 (function() {
     var xohkah0I_originalGetContext = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function() {
