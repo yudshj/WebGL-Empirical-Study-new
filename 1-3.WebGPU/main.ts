@@ -17,7 +17,8 @@ const END = Math.min((PART + 1) * PART_SIZE, total);
 fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
 (async () => {
-    for (let i = PART; i < total; i += TOTAL_PART) {
+    for (let i = START; i < END; i ++) {
+        // PART; i < total; i += TOTAL_PART) {
         const [idx, url] = indexUrls[i];
         console.info(`${START.toString().padStart(5, '0')}/${idx}/${END}  -  ${url}`);
         const json_out_path = `output/${NAME}/${idx}.json`;
@@ -25,7 +26,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
         if (fs.existsSync(json_out_path)) {
             console.info(`Skip ${idx}`);
-            // continue;
+            continue;
         }
         
         const browser = await chromium.launch(getLaunchOptions(NAME));

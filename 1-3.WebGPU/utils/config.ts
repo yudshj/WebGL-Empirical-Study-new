@@ -3,15 +3,19 @@ import { LaunchOptions, BrowserContextOptions } from 'playwright';
 import { Protocol } from 'playwright-core/types/protocol';
 
 import { tranco } from './tranco';
+import { gallery } from './gallery';
 
 interface LaunchOptionsDict {
   [key: string]: LaunchOptions;
 }
 
 const useProxy = false;
-const headless = false;
+const headless = true;
 
-export const indexUrls = tranco;
+export const indexUrls = [
+  ["HYD-0", "https://yudshj.synology.me/boat/"]
+]
+// tranco;
 
 const launchOptions: LaunchOptionsDict = {};
 
