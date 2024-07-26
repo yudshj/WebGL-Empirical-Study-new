@@ -40,10 +40,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 
             let netIdleTimeout = -1;
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 }).catch(() => null);
-            await page.waitForLoadState('networkidle', { timeout: 30_000 })
-                .then(() => { netIdleTimeout = 0; })
-                .catch(() => { netIdleTimeout = 1; })
-                .catch(() => null);
+            await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => null);
             // for (let i = 0; i < 4; i++) {
             //     await page.mouse.wheel(0, 512).catch(() => null);
             // }
@@ -52,6 +49,9 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             //     await page.mouse.wheel(0, -512).catch(() => null);
             // }
             await page.waitForLoadState('networkidle', { timeout: 30_000 })
+                .then(() => { netIdleTimeout = 0; })
+                .catch(() => { netIdleTimeout = 1; })
+                .catch(() => null);
 
             const canvas = await get_data_in_all_frames(page, 'window.koo7Gae7eire3Lit_getCounter()', 30_000);
             const data = {
