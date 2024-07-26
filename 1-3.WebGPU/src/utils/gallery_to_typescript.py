@@ -16,14 +16,14 @@ ts_out = Path('./gallery.json')
 with ts_out.open('w') as f:
     f.write('[\n')
     # example: ["POKI-0", "<URL>"],
-    for i, url in enumerate(poki_list):
-        f.write(f'  ["GALLERY-POKI-{i:04d}", "{url}"],\n')
-    for i, url in enumerate(poki_kids_list):
-        f.write(f'  ["GALLERY-POKI_KIDS-{i:04d}", "{url}"],\n')
     for i, url in enumerate(awwwards_list):
         f.write(f'  ["GALLERY-AWWWARDS-{i:04d}", "{url}"],\n')
     for i, url in enumerate(cssdesign_list):
         f.write(f'  ["GALLERY-CSSDESIGN-{i:04d}", "{url}"],\n')
+    for i, url in enumerate(poki_list):
+        f.write(f'  ["GALLERY-POKI-{i:04d}", "{url}"],\n')
+    for i, url in enumerate(poki_kids_list):
+        f.write(f'  ["GALLERY-POKI_KIDS-{i:04d}", "{url}"],\n')
     # skip the last comma
     f.seek(f.tell() - 2, 0)
     f.write('\n]\n')

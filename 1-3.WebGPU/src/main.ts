@@ -15,6 +15,8 @@ const START = PART * PART_SIZE;
 const END = Math.min((PART + 1) * PART_SIZE, total);
 
 fs.mkdirSync(`output/${NAME}/`, { recursive: true });
+fs.mkdirSync(`output/screenshot/`, { recursive: true });
+fs.mkdirSync(`output/html/`, { recursive: true });
 
 (async () => {
     for (let i = START; i < END; i ++) {
@@ -62,6 +64,10 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
                 canvas,
             };
 
+            const html_out_path = `output/html/${idx}.html`;
+            fs.writeFileSync(html_out_path, await page.content());
+            const screenshot_out_path = `output/screenshot/${idx}.png`;
+            await page.screenshot({ path: screenshot_out_path });
             fs.writeFileSync(json_out_path, JSON.stringify(data));
             await browserContext.close();
         }

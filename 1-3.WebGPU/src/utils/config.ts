@@ -55,7 +55,15 @@ const proxyPool = [
   'socks5://127.0.0.1:11632',
 ];
 
-export const contextOptions: BrowserContextOptions = { locale: 'en-US', ignoreHTTPSErrors: true, permissions: ['camera', 'microphone'] };
+export const contextOptions: BrowserContextOptions = {
+  locale: 'en-US',
+  ignoreHTTPSErrors: true,
+  permissions: ['camera', 'microphone'],
+  viewport: {
+    width: 1920,
+    height: 1080,
+  },
+};
 
 export const myStartParameters: Protocol.Tracing.startParameters = {
   transferMode: "ReturnAsStream",
