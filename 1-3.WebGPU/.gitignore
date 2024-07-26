@@ -1,0 +1,5 @@
+./aws/canvas-type/*.json
+./aws/canvas-type/*.txt
+./github/output*/*.json
+./tsconfig.tsbuildinfo
+./dist
