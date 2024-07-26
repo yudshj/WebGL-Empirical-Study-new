@@ -1,9 +1,11 @@
-// import * as fs from 'fs';
+import fs from 'fs';
+import path from 'path';
+
 import { LaunchOptions, BrowserContextOptions } from 'playwright';
 import { Protocol } from 'playwright-core/types/protocol';
 
-import { tranco } from './tranco';
-import { gallery } from './gallery';
+// import { tranco } from './tranco';
+// import { gallery } from './gallery';
 
 interface LaunchOptionsDict {
   [key: string]: LaunchOptions;
@@ -12,10 +14,13 @@ interface LaunchOptionsDict {
 const useProxy = false;
 const headless = true;
 
-export const indexUrls = [
-  ["HYD-0", "https://yudshj.synology.me/boat/"]
-]
 // tranco;
+// read indexUrls from 'gallery.json'
+
+const filePath = './gallery.json';
+export const indexUrls = JSON.parse(fs.readFileSync(path.resolve(__dirname, filePath), 'utf8'))
+
+console.log('indexUrls:', indexUrls);
 
 const launchOptions: LaunchOptionsDict = {};
 

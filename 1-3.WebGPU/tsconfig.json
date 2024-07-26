@@ -1,0 +1,34 @@
+{
+    "compilerOptions": {
+        "target": "es2022", // 或更高版本，例如 "esnext"
+        "module": "CommonJS", // 或 "es2022"
+        "lib": [
+            "es2022",
+            "dom"
+        ],
+        "allowJs": true,
+        "checkJs": false,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "noEmitOnError": true,
+        "isolatedModules": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+        "incremental": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
+}

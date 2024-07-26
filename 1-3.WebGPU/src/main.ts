@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import { chromium } from 'playwright';
 
 import { contextOptions, indexUrls, getLaunchOptions } from './utils/config';
@@ -65,7 +65,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
             fs.writeFileSync(json_out_path, JSON.stringify(data));
             await browserContext.close();
         }
-        catch (error: any) {
+        catch (error) {
             console.error(error);
             if (error instanceof Error) {
                 fs.writeFileSync(error_out_path, [error.name, error.message, error.stack].join('\n++++++++++\n'));
