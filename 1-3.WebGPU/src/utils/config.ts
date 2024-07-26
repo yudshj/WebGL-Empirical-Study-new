@@ -17,7 +17,7 @@ const headless = true;
 // tranco;
 // read indexUrls from 'gallery.json'
 
-const filePath = './gallery.json';
+const filePath = './test.json';
 export const indexUrls = JSON.parse(fs.readFileSync(path.resolve(__dirname, filePath), 'utf8'))
 
 console.log('indexUrls:', indexUrls);
@@ -28,16 +28,9 @@ export function getLaunchOptions(name: string): LaunchOptions {
   let launchOption = launchOptions[name] || {
     headless: headless,
     args: [
-      // "--no-sandbox",
-      // '--disable-dev-shm-usage',
-      // '--memory-pressure-off',
-      // '--max-old-space-size=8192',
-      // '--js-flags="--max_old_space_size=8192"',
-      // '--ignore-certificate-errors',
       "--enable-gpu",
       "--enable-unsafe-webgpu",
-      // "--use-gl=angle",
-      // '--force-gpu-rasterization',
+      // "--enable-feature=Vulkan",
     ],
   };
   if (useProxy) {
@@ -52,7 +45,7 @@ export function getLaunchOptions(name: string): LaunchOptions {
 
 
 const proxyPool = [
-  'socks5://127.0.0.1:11632',
+  'http://162.105.175.55:11632',
 ];
 
 export const contextOptions: BrowserContextOptions = {
