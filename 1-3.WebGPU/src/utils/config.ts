@@ -17,7 +17,7 @@ const headless = true;
 // tranco;
 // read indexUrls from 'gallery.json'
 
-const filePath = './test.json';
+const filePath = './' + process.argv[2] + '.json';
 export const indexUrls = JSON.parse(fs.readFileSync(path.resolve(__dirname, filePath), 'utf8'))
 
 console.log('indexUrls:', indexUrls);

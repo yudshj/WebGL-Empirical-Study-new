@@ -8,8 +8,8 @@ const NAME = 'canvas-type';
 
 const total = indexUrls.length;
 
-const PART = parseInt(process.argv[2]);
-const TOTAL_PART = parseInt(process.argv[3]);
+const PART = parseInt(process.argv[3]);
+const TOTAL_PART = parseInt(process.argv[4]);
 const PART_SIZE = Math.ceil(total / TOTAL_PART);
 const START = PART * PART_SIZE;
 const END = Math.min((PART + 1) * PART_SIZE, total);
@@ -18,7 +18,7 @@ fs.mkdirSync(`output/${NAME}/`, { recursive: true });
 fs.mkdirSync(`output/screenshot/`, { recursive: true });
 fs.mkdirSync(`output/html/`, { recursive: true });
 
-(async () => {
+async function main () {
     for (let i = START; i < END; i ++) {
         // PART; i < total; i += TOTAL_PART) {
         const [idx, url] = indexUrls[i];
@@ -81,4 +81,6 @@ fs.mkdirSync(`output/html/`, { recursive: true });
         await browser.close();
         await new Promise((resolve) => setTimeout(resolve, 1000));
     }
-})();
+}
+
+main();

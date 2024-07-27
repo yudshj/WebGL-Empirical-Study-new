@@ -1,0 +1,1 @@
+https://playwright.azureedge.net/builds/chromium/1124/chromium-win64.zip
