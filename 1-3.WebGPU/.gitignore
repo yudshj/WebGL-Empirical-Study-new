@@ -5,3 +5,4 @@
 ./dist
 ./output_test
 ./output
+package-lock.json
