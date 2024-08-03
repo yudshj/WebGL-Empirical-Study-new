@@ -36,4 +36,6 @@ node_modules
 1-3.WebGPU/tsconfig.tsbuildinfo
 1-3.WebGPU/dist
 1-3.WebGPU/output_test
+1-3.WebGPU/output-linux
+1-3.WebGPU/output-windows
 package-lock.json
