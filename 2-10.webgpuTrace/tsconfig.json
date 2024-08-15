@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+      "target": "es2022",               // 编译后的 JavaScript 目标版本
+      "module": "commonjs",             // 使用 commonjs 模块
+      "moduleResolution": "node",       // 模块解析策略
+      "outDir": "./dist",               // 输出目录
+      "strict": true,                   // 启用所有严格类型检查选项
+      "esModuleInterop": true,          // 允许默认导入不是模块的模块
+      "skipLibCheck": true,             // 跳过声明文件的类型检查
+      "forceConsistentCasingInFileNames": true, // 强制文件名大小写一致
+      "baseUrl": ".",                   // 基本目录用于解析非相对模块名称
+      "paths": {                        // 设置路径映射
+        "*": ["node_modules/*", "src/types/*"]
+      },
+      "resolveJsonModule": true,        // 允许导入 json 模块
+      "typeRoots": ["./node_modules/@types", "./src/@types"], // 类型声明文件路径
+      "lib": ["ESNext", "DOM"],         // 编译期间包含的库文件列表
+      "allowSyntheticDefaultImports": true // 允许默认导入没有默认导出的模块
+    },
+    "include": [
+      "src/**/*.ts"                      // 需要包含在编译中的文件
+    ],
+    "exclude": [
+      "node_modules",                   // 编译时排除的文件夹
+      "**/*.spec.ts"
+    ]
+  }
+  
